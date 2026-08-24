@@ -1,0 +1,7 @@
+(() => {
+  'use strict';
+  const KEY='smartATSPro.onboarding.v1',$=(s,r=document)=>r.querySelector(s);
+  function done(){localStorage.setItem(KEY,'done');$('#onboardingCard')?.remove();}
+  function inject(){if(localStorage.getItem(KEY)==='done'||$('#onboardingCard')||$('#screenTitle')?.textContent!=='ホーム')return;const screen=$('#appMain .screen');if(!screen)return;const c=document.createElement('div');c.className='onboarding-card';c.id='onboardingCard';c.innerHTML='<h3>Smart ATS Pro はログインなしで始められます</h3><p>まずローカルATSをそのまま使い、必要な機能だけ後から追加できます。</p><div class="onboarding-steps"><div class="onboarding-step"><span class="onboarding-num">1</span><div><b>候補者と求人を登録</b><small>端末内保存で選考管理を開始</small></div></div><div class="onboarding-step"><span class="onboarding-num">2</span><div><b>AIを使うならGemini APIキーを設定</b><small>履歴書解析、スカウト、メール返信などが有効</small></div></div><div class="onboarding-step"><span class="onboarding-num">3</span><div><b>クラウド・Gmail・原本保存は任意</b><small>必要になった時だけアカウント・連携から設定</small></div></div></div><div class="onboarding-actions"><button class="primary-btn" id="onboardingAi">AI設定を見る</button><button class="secondary-btn" id="onboardingDone">この案内を閉じる</button><button class="skip" id="onboardingSkip">今後表示しない</button></div>';screen.prepend(c);$('#onboardingAi',c).onclick=()=>{window.SmartATSAI?.open?.();setTimeout(()=>window.SmartATSAI?.renderSettings?.(),0);};$('#onboardingDone',c).onclick=()=>c.remove();$('#onboardingSkip',c).onclick=done;}
+  new MutationObserver(inject).observe(document.body,{childList:true,subtree:true});inject();
+})();

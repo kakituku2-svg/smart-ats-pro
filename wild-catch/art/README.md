@@ -1,6 +1,6 @@
 # WILD CATCH — Production Art Drop-in Contract v0.5.0
 
-このフォルダは仮プリミティブ/プレビューCGから本番CGへ差し替えるための正式な受け口です。ゲームロジック・当たり判定・AI・セーブを変更せず、GLBを所定パスへ置くだけで自動認識する設計です。
+このフォルダは仮プリミティブ/プレビューCGから本番CGへ差し替えるための正式な受け口です。ゲームロジック・当たり判定・AI・セーブを変更せず、GLBを所定パスへ置くだけで自動認識する設計です。\n\nFIELD BASE本番環境の配置先: `art/environment/hub/field_base_set.glb`
 
 ## 1. Ren
 

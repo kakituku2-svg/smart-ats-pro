@@ -1,0 +1,79 @@
+{
+  "schema_version": 2,
+  "checkpoint": "0.4.3",
+  "note": "Canonical final assets remain GLB. Development resolves GLB -> glTF -> current high-density preview -> legacy preview without changing gameplay logic. The art subsystem checkpoint remains 0.4.3 while the game release milestone is v0.5.0.",
+  "assets": [
+    {
+      "id": "ren",
+      "type": "character",
+      "path": "res://art/characters/ren/ren.glb",
+      "preview_path": "res://art/characters/ren/ren_preview_v3.tscn",
+      "status": "preview_scene_added",
+      "required_animations": ["Idle", "Run", "Jump"],
+      "recommended_animations": ["Dash", "Fall", "Land", "Net_1", "Net_2", "Net_3", "Scan", "Hit", "Knockout", "CaptureSuccess", "TransferIn", "TransferOut"]
+    },
+    {
+      "id": "lumi",
+      "type": "mimo",
+      "path": "res://art/mimo/lumi/lumi.glb",
+      "preview_path": "res://art/mimo/lumi/lumi_preview_v3.tscn",
+      "status": "preview_scene_added",
+      "required_animations": ["Idle", "Run", "Tired", "Capture"],
+      "recommended_animations": ["Alert", "Recover", "HideGrass"]
+    },
+    {
+      "id": "goro",
+      "type": "mimo",
+      "path": "res://art/mimo/goro/goro.glb",
+      "preview_path": "res://art/mimo/mimo_preview_base_v2.tscn",
+      "status": "preview_scene_added",
+      "required_animations": ["Idle", "Run", "Tired", "Capture"],
+      "recommended_animations": ["Alert", "Recover", "ThrowRock"]
+    },
+    {
+      "id": "boka",
+      "type": "mimo",
+      "path": "res://art/mimo/boka/boka.glb",
+      "preview_path": "res://art/mimo/mimo_preview_base_v2.tscn",
+      "status": "preview_scene_added",
+      "required_animations": ["Idle", "Run", "Tired", "Capture"],
+      "recommended_animations": ["Alert", "Recover", "ChargeTell", "Charge"]
+    },
+    {
+      "id": "nera",
+      "type": "mimo",
+      "path": "res://art/mimo/nera/nera.glb",
+      "preview_path": "res://art/mimo/mimo_preview_base_v2.tscn",
+      "status": "preview_scene_added",
+      "required_animations": ["Idle", "Run", "Tired", "Capture"],
+      "recommended_animations": ["Alert", "Recover", "ShockTell", "Shock"]
+    },
+    {
+      "id": "moku",
+      "type": "mimo",
+      "path": "res://art/mimo/moku/moku.glb",
+      "preview_path": "res://art/mimo/mimo_preview_base_v2.tscn",
+      "status": "preview_scene_added",
+      "required_animations": ["Idle", "Run", "Tired", "Capture"],
+      "recommended_animations": ["Alert", "Recover", "Sleep", "DrowsyField"]
+    },
+    {
+      "id": "raku",
+      "type": "mimo",
+      "path": "res://art/mimo/raku/raku.glb",
+      "preview_path": "res://art/mimo/mimo_preview_base_v2.tscn",
+      "status": "preview_scene_added",
+      "required_animations": ["Idle", "Run", "Tired", "Capture"],
+      "recommended_animations": ["Alert", "Recover", "Feint", "Decoy"]
+    },
+    {
+      "id": "stage1_set",
+      "type": "environment",
+      "path": "res://art/environment/stage1/stage1_set.glb",
+      "preview_path": "res://art/environment/stage1/stage1_preview_v2.tscn",
+      "status": "preview_scene_added",
+      "required_animations": [],
+      "recommended_animations": []
+    }
+  ]
+}

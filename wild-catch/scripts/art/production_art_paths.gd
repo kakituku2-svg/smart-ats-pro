@@ -21,6 +21,7 @@ const MIMO_SHARED_PREVIEW_LEGACY := "res://art/mimo/mimo_preview_base.tscn"
 const LUMI_PREVIEW := "res://art/mimo/lumi/lumi_preview_v3.tscn"
 const LUMI_PREVIEW_V2 := "res://art/mimo/lumi/lumi_preview_v2.tscn"
 
+# Backward-compatible primary constants used by docs/QA.
 const REN_SCENE := REN_GLB
 const STAGE1_SCENE := STAGE1_GLB
 

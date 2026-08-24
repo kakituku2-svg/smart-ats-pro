@@ -1,0 +1,147 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="PackedScene" path="res://art/mimo/lumi/lumi_preview_v2.tscn" id="1_base"]
+
+[sub_resource type="SphereMesh" id="SmallSphere"]
+radius = 0.09
+height = 0.18
+radial_segments = 12
+rings = 6
+
+[sub_resource type="BoxMesh" id="SmallBox"]
+size = Vector3(0.13, 0.045, 0.035)
+
+[sub_resource type="PrismMesh" id="LeafPrism"]
+size = Vector3(0.14, 0.30, 0.055)
+
+[sub_resource type="TorusMesh" id="TinyRing"]
+inner_radius = 0.075
+outer_radius = 0.095
+rings = 12
+ring_segments = 8
+
+[sub_resource type="StandardMaterial3D" id="LeafMid"]
+albedo_color = Color(0.12, 0.57, 0.24, 1)
+roughness = 0.78
+
+[sub_resource type="StandardMaterial3D" id="LeafBright"]
+albedo_color = Color(0.38, 0.92, 0.42, 1)
+roughness = 0.72
+
+[sub_resource type="StandardMaterial3D" id="CreamBelly"]
+albedo_color = Color(1.0, 0.91, 0.73, 1)
+roughness = 0.88
+
+[sub_resource type="StandardMaterial3D" id="DarkFace"]
+albedo_color = Color(0.04, 0.025, 0.02, 1)
+roughness = 0.54
+
+[sub_resource type="StandardMaterial3D" id="GlowMint"]
+albedo_color = Color(0.38, 1.0, 0.62, 1)
+emission_enabled = true
+emission = Color(0.18, 0.86, 0.42, 1)
+emission_energy_multiplier = 2.1
+roughness = 0.30
+
+[node name="LumiPreviewV3" instance=ExtResource("1_base")]
+
+[node name="EyeLineL" type="MeshInstance3D" parent="Rig"]
+position = Vector3(-0.15, 1.125, -0.475)
+rotation_degrees = Vector3(0, 0, -6)
+scale = Vector3(0.88, 0.72, 0.70)
+mesh = SubResource("SmallBox")
+material_override = SubResource("DarkFace")
+
+[node name="EyeLineR" type="MeshInstance3D" parent="Rig"]
+position = Vector3(0.15, 1.125, -0.475)
+rotation_degrees = Vector3(0, 0, 6)
+scale = Vector3(0.88, 0.72, 0.70)
+mesh = SubResource("SmallBox")
+material_override = SubResource("DarkFace")
+
+[node name="EyeSparkL" type="MeshInstance3D" parent="Rig"]
+position = Vector3(-0.125, 1.16, -0.512)
+scale = Vector3(0.28, 0.28, 0.18)
+mesh = SubResource("SmallSphere")
+material_override = SubResource("GlowMint")
+
+[node name="EyeSparkR" type="MeshInstance3D" parent="Rig"]
+position = Vector3(0.125, 1.16, -0.512)
+scale = Vector3(0.28, 0.28, 0.18)
+mesh = SubResource("SmallSphere")
+material_override = SubResource("GlowMint")
+
+[node name="ForeheadLeaf" type="MeshInstance3D" parent="Rig"]
+position = Vector3(0, 1.52, -0.17)
+rotation_degrees = Vector3(18, 0, 0)
+scale = Vector3(0.88, 0.84, 0.72)
+mesh = SubResource("LeafPrism")
+material_override = SubResource("LeafBright")
+
+[node name="LeafCrownBackL" type="MeshInstance3D" parent="Rig"]
+position = Vector3(-0.18, 1.45, 0.12)
+rotation_degrees = Vector3(-12, 0, -42)
+scale = Vector3(0.92, 0.92, 0.90)
+mesh = SubResource("LeafPrism")
+material_override = SubResource("LeafMid")
+
+[node name="LeafCrownBackR" type="MeshInstance3D" parent="Rig"]
+position = Vector3(0.18, 1.45, 0.12)
+rotation_degrees = Vector3(-12, 0, 42)
+scale = Vector3(0.92, 0.92, 0.90)
+mesh = SubResource("LeafPrism")
+material_override = SubResource("LeafMid")
+
+[node name="BellyPatch" type="MeshInstance3D" parent="Rig"]
+position = Vector3(0, 0.57, -0.365)
+scale = Vector3(2.15, 2.45, 0.45)
+mesh = SubResource("SmallSphere")
+material_override = SubResource("CreamBelly")
+
+[node name="PawMarkL" type="MeshInstance3D" parent="Rig"]
+position = Vector3(-0.24, 0.33, -0.27)
+rotation_degrees = Vector3(90, 0, 0)
+scale = Vector3(0.56, 0.56, 0.40)
+mesh = SubResource("TinyRing")
+material_override = SubResource("LeafMid")
+
+[node name="PawMarkR" type="MeshInstance3D" parent="Rig"]
+position = Vector3(0.24, 0.33, -0.27)
+rotation_degrees = Vector3(90, 0, 0)
+scale = Vector3(0.56, 0.56, 0.40)
+mesh = SubResource("TinyRing")
+material_override = SubResource("LeafMid")
+
+[node name="LeafScarfL" type="MeshInstance3D" parent="Rig"]
+position = Vector3(-0.18, 0.76, -0.16)
+rotation_degrees = Vector3(12, 0, -62)
+scale = Vector3(0.78, 1.04, 0.72)
+mesh = SubResource("LeafPrism")
+material_override = SubResource("LeafBright")
+
+[node name="LeafScarfR" type="MeshInstance3D" parent="Rig"]
+position = Vector3(0.18, 0.76, -0.16)
+rotation_degrees = Vector3(12, 0, 62)
+scale = Vector3(0.78, 1.04, 0.72)
+mesh = SubResource("LeafPrism")
+material_override = SubResource("LeafMid")
+
+[node name="TailLeafL" type="MeshInstance3D" parent="Rig"]
+position = Vector3(-0.10, 0.46, 0.48)
+rotation_degrees = Vector3(58, 0, -28)
+scale = Vector3(0.84, 0.88, 0.76)
+mesh = SubResource("LeafPrism")
+material_override = SubResource("LeafMid")
+
+[node name="TailLeafR" type="MeshInstance3D" parent="Rig"]
+position = Vector3(0.10, 0.46, 0.48)
+rotation_degrees = Vector3(58, 0, 28)
+scale = Vector3(0.84, 0.88, 0.76)
+mesh = SubResource("LeafPrism")
+material_override = SubResource("LeafBright")
+
+[node name="ChestSeed" type="MeshInstance3D" parent="Rig"]
+position = Vector3(0, 0.74, -0.39)
+scale = Vector3(0.42, 0.58, 0.30)
+mesh = SubResource("SmallSphere")
+material_override = SubResource("GlowMint")

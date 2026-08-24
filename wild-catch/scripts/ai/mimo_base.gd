@@ -67,22 +67,30 @@ func _physics_process(delta: float) -> void:
         _player = get_tree().get_first_node_in_group("player") as Node3D
         if not is_instance_valid(_player):
             return
+
     _lure_time = maxf(0.0, _lure_time - delta)
     _stun_time = maxf(0.0, _stun_time - delta)
     _route_refresh = maxf(0.0, _route_refresh - delta)
     var to_player := _player.global_position - global_position
     var player_distance := to_player.length()
+
     if _stun_time > 0.0:
         _stunned_tick(delta)
     elif _lure_time > 0.0 and state in [State.ROUTINE, State.ALERT, State.RECOVER]:
         _lure_tick(delta, player_distance)
     else:
         match state:
-            State.ROUTINE: _routine_tick(delta, player_distance)
-            State.ALERT: _alert_tick(delta, player_distance)
-            State.PANIC: _panic_tick(delta, to_player, player_distance)
-            State.FATIGUED: _fatigued_tick(delta, player_distance)
-            State.RECOVER: _recover_tick(delta, player_distance)
+            State.ROUTINE:
+                _routine_tick(delta, player_distance)
+            State.ALERT:
+                _alert_tick(delta, player_distance)
+            State.PANIC:
+                _panic_tick(delta, to_player, player_distance)
+            State.FATIGUED:
+                _fatigued_tick(delta, player_distance)
+            State.RECOVER:
+                _recover_tick(delta, player_distance)
+
     if not is_on_floor():
         velocity.y -= float(ProjectSettings.get_setting("physics/3d/default_gravity")) * delta
     move_and_slide()
@@ -142,9 +150,11 @@ func _panic_tick(delta: float, to_player: Vector3, player_distance: float) -> vo
         _recover_timer = 2.7
         set_state(State.FATIGUED)
         return
+
     var away := -to_player
     away.y = 0.0
-    if away.length_squared() < 0.01: away = Vector3.FORWARD
+    if away.length_squared() < 0.01:
+        away = Vector3.FORWARD
     away = away.normalized()
     var perpendicular := Vector3(-away.z, 0.0, away.x)
     var side := perpendicular * sin(Time.get_ticks_msec() * 0.0025 + _phase) * (0.35 + trick_bias)
@@ -159,6 +169,7 @@ func _panic_tick(delta: float, to_player: Vector3, player_distance: float) -> vo
     var speed_scale := _profile_speed_scale(player_distance)
     velocity.x = desired_dir.x * panic_speed * speed_scale
     velocity.z = desired_dir.z * panic_speed * speed_scale
+
     if player_distance > detection_distance * 2.2 and stamina > stamina_max * 0.35:
         set_state(State.RECOVER)
 
@@ -166,17 +177,21 @@ func _escape_route_direction() -> Vector3:
     if _route_refresh <= 0.0 or not is_instance_valid(_route_anchor) or global_position.distance_to(_route_anchor.global_position) < 1.2:
         _route_refresh = 0.75 + randf() * 0.55
         _route_anchor = _choose_escape_anchor()
-    if not is_instance_valid(_route_anchor): return Vector3.ZERO
+    if not is_instance_valid(_route_anchor):
+        return Vector3.ZERO
     return _flat_direction_to(_route_anchor.global_position)
 
 func _choose_escape_anchor() -> Node3D:
-    if not is_instance_valid(_player): return null
+    if not is_instance_valid(_player):
+        return null
     var best: Node3D
     var best_score := -INF
     for node in get_tree().get_nodes_in_group("mimo_escape_anchor"):
         var anchor := node as Node3D
-        if anchor == null: continue
-        if StringName(anchor.get_meta("target_mimo", &"")) != mimo_id: continue
+        if anchor == null:
+            continue
+        if StringName(anchor.get_meta("target_mimo", &"")) != mimo_id:
+            continue
         var player_distance := anchor.global_position.distance_to(_player.global_position)
         var self_distance := anchor.global_position.distance_to(global_position)
         var score := player_distance - self_distance * 0.38 + randf() * 0.45
@@ -188,8 +203,10 @@ func _choose_escape_anchor() -> Node3D:
 func _profile_escape_direction(base_dir: Vector3, away: Vector3, perpendicular: Vector3, player_distance: float) -> Vector3:
     var t := Time.get_ticks_msec() * 0.001 + _phase
     match behavior_profile:
-        &"timid": return (base_dir + away * 0.35 + _flat_direction_to(_home) * 0.35).normalized()
-        &"zigzag": return (away + perpendicular * sin(t * 7.5) * 0.92).normalized()
+        &"timid":
+            return (base_dir + away * 0.35 + _flat_direction_to(_home) * 0.35).normalized()
+        &"zigzag":
+            return (away + perpendicular * sin(t * 7.5) * 0.92).normalized()
         &"challenger":
             if player_distance < 4.4:
                 var side_sign := 1.0 if sin(t * 5.0) >= 0.0 else -1.0
@@ -199,42 +216,58 @@ func _profile_escape_direction(base_dir: Vector3, away: Vector3, perpendicular: 
                 _special_timer = 2.8
                 _burst_timer = 0.52
                 _escape_flip *= -1.0
-            if _burst_timer > 0.0: return (away + perpendicular * _escape_flip * 0.72).normalized()
-        &"sleepy": return (base_dir + away * 0.20).normalized()
+            if _burst_timer > 0.0:
+                return (away + perpendicular * _escape_flip * 0.72).normalized()
+        &"sleepy":
+            return (base_dir + away * 0.20).normalized()
         &"trickster":
             if _special_timer <= 0.0:
                 _special_timer = 1.65
                 _burst_timer = 0.38
                 _escape_flip *= -1.0
-            if _burst_timer > 0.0: return (away * 0.22 + perpendicular * _escape_flip * 1.30).normalized()
+            if _burst_timer > 0.0:
+                return (away * 0.22 + perpendicular * _escape_flip * 1.30).normalized()
             return (base_dir + perpendicular * sin(t * 10.5) * 0.48).normalized()
     return base_dir
 
 func _profile_speed_scale(player_distance: float) -> float:
     match behavior_profile:
-        &"timid": return 1.06
-        &"zigzag": return 0.98
-        &"challenger": return 1.12 if player_distance < 4.4 else 1.0
-        &"sentinel": return 1.34 if _burst_timer > 0.0 else 1.0
-        &"sleepy": return 0.72 + get_pressure() * 0.28
-        &"trickster": return 1.24 if _burst_timer > 0.0 else 1.02
+        &"timid":
+            return 1.06
+        &"zigzag":
+            return 0.98
+        &"challenger":
+            return 1.12 if player_distance < 4.4 else 1.0
+        &"sentinel":
+            return 1.34 if _burst_timer > 0.0 else 1.0
+        &"sleepy":
+            return 0.72 + get_pressure() * 0.28
+        &"trickster":
+            return 1.24 if _burst_timer > 0.0 else 1.02
     return 1.0
 
 func _default_behavior_profile() -> StringName:
     match mimo_id:
-        &"lumi": return &"timid"
-        &"goro": return &"zigzag"
-        &"boka": return &"challenger"
-        &"nera": return &"sentinel"
-        &"moku": return &"sleepy"
-        &"raku": return &"trickster"
+        &"lumi":
+            return &"timid"
+        &"goro":
+            return &"zigzag"
+        &"boka":
+            return &"challenger"
+        &"nera":
+            return &"sentinel"
+        &"moku":
+            return &"sleepy"
+        &"raku":
+            return &"trickster"
     return &"runner"
 
 func _fatigued_tick(delta: float, player_distance: float) -> void:
     velocity.x = move_toward(velocity.x, 0.0, 14.0 * delta)
     velocity.z = move_toward(velocity.z, 0.0, 14.0 * delta)
     _recover_timer -= delta
-    if player_distance > 4.5 and _recover_timer <= 0.0: set_state(State.RECOVER)
+    if player_distance > 4.5 and _recover_timer <= 0.0:
+        set_state(State.RECOVER)
 
 func _recover_tick(delta: float, player_distance: float) -> void:
     stamina = minf(stamina_max, stamina + recover_rate * delta)
@@ -246,22 +279,29 @@ func _recover_tick(delta: float, player_distance: float) -> void:
         set_state(State.ROUTINE)
 
 func set_state(next_state: State) -> void:
-    if state == State.CAPTURED or state == next_state: return
+    if state == State.CAPTURED or state == next_state:
+        return
     state = next_state
-    if state == State.PANIC and _special_timer <= 0.0: _special_timer = 0.6 + randf() * 0.8
-    if state != State.PANIC: _route_anchor = null
+    if state == State.PANIC and _special_timer <= 0.0:
+        _special_timer = 0.6 + randf() * 0.8
+    if state != State.PANIC:
+        _route_anchor = null
     state_changed.emit(self, state)
 
 func apply_lure(target_position: Vector3, duration: float) -> bool:
-    if state in [State.CAPTURED, State.FATIGUED]: return false
-    if state == State.PANIC and get_pressure() < 0.45: return false
+    if state in [State.CAPTURED, State.FATIGUED]:
+        return false
+    if state == State.PANIC and get_pressure() < 0.45:
+        return false
     _lure_position = target_position
     _lure_time = maxf(_lure_time, duration)
-    if state == State.PANIC: set_state(State.RECOVER)
+    if state == State.PANIC:
+        set_state(State.RECOVER)
     return true
 
 func apply_pulse(_origin: Vector3, damage: float, stun_seconds: float) -> bool:
-    if state == State.CAPTURED: return false
+    if state == State.CAPTURED:
+        return false
     _lure_time = 0.0
     stamina = maxf(0.0, stamina - maxf(damage, 0.0))
     _stun_time = maxf(_stun_time, stun_seconds)
@@ -273,11 +313,15 @@ func apply_pulse(_origin: Vector3, damage: float, stun_seconds: float) -> bool:
         set_state(State.ALERT)
     return true
 
-func is_lured() -> bool: return _lure_time > 0.0
-func is_stunned() -> bool: return _stun_time > 0.0
+func is_lured() -> bool:
+    return _lure_time > 0.0
+
+func is_stunned() -> bool:
+    return _stun_time > 0.0
 
 func attempt_capture(net_step: int, hunter: Node3D) -> bool:
-    if state == State.CAPTURED or not is_instance_valid(hunter): return false
+    if state == State.CAPTURED or not is_instance_valid(hunter):
+        return false
     var distance := global_position.distance_to(hunter.global_position)
     var guaranteed := state == State.FATIGUED or (_stun_time > 0.0 and distance <= 2.3) or distance <= 1.35 or (net_step == 3 and distance <= 2.05)
     if guaranteed:
@@ -291,7 +335,8 @@ func attempt_capture(net_step: int, hunter: Node3D) -> bool:
     return false
 
 func capture() -> void:
-    if state == State.CAPTURED: return
+    if state == State.CAPTURED:
+        return
     state = State.CAPTURED
     velocity = Vector3.ZERO
     _lure_time = 0.0
@@ -305,27 +350,56 @@ func capture() -> void:
     tween.tween_property(visual, "scale", Vector3.ZERO, 0.24).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)
     tween.tween_callback(func() -> void: visible = false)
 
-func is_capture_ready() -> bool: return state == State.FATIGUED
-func get_pressure() -> float: return clampf(1.0 - stamina / maxf(stamina_max, 1.0), 0.0, 1.0)
+func is_capture_ready() -> bool:
+    return state == State.FATIGUED
+
+func get_pressure() -> float:
+    return clampf(1.0 - stamina / maxf(stamina_max, 1.0), 0.0, 1.0)
 
 func get_capture_status() -> String:
-    if state == State.FATIGUED: return "READY — HEX NET NOW"
-    if _stun_time > 0.0: return "STUNNED — CLOSE IN"
-    if _lure_time > 0.0: return "LURED — SET UP AN AMBUSH"
+    if state == State.FATIGUED:
+        return "READY — HEX NET NOW"
+    if _stun_time > 0.0:
+        return "STUNNED — CLOSE IN"
+    if _lure_time > 0.0:
+        return "LURED — SET UP AN AMBUSH"
     var stamina_ratio := stamina / maxf(stamina_max, 1.0)
-    if state == State.PANIC and stamina_ratio <= 0.35: return "NEARLY TIRED"
-    if state == State.PANIC: return "CHASE"
-    if state == State.ALERT: return "SPOTTED YOU"
-    if state == State.RECOVER: return "RECOVERING"
+    if state == State.PANIC and stamina_ratio <= 0.35:
+        return "NEARLY TIRED"
+    if state == State.PANIC:
+        return "CHASE"
+    if state == State.ALERT:
+        return "SPOTTED YOU"
+    if state == State.RECOVER:
+        return "RECOVERING"
     return "TRACK"
 
 func get_route_hint() -> String:
-    if is_instance_valid(_route_anchor): return String(_route_anchor.get_meta("anchor_kind", "dynamic"))
+    if is_instance_valid(_route_anchor):
+        return String(_route_anchor.get_meta("anchor_kind", "dynamic"))
     return "dynamic"
 
 func get_scan_payload(observer_position: Vector3) -> Dictionary:
     var delta := global_position - observer_position
-    return {"id":String(mimo_id),"name":display_name,"distance":delta.length(),"direction":_direction_label(delta),"area":area_name,"personality":personality,"behavior":String(behavior_profile),"route":get_route_hint(),"state":State.keys()[state],"stamina":stamina/maxf(stamina_max,1.0),"pressure":get_pressure(),"capture_ready":is_capture_ready(),"capture_status":get_capture_status(),"lured":is_lured(),"stunned":is_stunned(),"hint":capture_hint}
+    var direction_label := _direction_label(delta)
+    return {
+        "id": String(mimo_id),
+        "name": display_name,
+        "distance": delta.length(),
+        "direction": direction_label,
+        "area": area_name,
+        "personality": personality,
+        "behavior": String(behavior_profile),
+        "route": get_route_hint(),
+        "state": State.keys()[state],
+        "stamina": stamina / maxf(stamina_max, 1.0),
+        "pressure": get_pressure(),
+        "capture_ready": is_capture_ready(),
+        "capture_status": get_capture_status(),
+        "lured": is_lured(),
+        "stunned": is_stunned(),
+        "hint": capture_hint,
+    }
 
 func _pick_wander_target() -> void:
     _wander_timer = 1.5 + randf() * 2.4
@@ -340,7 +414,8 @@ func _flat_direction_to(target: Vector3) -> Vector3:
 
 func _face_velocity(delta: float) -> void:
     var planar := Vector3(velocity.x, 0.0, velocity.z)
-    if planar.length_squared() <= 0.05: return
+    if planar.length_squared() <= 0.05:
+        return
     var target_yaw := atan2(-planar.x, -planar.z)
     rotation.y = lerp_angle(rotation.y, target_yaw, clampf(7.0 * delta, 0.0, 1.0))
 
@@ -357,22 +432,40 @@ func _apply_accent_material() -> void:
     orb_mesh.material_override = _orb_material
 
 func _update_visual_feedback(delta: float) -> void:
-    if not is_instance_valid(visual) or not is_instance_valid(halo_mesh) or _orb_material == null: return
+    if not is_instance_valid(visual) or not is_instance_valid(halo_mesh) or _orb_material == null:
+        return
     var now := Time.get_ticks_msec() * 0.001 + _phase
     var pulse_amp := 0.025
     var pulse_speed := 2.5
     var state_color := accent_color
     var scale_base := 1.0
     if _stun_time > 0.0:
-        state_color = Color(0.20, 0.78, 1.0, 1.0); pulse_amp = 0.09; pulse_speed = 13.0
+        state_color = Color(0.20, 0.78, 1.0, 1.0)
+        pulse_amp = 0.09
+        pulse_speed = 13.0
     elif _lure_time > 0.0:
-        state_color = Color(0.58, 1.0, 0.38, 1.0); pulse_amp = 0.06; pulse_speed = 4.8
+        state_color = Color(0.58, 1.0, 0.38, 1.0)
+        pulse_amp = 0.06
+        pulse_speed = 4.8
     else:
         match state:
-            State.ALERT: state_color = Color(1.0,0.72,0.16,1.0); pulse_amp=0.055; pulse_speed=6.0
-            State.PANIC: state_color = Color(1.0,0.16,0.12,1.0); pulse_amp=0.075; pulse_speed=8.5
-            State.FATIGUED: state_color=Color(0.25,1.0,0.46,1.0); pulse_amp=0.11; pulse_speed=5.0; scale_base=0.90
-            State.RECOVER: state_color=Color(0.25,0.72,1.0,1.0); pulse_amp=0.04; pulse_speed=3.5
+            State.ALERT:
+                state_color = Color(1.0, 0.72, 0.16, 1.0)
+                pulse_amp = 0.055
+                pulse_speed = 6.0
+            State.PANIC:
+                state_color = Color(1.0, 0.16, 0.12, 1.0)
+                pulse_amp = 0.075
+                pulse_speed = 8.5
+            State.FATIGUED:
+                state_color = Color(0.25, 1.0, 0.46, 1.0)
+                pulse_amp = 0.11
+                pulse_speed = 5.0
+                scale_base = 0.90
+            State.RECOVER:
+                state_color = Color(0.25, 0.72, 1.0, 1.0)
+                pulse_amp = 0.04
+                pulse_speed = 3.5
     var pulse := scale_base * (1.0 + sin(now * pulse_speed) * pulse_amp)
     visual.scale = visual.scale.lerp(Vector3.ONE * pulse, clampf(delta * 8.0, 0.0, 1.0))
     halo_mesh.rotation.y += delta * (2.6 if state == State.PANIC else 1.25)
@@ -381,5 +474,6 @@ func _update_visual_feedback(delta: float) -> void:
     _orb_material.emission_energy_multiplier = 3.0 if state == State.FATIGUED else (2.4 if _stun_time > 0.0 else 1.7)
 
 func _direction_label(delta: Vector3) -> String:
-    if absf(delta.x) > absf(delta.z): return "E" if delta.x > 0.0 else "W"
+    if absf(delta.x) > absf(delta.z):
+        return "E" if delta.x > 0.0 else "W"
     return "S" if delta.z > 0.0 else "N"

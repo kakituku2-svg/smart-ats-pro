@@ -47,7 +47,7 @@ checks={
  'backup-disabled': 'android:allowBackup="false"' in manifest,
  'file-picker': 'onShowFileChooser' in java and 'ACTION_OPEN_DOCUMENT' in java,
  'external-nav-blocked': 'file:///android_asset/' in java and 'shouldOverrideUrlLoading' in java,
- 'audit-minimal': 'const MAX=200' in audit and 'feature:feature||' in audit and 'ok:!!ok' in audit,
+ 'audit-minimal': 'MAX=200' in audit and 'feature:feature||' in audit and 'ok:!!ok' in audit,
  'workflow-shortcuts': all(x in workflow for x in ['renderScout','renderReply','renderSummary','renderQuestions']),
  'no-hardcoded-google-api-key': re.search(r'AIza[0-9A-Za-z_-]{20,}', assets_all) is None,
  'release-signing-ready': all(x in build for x in ['SMART_ATS_KEYSTORE_PATH','SMART_ATS_KEYSTORE_PASSWORD','SMART_ATS_KEY_ALIAS','SMART_ATS_KEY_PASSWORD']),

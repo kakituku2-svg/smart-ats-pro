@@ -1,0 +1,31 @@
+name: WILD CATCH — Source Access Test
+
+on:
+  push:
+    branches: ["wild-catch-build"]
+    paths:
+      - ".github/workflows/wild-catch-source-access-test.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-access:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout public build repo
+        uses: actions/checkout@v4
+      - name: Try checkout private WILD CATCH source
+        uses: actions/checkout@v4
+        with:
+          repository: kakituku2-svg/claude-mini-app-workspace
+          ref: wild-catch-staging
+          token: ${{ github.token }}
+          path: private-source
+      - name: Verify WILD CATCH source
+        run: |
+          test -s private-source/wild-catch/project.godot
+          grep -q 'config/name="WILD CATCH"' private-source/wild-catch/project.godot
+          echo "PRIVATE_SOURCE_ACCESS_OK"

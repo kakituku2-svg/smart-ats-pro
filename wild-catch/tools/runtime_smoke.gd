@@ -215,7 +215,7 @@ func _run() -> void:
     _check(_stage_clear_count == 1, "Stage Clear emits exactly once")
     if save_manager != null:
         _check(int(save_manager.call("get_stage_clear_count", &"stage1")) >= 1, "Stage Clear persists through SaveManager")
-        var summary: Array = save_manager.call("get_bestiary_summary")
+        var summary: Array = save_manager.call("get_bestiary_summary", &"stage1")
         _check(summary.size() == 6, "Persistent bestiary exposes all six Stage 1 entries")
         _check(int(save_manager.call("get_unique_capture_count")) == 6, "Persistent bestiary count cannot exceed six known Mimo")
         var result: Dictionary = save_manager.call("get_stage_result", &"stage1")

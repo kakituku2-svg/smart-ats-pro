@@ -90,6 +90,11 @@ func _build_sky_canyon() -> void:
 func _build_neon_swamp() -> void:
     var ruin := Color(0.17, 0.23, 0.27, 1.0)
     var path := Color(0.10, 0.26, 0.20, 1.0)
+    var glow_colors: Array[Color] = [
+        Color(0.28, 1.0, 0.68, 1.0),
+        Color(0.58, 0.38, 1.0, 1.0),
+        Color(1.0, 0.34, 0.76, 1.0),
+    ]
     _add_static_box(self, "ResearchDeck", Vector3(0, 0.35, -10), Vector3(16, 0.7, 8), ruin)
     _add_static_box(self, "WestLab", Vector3(-15, 1.2, 1), Vector3(8, 2.4, 10), ruin.darkened(0.04))
     _add_static_box(self, "EastLab", Vector3(15, 0.9, 4), Vector3(7, 1.8, 9), ruin.lightened(0.03))
@@ -99,7 +104,7 @@ func _build_neon_swamp() -> void:
     for i in range(30):
         var x := -23.0 + float((i * 7) % 46)
         var z := -20.0 + float((i * 11) % 42)
-        var hue := [Color(0.28, 1.0, 0.68, 1.0), Color(0.58, 0.38, 1.0, 1.0), Color(1.0, 0.34, 0.76, 1.0)][i % 3]
+        var hue: Color = glow_colors[i % glow_colors.size()]
         _add_glow_plant(Vector3(x, 0.25, z), hue, 0.7 + float(i % 4) * 0.12)
 
 func _spawn_player_and_tools() -> void:

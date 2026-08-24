@@ -69,9 +69,15 @@ jobs:
         run: timeout 60s ./godot --headless --path wild-catch --quit-after 20
 
       - name: Runtime smoke tests
+        env:
+          XDG_DATA_HOME: ${{ runner.temp }}/wild-catch-godot-data
         run: |
           timeout 90s ./godot --headless --path wild-catch res://tools/runtime_smoke.tscn
           timeout 90s ./godot --headless --path wild-catch res://tools/runtime_mobile_input_smoke.tscn
+          timeout 90s ./godot --headless --path wild-catch res://tools/runtime_v041_smoke.tscn
+          timeout 90s ./godot --headless --path wild-catch res://tools/runtime_v042_smoke.tscn
+          timeout 90s ./godot --headless --path wild-catch res://tools/runtime_v043_smoke.tscn
+          timeout 90s ./godot --headless --path wild-catch res://tools/runtime_v044_smoke.tscn
           timeout 90s ./godot --headless --path wild-catch res://tools/runtime_mission_flow_smoke.tscn
 
       - name: Export Android debug APK

@@ -78,7 +78,6 @@ func play_capture(world_position: Vector3, accent: Color) -> void:
 
 func play_pulse_hit(world_position: Vector3) -> void:
     var ring := MeshInstance3D.new()
-    ring.global_position = world_position + Vector3.UP * 0.45
     var mesh := TorusMesh.new()
     mesh.inner_radius = 0.38
     mesh.outer_radius = 0.45
@@ -93,6 +92,7 @@ func play_pulse_hit(world_position: Vector3) -> void:
     mat.emission_energy_multiplier = 3.0
     ring.material_override = mat
     add_child(ring)
+    ring.global_position = world_position + Vector3.UP * 0.45
     var tween := create_tween()
     tween.tween_property(ring, "scale", Vector3.ONE * 2.2, 0.20).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
     tween.tween_property(ring, "scale", Vector3.ZERO, 0.14)

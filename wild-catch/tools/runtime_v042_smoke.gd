@@ -86,7 +86,7 @@ func _run() -> void:
         lumi.state = MimoBase.State.ROUTINE
         director.call("_trigger_signature", lumi)
         _check(bool(lumi.get_meta("scan_hidden", false)), "Lumi signature temporarily hides it from normal scan")
-        lumi.apply_lure(lumi.global_position, 1.0, 1.0)
+        lumi.apply_lure(lumi.global_position, 1.0)
         _check(lumi.is_lured(), "LURE can counter Lumi scan-hide state")
 
     if boka != null:

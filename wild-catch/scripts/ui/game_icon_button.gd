@@ -110,7 +110,7 @@ func _draw_jump(c: Vector2, r: float) -> void:
 
 func _draw_dash(c: Vector2, r: float) -> void:
     for offset in [-0.26, 0.18]:
-        var x := r * offset
+        var x: float = r * float(offset)
         var pts := PackedVector2Array([
             c + Vector2(x - r * 0.40, -r * 0.50), c + Vector2(x + r * 0.34, 0), c + Vector2(x - r * 0.40, r * 0.50),
             c + Vector2(x - r * 0.18, 0)

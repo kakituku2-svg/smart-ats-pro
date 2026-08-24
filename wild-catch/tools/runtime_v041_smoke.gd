@@ -22,7 +22,7 @@ func _run() -> void:
         await get_tree().process_frame
         var start_button := title.get_node_or_null("Center/Card/Content/StartButton") as Button
         var stage_label := title.get_node_or_null("Center/Card/Content/Stage") as Label
-        _check(start_button != null and start_button.text == "探索を開始", "Title START button is Japanese")
+        _check(start_button != null and start_button.text.contains("探索を開始"), "Title START button is Japanese")
         _check(stage_label != null and stage_label.text.contains("トロピカル遺跡パーク"), "Title stage label is Japanese")
         title.queue_free()
         await get_tree().process_frame

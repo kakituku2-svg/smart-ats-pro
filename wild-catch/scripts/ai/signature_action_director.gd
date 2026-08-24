@@ -127,8 +127,6 @@ func _spawn_charge_telegraph(start: Vector3, charge_end: Vector3) -> void:
     var length := start.distance_to(charge_end)
     mesh.size = Vector3(0.22, 0.04, length)
     trail.mesh = mesh
-    trail.global_position = (start + charge_end) * 0.5 + Vector3.UP * 0.08
-    trail.look_at(charge_end, Vector3.UP)
     var mat := StandardMaterial3D.new()
     mat.albedo_color = Color(1.0, 0.34, 0.20, 0.55)
     mat.emission_enabled = true
@@ -137,8 +135,10 @@ func _spawn_charge_telegraph(start: Vector3, charge_end: Vector3) -> void:
     mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
     trail.material_override = mat
     get_tree().current_scene.add_child(trail)
+    trail.global_position = (start + charge_end) * 0.5 + Vector3.UP * 0.08
+    trail.look_at(charge_end, Vector3.UP)
     var tween := create_tween()
-    tween.tween_property(trail, "modulate:a", 0.0, 0.42)
+    tween.tween_property(mat, "albedo_color:a", 0.0, 0.42)
     tween.tween_callback(trail.queue_free)
 
 func _nera_shock(mimo: MimoBase) -> void:
@@ -228,7 +228,7 @@ func _spawn_ring(origin: Vector3, color: Color, start_radius: float, end_radius:
     ring.scale = Vector3.ONE * start_radius
     var tween := create_tween()
     tween.tween_property(ring, "scale", Vector3.ONE * end_radius, 0.38).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-    tween.parallel().tween_property(ring, "modulate:a", 0.0, 0.38)
+    tween.parallel().tween_property(mat, "albedo_color:a", 0.0, 0.38)
     tween.tween_callback(func() -> void:
         if is_instance_valid(ring):
             ring.queue_free()

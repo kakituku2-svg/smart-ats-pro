@@ -72,22 +72,38 @@ jobs:
         with:
           gradle-version: '8.10.2'
 
-      - name: Build KEIRIN Android APK
+      - name: Build KEIRIN Android web-wrapper APK
         working-directory: keirin-android
         run: gradle :app:assembleDebug --stacktrace
 
-      - name: Stage direct-download APK
+      - name: Build KEIRIN Android Standalone APK
+        working-directory: keirin-android-standalone
+        run: gradle :app:assembleDebug --stacktrace
+
+      - name: Validate Android Standalone source
+        run: |
+          test -f keirin-android-standalone/app/src/main/assets/index.html
+          test -f keirin-android-standalone/app/src/main/java/jp/kakituku/keirinracegate/standalone/MainActivity.java
+          grep -q 'file:///android_asset/index.html' keirin-android-standalone/app/src/main/java/jp/kakituku/keirinracegate/standalone/MainActivity.java
+          grep -q 'addJavascriptInterface' keirin-android-standalone/app/src/main/java/jp/kakituku/keirinracegate/standalone/MainActivity.java
+          grep -q 'AndroidBridge' keirin-android-standalone/app/src/main/assets/index.html
+          ! grep -q 'uses-permission android:name="android.permission.INTERNET"' keirin-android-standalone/app/src/main/AndroidManifest.xml
+
+      - name: Stage direct-download APKs
         run: |
           mkdir -p keirin-race-gate/downloads
           cp keirin-android/app/build/outputs/apk/debug/app-debug.apk keirin-race-gate/downloads/KEIRIN-RACE-GATE-v4.3.1.apk
+          cp keirin-android-standalone/app/build/outputs/apk/debug/app-debug.apk keirin-race-gate/downloads/KEIRIN-RACE-GATE-Android-Standalone-v4.3.1.apk
           sha256sum keirin-race-gate/downloads/KEIRIN-RACE-GATE-v4.3.1.apk > keirin-race-gate/downloads/KEIRIN-RACE-GATE-v4.3.1.apk.sha256
+          sha256sum keirin-race-gate/downloads/KEIRIN-RACE-GATE-Android-Standalone-v4.3.1.apk > keirin-race-gate/downloads/KEIRIN-RACE-GATE-Android-Standalone-v4.3.1.apk.sha256
           test -s keirin-race-gate/downloads/KEIRIN-RACE-GATE-v4.3.1.apk
+          test -s keirin-race-gate/downloads/KEIRIN-RACE-GATE-Android-Standalone-v4.3.1.apk
 
-      - name: Upload APK artifact
+      - name: Upload Android Standalone APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: KEIRIN-RACE-GATE-v4.3.1-APK
-          path: keirin-race-gate/downloads/KEIRIN-RACE-GATE-v4.3.1.apk
+          name: KEIRIN-RACE-GATE-Android-Standalone-v4.3.1-APK
+          path: keirin-race-gate/downloads/KEIRIN-RACE-GATE-Android-Standalone-v4.3.1.apk
           if-no-files-found: error
           retention-days: 30
 
@@ -112,8 +128,8 @@ jobs:
             sleep 3
           done
           grep -q "KEIRIN" /tmp/index.html
-          grep -q "KEIRIN-RACE-GATE-v4.3.1.apk" /tmp/index.html
+          grep -q "KEIRIN-RACE-GATE-Android-Standalone-v4.3.1.apk" /tmp/index.html
           curl -fsSL "${PAGE_URL}manifest.webmanifest" | grep -q "RACE GATE"
           curl -fsSL "${PAGE_URL}sw.js" | grep -q "keirin-race-gate"
-          curl -fsSL "${PAGE_URL}downloads/KEIRIN-RACE-GATE-v4.3.1.apk" -o /tmp/keirin.apk
-          test -s /tmp/keirin.apk
+          curl -fsSL "${PAGE_URL}downloads/KEIRIN-RACE-GATE-Android-Standalone-v4.3.1.apk" -o /tmp/keirin-standalone.apk
+          test -s /tmp/keirin-standalone.apk

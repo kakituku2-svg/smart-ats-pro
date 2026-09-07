@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- KEIRIN AI RACE GATE v4.3.1 iPhone PWA -->
+<!-- KEIRIN AI RACE GATE v4.4.0 iPhone PWA -->
 <html lang="ja">
   <head>
     <meta charset="UTF-8" />
@@ -457,13 +457,13 @@ body.ios-build .site-header { position: relative; }
         <button class="app-tab" id="tab-generator" type="button" role="tab" aria-selected="true" aria-controls="generator-view" data-view="generator"><small>CREATE</small><span>プロンプト生成</span></button>
         <button class="app-tab" id="tab-guide" type="button" role="tab" aria-selected="false" aria-controls="guide-view" data-view="guide" tabindex="-1"><small>HOW TO</small><span>使い方</span></button>
       </nav>
-      <span class="paper-badge"><i></i>v4.3.1 Android</span>
+      <span class="paper-badge"><i></i>v4.4.0 Android</span>
     </header>
 
     <main id="main">
       <div class="app-view" id="generator-view" role="tabpanel" aria-labelledby="tab-generator">
       <section class="hero" id="top">
-        <h1 class="brand-title">KEIRIN <em>RACE GATE</em></h1><p class="hero-lead strict-lead">開催日・開催場・レース番号を選ぶだけで、ライン・脚質・直近3/5/10走・当日バンクまで分析し、結論をコンパクトに返す実戦予想プロンプトを作成します。</p>
+        <h1 class="brand-title">KEIRIN <em>RACE GATE</em></h1><p class="hero-lead strict-lead">開催日・開催場・レース番号を選ぶだけで、WINTICKET出走表・選手コメント・直近戦績・その時点のオッズまで照合する実戦予想プロンプトを作成します。</p>
         <div class="pwa-install-card" id="pwa-install-card" hidden>
           <div class="pwa-install-copy"><strong>ホーム画面に追加して使えます</strong><span>Safariの共有ボタン →「ホーム画面に追加」。次回からアイコンをタップして起動できます。</span></div>
           <button class="pwa-install-close" id="pwa-install-close" type="button" aria-label="案内を閉じる">×</button>
@@ -472,9 +472,9 @@ body.ios-build .site-header { position: relative; }
         <div class="android-download-card" id="android-download-card" hidden>
           <div class="android-download-copy">
             <strong>Androidアプリ版をインストール</strong>
-            <span>KEIRIN RACE GATE v4.3.1 APK。公開Web版と同じ最新画面をアプリとして開けます。</span>
+            <span>KEIRIN RACE GATE Android Standalone。UIと予測ロジックをAPK内に内蔵した独立アプリ版です。</span>
           </div>
-          <a class="android-download-button" href="./downloads/KEIRIN-RACE-GATE-v4.3.1.apk" download>APKをダウンロード</a>
+          <a class="android-download-button" href="./downloads/KEIRIN-RACE-GATE-Android-Standalone-v4.4.0.apk" download>Androidアプリをダウンロード</a>
         </div>
 
         <form class="composer-card" id="race-form" novalidate>
@@ -550,7 +550,7 @@ body.ios-build .site-header { position: relative; }
           <div class="prompt-meta"><div class="race-stamp"><span id="result-date">—</span><strong id="result-race">—</strong></div><div class="prompt-stats"><span><b id="char-count">0</b>文字</span><span>履歴へ自動保存</span></div></div>
           
           <div class="prompt-shell">
-            <div class="prompt-toolbar"><span><i></i>AI分析プロンプト · v4.3.1</span><button id="select-all-button" type="button">全文を選択</button></div>
+            <div class="prompt-toolbar"><span><i></i>AI分析プロンプト · v4.4.0</span><button id="select-all-button" type="button">全文を選択</button></div>
             <textarea id="prompt-output" readonly spellcheck="false" aria-label="生成したAI用プロンプト"></textarea>
           </div>
           <div class="action-grid">
@@ -597,7 +597,7 @@ body.ios-build .site-header { position: relative; }
 
         <aside class="guide-note">
           <div><span>i</span><strong>レース開始前に使用してください</strong></div>
-          <p>最新の出走情報やオッズが確認できる状態で使うと、より多くの事前情報を反映できます。</p>
+          <p>レース開始前のWINTICKET出走表・選手コメント・直近戦績・最新オッズを確認できる状態で使うと、予測へ反映できます。</p>
         </aside>
         <aside class="guide-note">
           <div><span>⌂</span><strong>iPhoneホーム画面対応</strong></div>
@@ -607,7 +607,7 @@ body.ios-build .site-header { position: relative; }
       </section>
     </main>
 
-    <footer><div class="footer-brand"><span>AI</span><strong>KEIRIN RACE GATE</strong></div><p>予測結果は参考情報です。レース結果や的中を保証するものではありません。</p><small>v4.3.1 · Android Standalone</small></footer>
+    <footer><div class="footer-brand"><span>AI</span><strong>KEIRIN RACE GATE</strong></div><p>予測結果は参考情報です。レース結果や的中を保証するものではありません。</p><small>v4.4.0 · Android Standalone</small></footer>
     <div id="toast-region" class="toast-region" aria-live="assertive" aria-atomic="true"></div>
     <script>
 (function (root, factory) {
@@ -617,7 +617,7 @@ body.ios-build .site-header { position: relative; }
 })(typeof globalThis !== "undefined" ? globalThis : this, function () {
   "use strict";
 
-  var SPEC_VERSION = "4.2.0";
+  var SPEC_VERSION = "4.3.0";
 
   function cleanText(value) {
     return String(value == null ? "" : value).replace(/\s+/g, " ").trim();
@@ -680,7 +680,7 @@ body.ios-build .site-header { position: relative; }
       "# KEIRIN_RACE_ANALYSIS_SPEC",
       "",
       "SPEC {",
-      "  version: \"4.2.0\";",
+      "  version: \"4.3.0\";",
       "  task: LIVE_RACE_FORECAST;",
       "  response_language: ja-JP;",
       "  prompt_style: STRUCTURED_CODE_SPEC;",
@@ -700,14 +700,20 @@ body.ios-build .site-header { position: relative; }
       "ROLE {",
       "  act_as: [keirin_analyst, line_tactics_forecaster, rider_form_analyst, odds_interpreter];",
       "  objective: \"今日この並び・相手・バンク・状態なら誰が最も勝ちやすく、誰が3着以内に残りやすいかを予想する\";",
-      "  priority: [line_position, recent_form, riding_style, role_fit, bank_fit, same_day_tendency, weather, odds_context];",
+      "  priority: [winticket_race_card, line_position, recent_form, rider_comment, riding_style, role_fit, bank_fit, same_day_tendency, weather, odds_context];",
       "  do_not_turn_this_into: [backtest, historical_test, post_race_review, validation_task];",
       "}",
       "",
       "DATA_POLICY {",
       "  research_web: REQUIRED;",
-      "  primary_sources_first: [KEIRIN_JP, official_velodrome, official_rider_profile, official_comments];",
-      "  verify: [race_identity, field, scratches, lineup, rider_stats, recent_results, bank_characteristics, weather, current_odds_if_available];",
+      "  mandatory_market_source: WINTICKET;",
+      "  mandatory_pre_race_inputs_if_accessible: [WINTICKET_RACE_CARD, WINTICKET_RIDER_COMMENTS, WINTICKET_CURRENT_ODDS];",
+      "  primary_crosscheck_sources: [KEIRIN_JP, official_velodrome, official_rider_profile, official_comments];",
+      "  verify: [race_identity, field, scratches, lineup, rider_stats, recent_results, rider_comments, bank_characteristics, weather, current_odds];",
+      "  if_WINTICKET_is_not_accessible: [USE_OFFICIAL_AND_VERIFIED_FALLBACKS, MARK_WINTICKET_UNAVAILABLE, DO_NOT_INVENT_WINTICKET_DATA];",
+      "  freeze_rule: USE_ONLY_INFORMATION_AVAILABLE_BEFORE_TARGET_RACE_RESULT;",
+      "  odds_snapshot_rule: RECORD_SOURCE_AND_CAPTURE_TIME;",
+      "  if_user_attaches_WINTICKET_screenshot: READ_DISPLAYED_ODDS_AND_TIMESTAMP_AND_PRIORITIZE_OVER_STALE_WEB_ODDS;",
       "  unknown_data: MARK_UNKNOWN;",
       "  invented_stats: DENY;",
       "  invented_health_or_injury_detail: DENY;",
@@ -716,6 +722,7 @@ body.ios-build .site-header { position: relative; }
       "",
       "ANALYSIS_ORDER [",
       "  RACE_IDENTITY,",
+      "  WINTICKET_CARD_AND_COMMENTS,",
       "  RACE_STAGE_AND_ADVANCEMENT,",
       "  LINE_STRUCTURE,",
       "  RIDER_STYLE_AND_ABILITY,",
@@ -738,6 +745,15 @@ body.ios-build .site-header { position: relative; }
       "  RACE_IDENTITY {",
       "    collect: [class, distance, start_time, riders, vehicle_numbers, region, scratches, lineup, race_stage, day_of_meet, advancement_rule, elimination_risk];",
       "    official_source_priority: true;",
+      "  }",
+      "",
+      "  WINTICKET_CARD_AND_COMMENTS {",
+      "    race_card_fields: [lineup, rider_number, rating_score, style, B_count, H_count, win_rate, top2_rate, top3_rate, nige, makuri, sashi, mark, current_meet_results];",
+      "    rider_comments: REQUIRED_IF_PUBLISHED;",
+      "    comment_extract: [declared_tactic, who_follows_whom, self_power_intent, front_or_mark_role, condition_statement, adjustment_statement, injury_or_fall_statement_only_if_explicit, tactical_caution];",
+      "    comment_use: \"Use comments as tactical/current-state evidence, not as guaranteed truth\";",
+      "    contradiction_check: [comment_vs_recent_behavior, comment_vs_lineup, comment_vs_market];",
+      "    never_invent_missing_comment: true;",
       "  }",
       "",
       "  RACE_STAGE_AND_ADVANCEMENT {",
@@ -769,9 +785,12 @@ body.ios-build .site-header { position: relative; }
       "    last_3: CURRENT_MOTION;",
       "    last_5: FORM_AND_STABILITY;",
       "    last_10: BASE_ABILITY_AND_REPEATABILITY;",
-      "    inspect_content: [lead_and_hold, late_fade, makuri_success, makuri_failure, second_wheel_sashi, acceleration, trigger_timing, positioning, final_straight, line_coordination, self_created_result, gifted_result, recent_second_third_finishes, current_meet_content, opponent_strength];",
+      "    source_priority: [WINTICKET_RECENT_RESULTS, KEIRIN_JP_OR_OFFICIAL_CROSSCHECK];",
+      "    inspect_content: [lead_and_hold, late_fade, makuri_success, makuri_failure, second_wheel_sashi, acceleration, trigger_timing, positioning, final_straight, line_coordination, self_created_result, gifted_result, recent_second_third_finishes, current_meet_content, opponent_strength, class_level, days_since_last_race];",
+      "    compare_finish_with_content: true;",
+      "    detect_change: [improving, stable, declining, one_race_noise];",
       "    form_labels: [好調, 上向き, 平行線, やや下降, 不調];",
-      "    key_rule: \"着順だけで好不調を決めない\";",
+      "    key_rule: \"着順だけで好不調を決めず、直近の走り方と相手関係まで見る\";",
       "  }",
       "",
       "  WIN_VS_TOP3_SURVIVAL {",
@@ -856,10 +875,17 @@ body.ios-build .site-header { position: relative; }
       "  }",
       "",
       "  ODDS_CONTEXT {",
-      "    role: SECONDARY;",
-      "    use_for: [popularity_check, overbet_warning, underweighted_branch, ticket_priority];",
-      "    never_do: [copy_popularity_ranking, replace_baseline_only_for_high_payout];",
-      "    key_rule: \"人気・配当は展開予想の代わりにしない\";",
+      "    source: WINTICKET_CURRENT_ODDS_PREFERRED;",
+      "    capture: [capture_time, minutes_to_close_if_known];",
+      "    inspect_pools: [2車単, 2車複, 3連複, 3連単];",
+      "    role: POST_MODEL_CROSSCHECK;",
+      "    order_rule: \"Create line/form/scenario and rough probabilities BEFORE using odds to revise confidence\";",
+      "    use_for: [market_consensus, market_dissent, overbet_warning, underweighted_branch, ticket_priority, cross_pool_structure];",
+      "    cross_pool_checks: [strong_exacta_pair_support, trio_set_support_without_exact_order_support, unexpected_third_place_support, second_wheel_or_line_tail_support, solo_rider_support, favorite_order_concentration, late_odds_shift_if_two_snapshots_exist];",
+      "    dissent_rule: \"If market materially supports a combination the model underrates, re-open the causal scenario and explain or lower confidence\";",
+      "    trio_vs_trifecta_rule: \"If a top3 set is strongly supported but exact orders are dispersed, raise trio preference and lower exact-order confidence\";",
+      "    never_do: [copy_popularity_ranking, replace_baseline_only_for_high_payout, infer_private_information_from_odds_alone];",
+      "    key_rule: \"オッズは展開予想の代わりではなく、予測の見落とし検査と券種選択に使う\";",
       "  }",
       "}",
       "",
@@ -881,12 +907,12 @@ body.ios-build .site-header { position: relative; }
       "",
       "  RESULT {",
       "    title: \"■ 結論\";",
-      "    include: [confidence_grade, key_rider, best_ticket_type, one_sentence_race_read];",
+      "    include: [confidence_grade, key_rider, best_ticket_type, one_sentence_race_read, market_alignment_or_dissent];",
       "  }",
       "",
       "  LINE_AND_FORM {",
       "    title: \"■ ライン・状態\";",
-      "    include: [lineup, race_stage, advancement_rule, likely_controller, key_riders_recent_3_5_10_summary, same_day_bank_summary, weather_summary];",
+      "    include: [lineup, race_stage, advancement_rule, key_WINTICKET_comments, likely_controller, key_riders_recent_3_5_10_summary, same_day_bank_summary, weather_summary, odds_snapshot_time];",
       "    rider_detail_limit: TOP_4_MATERIAL_RIDERS_ONLY;",
       "    do_not_list_all_raw_recent_results: true;",
       "  }",
@@ -916,7 +942,7 @@ body.ios-build .site-header { position: relative; }
       "",
       "  RISKS {",
       "    title: \"■ 注意点\";",
-      "    include: [strongest_failure_path, race_stage_order_risk_if_material, most_overlooked_rider_if_any];",
+      "    include: [strongest_failure_path, race_stage_order_risk_if_material, unexplained_market_dissent_if_any, most_overlooked_rider_if_any];",
       "    max_points: 2;",
       "  }",
       "",
@@ -954,19 +980,30 @@ body.ios-build .site-header { position: relative; }
       "  assume_favorite_must_win_because_race_is_special_selection,",
       "  ignore_two_strong_second_wheels_from_different_lines,",
       "  eliminate_front_automatically_after_second_wheel_pass,",
-      "  infer_reduced_effort_only_because_all_riders_advance",
+      "  infer_reduced_effort_only_because_all_riders_advance,",
+      "  ignore_WINTICKET_race_card_when_accessible,",
+      "  ignore_published_rider_comments,",
+      "  use_stale_odds_when_newer_user_screenshot_exists,",
+      "  use_odds_before_building_the_baseline_scenario,",
+      "  copy_WINTICKET_popularity_without_causal_analysis",
       "];",
       "",
       "PRIORITY_RULE {",
-      "  1: LINE_AND_POSITION;",
+      "  1: WINTICKET_RACE_CARD_AND_LINE;",
       "  2: LAST_3_TO_5_CONTENT;",
       "  3: RIDER_ABILITY_AND_STYLE;",
-      "  4: LAST_10_STABILITY;",
-      "  5: RACE_STAGE_AND_ADVANCEMENT;",
-      "  6: SAME_DAY_BANK;",
-      "  7: WEATHER_AND_WIND;",
-      "  8: SCENARIO_MATCH;",
-      "  9: ODDS_CONTEXT;",
+      "  4: WINTICKET_RIDER_COMMENTS;",
+      "  5: LAST_10_STABILITY;",
+      "  6: RACE_STAGE_AND_ADVANCEMENT;",
+      "  7: SAME_DAY_BANK;",
+      "  8: WEATHER_AND_WIND;",
+      "  9: SCENARIO_MATCH;",
+      "  10: WINTICKET_CURRENT_ODDS_AS_POST_MODEL_CHECK;",
+      "}",
+      "",
+      "FINAL_PRE_RACE_AUDIT {",
+      "  confirm_before_output: [WINTICKET_card_checked_or_unavailable_marked, rider_comments_checked_or_unavailable_marked, recent_3_5_10_checked, odds_snapshot_checked_or_unavailable_marked, odds_capture_time_recorded_if_available];",
+      "  if_major_market_dissent_remains_unexplained: LOWER_CONFIDENCE_AND_AVOID_STRONG_RECOMMENDATION;",
       "}",
       "",
       "EXECUTE_NOW: Research TARGET and return the forecast using OUTPUT_CONTRACT.",
@@ -1459,7 +1496,7 @@ body.ios-build .site-header { position: relative; }
       var title = document.createElement("strong");
       title.textContent = entry.config.venue + "競輪 " + entry.config.round + "R";
       var meta = document.createElement("small");
-      meta.textContent = formatDateDisplay(entry.config.date) + " · 実戦予想 v4.3.1";
+      meta.textContent = formatDateDisplay(entry.config.date) + " · 実戦予想 v4.4.0";
       openButton.appendChild(title);
       openButton.appendChild(meta);
       openButton.addEventListener("click", function () {

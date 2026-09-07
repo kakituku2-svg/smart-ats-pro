@@ -998,3 +998,902 @@ body.ios-build .site-header { position: relative; }
       "      promotion_rule: ALL_OF {",
       "        rate_profile: [low_win_rate, high_top3_rate];",
       "        recent_evidence: multiple_second_or_third_finishes_last_3_to_5_meets;",
+      "        role_path: ANY_OF [",
+      "          second_wheel_behind_aggressive_front, front_likely_to_control,",
+      "          energy_conservation, favorable_line_position, straight_extension_from_second_wheel",
+      "        ];",
+      "      };",
+      "      classification: TRIO_SURVIVOR_NOT_HEAD_CANDIDATE;",
+      "      increase: [top3_survival_probability, CORE_TRIO_or_THIN_VALUE_TRIO_consideration];",
+      "      do_not_force_into: [trifecta_first_place, exacta_first_place];",
+      "    };",
+      "    REJECTION {",
+      "      if_all: [low_win_rate, low_top3_rate, poor_recent_content, unfavorable_positioning];",
+      "      action: DO_NOT_PROMOTE;",
+      "    };",
+      "    key_rule: \"A rider likely to win and a rider likely to remain in the top three are different\";",
+      "  }",
+      "",
+      "  STEP_09_TOP3_SET_VS_ORDER {",
+      "    phase_A: \"Estimate which three riders occupy the top three, ignoring order, using top3 survival rather than win rate\";",
+      "    phase_B: \"Estimate conditional order within each likely top-three set\";",
+      "    score_separately_0_to_100: [top3_set_confidence, head_confidence, first_second_relation_confidence, exact_order_confidence];",
+      "    never_convert_ability_rank_directly_into_head_lock: true;",
+      "    carry_forward: TRIO_SURVIVOR_NOT_HEAD_CANDIDATE;",
+      "    three_rider_line: {",
+      "      first_estimate: line_all_top3_probability;",
+      "      then_evaluate_orders: [A-B-C, A-C-B, B-A-C, B-C-A, C-A-B, C-B-A];",
+      "      never_auto_remove_third_wheel_win: true;",
+      "    };",
+      "    lead_vs_chaser_guard: {",
+      "      trigger: \"Model favorite depends on makuri/late acceleration while a credible rival can secure the lead or favorable position\";",
+      "      action: [raise_rival_head_probability, lower_favorite_head_confidence, explicitly_model_front_runner_holds_off_chaser];",
+      "      reason: \"The strongest rider can remain in the top three without being the most reliable first-place lock\";",
+      "    };",
+      "    ticket_routing_thresholds: {",
+      "      if_top3_set_confidence_high_and_exact_order_confidence_below_70: PREFER_TRIO;",
+      "      if_head_confidence_below_70: DO_NOT_STRONGLY_RECOMMEND_TRIFECTA_HEAD_LOCK;",
+      "      if_exact_order_requires_late_makuri_to_fully_land: DOWNGRADE_EXACT_ORDER_CONFIDENCE;",
+      "    };",
+      "    if_set_high_and_order_low: PREFER_TRIO;",
+      "  }",
+      "",
+      "  STEP_10_TICKET_ROUTER {",
+      "    signals: [win_probability, top3_survival_probability, first_place_confidence, first_second_relation_confidence, top3_set_confidence, order_confidence];",
+      "    route: {",
+      "      exacta_2way: \"Use when first and second relation is readable but third is unstable\";",
+      "      trio: \"Use when top-three set is strong and order is uncertain\";",
+      "      trifecta: \"Use only when first/second/order structure is clear and countercase audit is clean\";",
+      "    };",
+      "    compare_every_time: [2車単, 3連複, 3連単];",
+      "    must_buy_every_type: false;",
+      "    dominance_rule: \"If a trio covers all exact-order outcomes needed and its live odds are equal to or higher than a focal trifecta, prefer the trio for that overlap\";",
+      "    objective_not_allowed: \"Hit a trifecta at any cost\";",
+      "  }",
+      "",
+      "  STEP_11_TRIO_SPLIT {",
+      "    CORE_TRIO: {",
+      "      use_when: \"Top-three set has high confidence and order has meaningful uncertainty\";",
+      "      action: USE_PROACTIVELY;",
+      "    };",
+      "    THIN_VALUE_TRIO: {",
+      "      premise: \"Two core riders are strong; third rider has one concrete survival path\";",
+      "      valid_paths: [third_wheel, wheel_behind_second, inside_survival, rival_second_wheel, pace_duel_benefit, solo_cleanup, low_win_high_top3_second_wheel];",
+      "      max_tickets: 2;",
+      "      vague_reason: DENY;",
+      "    };",
+      "  }",
+      "",
+      "  STEP_12_KEEP_BASELINE {",
+      "    most_likely_scenario_must_remain: true;",
+      "    baseline_ticket_candidate_must_remain: true;",
+      "    structure: [BASELINE, REVERSAL, VALUE, OPTIONAL_LONGSHOT];",
+      "    forbidden: [\"Reject because popular\", \"Replace because longshot pays more\"] ;",
+      "    clarification: \"Candidate retention does not force purchase; price can still produce SKIP\";",
+      "  }",
+      "",
+      "  STEP_13_ODDS_LAST {",
+      "    before_odds: {",
+      "      lock: [scenario_probabilities, top3_set_probabilities, order_probabilities, ticket_probabilities];",
+      "      lock_timestamp_required: true;",
+      "    };",
+      "    then_collect: [2車単_odds, 3連複_odds, 3連単_odds, odds_timestamp, market_depth_if_available];",
+      "    odds_use_only_for: [overpricing, underpricing, tie_break_between_similar_probabilities, expected_value];",
+      "    formulas: {",
+      "      fair_odds: \"1 / model_probability\";",
+      "      market_implied_probability: \"1 / current_odds\";",
+      "      raw_EV: \"model_probability * current_odds\";",
+      "      conservative_EV: \"conservative_probability * current_odds\";",
+      "    };",
+      "    minimum_odds: {",
+      "      confidence_A: \"fair_odds * 1.10 to 1.15\";",
+      "      confidence_B: \"fair_odds * 1.20 to 1.30\";",
+      "      confidence_C: \"fair_odds * 1.35 or higher\";",
+      "    };",
+      "    buy_gate: \"current_odds >= minimum_odds AND conservative_EV >= 1.10\";",
+      "    if_odds_missing_or_thin: PREVIEW_ONLY;",
+      "  }",
+      "",
+      "  STEP_13A_MARKET_DISSENT_AUDIT {",
+      "    do_not_copy_market: true;",
+      "    inspect_after_probability_lock: [top_exacta_pairs, top_trio_sets, top_trifecta_orders, concentration, alternate_line_price];",
+      "    warning_examples: [rival_line_pair_is_second_market_choice, alternate_top3_set_is_close_to_favorite, favorite_exact_order_is_extremely_overconcentrated];",
+      "    action: \"Do not change locked probabilities merely to follow odds; use disagreement as a confidence-label warning requiring explanation\";",
+      "  }",
+      "",
+      "  STEP_13B_RECOMMENDATION_QUALITY_CHECK {",
+      "    S_REQUIRES_ALL: [",
+      "      race_identity_and_lineup_confirmed,",
+      "      current_form_checked_last_3_to_5_meets,",
+      "      day_conditions_and_same_day_bank_checked,",
+      "      first_place_or_top3_set_has_clear_model_edge,",
+      "      strongest_countercase_is_not_material,",
+      "      line_tail_and_cross_line_risk_is_contained,",
+      "      market_dissent_has_no_unexplained_major_warning,",
+      "      ticket_type_matches_order_uncertainty,",
+      "      price_is_not_structurally_bad",
+      "    ];",
+      "    automatic_caps: {",
+      "      weather_or_track_materially_uncertain: A_MAX;",
+      "      two_or_more_strong_competing_lines: A_MAX;",
+      "      exact_order_depends_on_fragile_second_or_third_place: A_MAX;",
+      "      strong_market_dissent_unexplained: A_MAX;",
+      "      current_odds_below_minimum_or_conservative_EV_below_gate: \"堅いが低配当 / SKIP\";",
+      "    };",
+      "    if_no_race_passes: \"強推奨なし・見送り\";",
+      "  }",
+      "",
+      "  STEP_14_PORTFOLIO {",
+      "    candidate_views: [SOLID, REVERSAL, VALUE, LONGSHOT];",
+      "    funding_layers: {",
+      "      baseline: \"60 to 70 percent\";",
+      "      value: \"20 to 30 percent\";",
+      "      longshot: \"5 to 10 percent, only with a causal path\";",
+      "    };",
+      "    final_ticket_count: \"3 to 6 when betting; zero is valid on SKIP\";",
+      "    stake_unit_jpy: 100;",
+      "    race_budget_jpy: " + c.raceBudget + ";",
+      "    daily_cap_jpy: " + c.dailyCap + ";",
+      "    do_not_force_full_budget: true;",
+      "    calculate: [total_stake, payout_if_hit, net_profit_if_hit, ROI, overlapping_scenario_cost];",
+      "  }",
+      "",
+      "  STEP_15_FINAL_FREEZE {",
+      "    states: [PREVIEW, FINAL, SKIP, FREEZE不可, DATA_BLOCKED];",
+      "    freeze_fields: [",
+      "      date, venue, race_no, ticket_type, selection, stake, model_probability,",
+      "      conservative_probability, captured_odds, market_implied_probability, fair_odds,",
+      "      minimum_odds, raw_EV, conservative_EV, rationale, source_times, freeze_time",
+      "    ];",
+      "    immutable_after_freeze: true;",
+      "  }",
+      "}",
+      "",
+      "OUTPUT_CONTRACT {",
+      "  language: JAPANESE;",
+      "  order: FIXED;",
+      "  no_missing_section: true;",
+      "  unavailable_value: \"取得不能\";",
+      "  concise_but_evidence_based: true;",
+      "",
+      "  section_01: \"■ 総合評価\";",
+      "    required: [S_or_A_or_B_or_C_or_見送り, confidence_score_0_to_100, buy_value_score_0_to_100, start_time, data_time, odds_time, source_summary];",
+      "    wording: \"Confidence grade and buy value are separate. High confidence can still be a no-recommendation at poor prices.\";",
+      "",
+      "  section_01A: \"■ リスクチェック\";",
+      "    table: [確認項目, PASS_or_FAIL_or_UNKNOWN, 根拠, 影響];",
+      "    checks: [lineup, form, conditions, same_day_bank, countercase, line_tail, cross_line, market_dissent, ticket_fit, price];",
+      "",
+      "  section_02: \"■ ライン\";",
+      "    format_examples_only: [\"○-○-○\", \"○-○\", \"単騎○\"];",
+      "    include: [controller_probability, lead_battle_probability, second_wheel_pass, third_wheel_survival, solo_position];",
+      "",
+      "  section_03: \"■ 現在の選手状態\";",
+      "    per_key_rider: [好調_or_上向き_or_平行線_or_やや下降_or_不調, evidence, uncertainty];",
+      "",
+      "  section_04: \"■ 能力評価\";",
+      "    labels: [◎, ○, ▲, △, ☆];",
+      "    per_rider_columns: [ability_label, win_rate, top3_rate, win_probability, top3_survival_probability, role];",
+      "    show_raw_ability_separately_from_top3_survival: true;",
+      "    explain_material_gap_between_win_and_top3: true;",
+      "",
+      "  section_05: \"■ 最頻展開\";",
+      "    include: [sequence, trigger, probability, likely_order];",
+      "",
+      "  section_06: \"■ 逆転展開\";",
+      "    include: [second_wheel_or_makuri_reversal, probability, causal_reason];",
+      "",
+      "  section_07: \"■ 踏み合い・崩れ展開\";",
+      "    include: [dueling_riders, biggest_beneficiary, probability, collapse_order];",
+      "",
+      "  section_08: \"■ 上位3人候補\";",
+      "    rank_by_top3_survival_probability: true;",
+      "    include_likely_top3_sets_without_order: true;",
+      "    label_promoted_survivor: TRIO_SURVIVOR_NOT_HEAD_CANDIDATE;",
+      "",
+      "  section_09: \"■ 着順確信度\";",
+      "    value: [高, 中, 低];",
+      "    explain_difference_between_set_confidence_and_order_confidence: true;",
+      "",
+      "  section_10: \"■ 本命\";",
+      "    always_show_most_likely_ticket_candidate: true;",
+      "    if_price_fails: \"候補維持・購入SKIP\";",
+      "",
+      "  section_11: \"■ 対抗・逆転\";",
+      "    prefer: [front_second_reverse, second_wheel_pass, alternative_controller];",
+      "",
+      "  section_12: \"■ 妙味\";",
+      "    rule: \"Preserve the baseline structure and add only an underpriced branch\";",
+      "",
+      "  section_13: \"■ 穴\";",
+      "    require_concrete_scenario: true;",
+      "    no_valid_path: \"該当なし\";",
+      "",
+      "  section_14: \"■ 本線3連複\";",
+      "    use_if_top3_set_confidence_is_high: true;",
+      "    explicitly_check_low_win_high_top3_survivor: true;",
+      "",
+      "  section_15: \"■ 薄穴3連複\";",
+      "    max_tickets: 2;",
+      "    require_specific_third_place_survival_reason: true;",
+      "    valid_promotion: \"Low win rate is acceptable when high top3 rate, recent 2nd/3rd evidence, and favorable wheel position align\";",
+      "",
+      "  section_16: \"■ 2車単保険\";",
+      "    use_if_first_second_readable_and_third_unstable: true;",
+      "",
+      "  section_17: \"■ 最終推奨\";",
+      "    ticket_count: \"3 to 6, or none on SKIP\";",
+      "    table_columns: [層, 券種, 買い目, モデル確率, 保守確率, フェア, 最低許容, 現在オッズ, 保守EV, 投資額, 純利益, 判定];",
+      "    explicitly_name: \"実際に買うならこれ\";",
+      "",
+      "  section_18: \"■ 見送り判定\";",
+      "    allow_full_race_skip: true;",
+      "    include: [reason, odds_cancel_line, lineup_or_condition_invalidation, largest_model_risk];",
+      "",
+      "  final_freeze_record: {",
+      "    append_inside_section_17_if_FINAL: true;",
+      "    include_all_STEP_15_fields: true;",
+      "    if_not_FINAL: \"Do not invent missing values; show the next confirmation trigger\";",
+      "  };",
+      "}",
+      "",
+      "FORBIDDEN_PATTERNS [",
+      "  use_previous_specific_vehicle_number_result,",
+      "  copy_popularity_ranking,",
+      "  rank_by_score_only,",
+      "  remove_top3_candidate_only_because_win_rate_is_low,",
+      "  remove_baseline_to_chase_payout,",
+      "  widen_to_all_riders_without_causal_reason,",
+      "  force_trifecta,",
+      "  assert_private_health_condition,",
+      "  leak_result_into_pre_race_forecast,",
+      "  retrofit_reasoning_after_result,",
+      "  use_certainty_language_without_support,",
+      "  force_a_recommendation_when_evidence_is_insufficient,",
+      "  ignore_rival_line_because_rating_leader_is_strong,",
+      "  ignore_third_or_fourth_wheel_only_for_low_score,",
+      "  assume_bad_weather_skill_without_comparable_evidence",
+      "];",
+      "",
+      "QUALITY_GATE {",
+      "  target_identity_matches: REQUIRED;",
+      "  result_leakage_detected: false;",
+      "  memory_isolation_passed: REQUIRED;",
+      "  line_built_before_ranking: REQUIRED;",
+      "  confidence_policy_applied: REQUIRED;",
+      "  same_day_bank_read_checked: REQUIRED;",
+      "  strongest_countercase_checked: REQUIRED;",
+      "  line_tail_survival_checked: REQUIRED;",
+      "  cross_line_mix_checked: REQUIRED;",
+      "  market_dissent_checked_after_probability_lock: REQUIRED;",
+      "  grade_evidence_checked: REQUIRED;",
+      "  last_3_to_5_meets_content_checked: REQUIRED;",
+      "  four_required_scenarios_present: REQUIRED;",
+      "  pace_duel_beneficiary_checked: REQUIRED;",
+      "  second_wheel_win_checked: REQUIRED;",
+      "  ability_and_survival_separated: REQUIRED;",
+      "  win_rate_and_top3_rate_separated: REQUIRED;",
+      "  low_win_high_top3_trio_survivor_checked: REQUIRED;",
+      "  top3_set_and_order_separated: REQUIRED;",
+      "  core_trio_and_thin_trio_checked: REQUIRED;",
+      "  probabilities_locked_before_odds: REQUIRED;",
+      "  all_three_ticket_types_compared: REQUIRED;",
+      "  baseline_candidate_retained: REQUIRED;",
+      "  final_recommendation_is_3_to_6_or_skip: REQUIRED;",
+      "}",
+      "",
+      "",
+      "EXECUTE_NOW: Research the TARGET race, obey the ordered pipeline, and return OUTPUT_CONTRACT in Japanese."
+    ]);
+
+    return lines.join("\n");
+  }
+
+  function fileName(input) {
+    var c = normalizeConfig(input);
+    var safeVenue = c.venue.replace(/[\\/:*?"<>|\r\n]/g, "_");
+    return "keirin_prompt_" + c.date.replace(/-/g, "") + "_" + safeVenue + "_" + c.round + "R.txt";
+  }
+
+  return {
+    buildPrompt: buildPrompt,
+    normalizeConfig: normalizeConfig,
+    formatDateJa: formatDateJa,
+    fileName: fileName,
+    SPEC_VERSION: SPEC_VERSION,
+    MODE_LABELS: MODE_LABELS,
+    STRATEGY_LABELS: STRATEGY_LABELS
+  };
+});
+
+    </script>
+    <script>
+(function () {
+  "use strict";
+
+  var engine = window.KeirinPromptEngine;
+  if (!engine) throw new Error("Prompt engine could not be loaded.");
+
+  var VENUES = [
+    "函館", "青森", "いわき平", "弥彦", "前橋", "取手", "宇都宮", "大宮", "西武園",
+    "京王閣", "立川", "松戸", "TIPSTAR DOME CHIBA", "川崎", "平塚", "小田原", "伊東",
+    "静岡", "名古屋", "岐阜", "大垣", "豊橋", "富山", "松阪", "四日市", "福井", "奈良",
+    "向日町", "和歌山", "岸和田", "玉野", "広島", "防府", "高松", "小松島", "高知",
+    "松山", "小倉", "久留米", "武雄", "佐世保", "別府", "熊本"
+  ];
+  var HISTORY_KEY = "keirin-prompt-history-v21";
+  var PREFS_KEY = "keirin-prompt-prefs-v2";
+  var VIEW_IDS = { generator: "generator-view", guide: "guide-view" };
+  var currentPrompt = "";
+  var currentConfig = null;
+  var toastTimer = null;
+
+  function byId(id) {
+    return document.getElementById(id);
+  }
+
+  function switchView(view, options) {
+    var settings = options || {};
+    var selected = view === "guide" ? "guide" : "generator";
+    Object.keys(VIEW_IDS).forEach(function (name) {
+      var panel = byId(VIEW_IDS[name]);
+      var tab = byId("tab-" + name);
+      var active = name === selected;
+      panel.hidden = !active;
+      tab.setAttribute("aria-selected", active ? "true" : "false");
+      tab.tabIndex = active ? 0 : -1;
+    });
+    document.body.dataset.view = selected;
+    if (settings.updateHash) {
+      var nextHash = selected === "guide" ? "#guide" : "#top";
+      try {
+        window.history.replaceState(null, "", nextHash);
+      } catch (_error) {
+        window.location.hash = nextHash;
+      }
+    }
+    if (settings.scroll !== false) {
+      window.scrollTo({ top: 0, behavior: settings.instant ? "auto" : "smooth" });
+    }
+  }
+
+  function handleTabKey(event) {
+    if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+    event.preventDefault();
+    var tabs = Array.from(document.querySelectorAll(".app-tab"));
+    var index = tabs.indexOf(event.currentTarget);
+    if (event.key === "Home") index = 0;
+    else if (event.key === "End") index = tabs.length - 1;
+    else index = (index + (event.key === "ArrowLeft" ? -1 : 1) + tabs.length) % tabs.length;
+    tabs[index].focus();
+    switchView(tabs[index].dataset.view, { updateHash: true });
+  }
+
+  function initViews() {
+    document.querySelectorAll(".app-tab").forEach(function (tab) {
+      tab.addEventListener("click", function () {
+        switchView(tab.dataset.view, { updateHash: true });
+      });
+      tab.addEventListener("keydown", handleTabKey);
+    });
+    document.querySelectorAll("[data-view-link]").forEach(function (link) {
+      link.addEventListener("click", function (event) {
+        event.preventDefault();
+        switchView(link.dataset.viewLink, { updateHash: true });
+      });
+    });
+    byId("guide-start-button").addEventListener("click", function () {
+      switchView("generator", { updateHash: true });
+      window.setTimeout(function () { window.scrollTo(0, 0); }, 0);
+    });
+    window.addEventListener("hashchange", function () {
+      switchView(window.location.hash === "#guide" ? "guide" : "generator", { scroll: false });
+    });
+    switchView(window.location.hash === "#guide" ? "guide" : "generator", { scroll: false, instant: true });
+  }
+
+  function todayInJapan() {
+    var parts = new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Asia/Tokyo",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit"
+    }).formatToParts(new Date());
+    var values = {};
+    parts.forEach(function (part) { values[part.type] = part.value; });
+    return values.year + "-" + values.month + "-" + values.day;
+  }
+
+  function formatDateDisplay(date) {
+    var parsed = new Date(date + "T00:00:00+09:00");
+    return new Intl.DateTimeFormat("ja-JP", {
+      timeZone: "Asia/Tokyo",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      weekday: "short"
+    }).format(parsed);
+  }
+
+  function loadJson(key, fallback) {
+    try {
+      var value = JSON.parse(localStorage.getItem(key));
+      return value == null ? fallback : value;
+    } catch (_error) {
+      return fallback;
+    }
+  }
+
+  function saveJson(key, value) {
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+    } catch (_error) {
+      showToast("端末の保存領域に履歴を保存できませんでした", true);
+    }
+  }
+
+  function showToast(message, isError) {
+    var region = byId("toast-region");
+    window.clearTimeout(toastTimer);
+    region.textContent = "";
+    var toast = document.createElement("div");
+    toast.className = "toast" + (isError ? " error" : "");
+    toast.textContent = message;
+    region.appendChild(toast);
+    toastTimer = window.setTimeout(function () { region.textContent = ""; }, 2600);
+  }
+
+  function fillVenues() {
+    // v3.1.0: 開催場はHTMLに静的埋め込み。iPhoneでもキーボードを出さずネイティブ選択。
+  }
+
+  function selectRound(round) {
+    var value = String(round || "");
+    byId("round-value").value = value;
+    document.querySelectorAll(".round-button").forEach(function (button) {
+      var selected = button.dataset.round === value;
+      button.setAttribute("aria-checked", selected ? "true" : "false");
+      button.tabIndex = selected ? 0 : -1;
+    });
+    updateGenerateState();
+  }
+
+  function buildRoundGrid() {
+    // v3.1.0: 1〜12RボタンはHTMLに静的埋め込み。JSはイベント登録だけ行う。
+    document.querySelectorAll(".round-button").forEach(function (button) {
+      button.addEventListener("click", function (event) {
+        selectRound(event.currentTarget.dataset.round);
+        hideError();
+      });
+      button.addEventListener("keydown", handleRoundKey);
+    });
+  }
+
+  function handleRoundKey(event) {
+    if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(event.key)) return;
+    event.preventDefault();
+    var buttons = Array.from(document.querySelectorAll(".round-button"));
+    var current = buttons.indexOf(event.currentTarget);
+    var change = event.key === "ArrowLeft" || event.key === "ArrowUp" ? -1 : 1;
+    var next = (current + change + buttons.length) % buttons.length;
+    buttons[next].focus();
+    selectRound(buttons[next].dataset.round);
+  }
+
+
+  function updateGenerateState() {
+    var date = byId("race-date").value;
+    var venue = byId("venue").value;
+    var round = byId("round-value").value;
+    var ready = Boolean(date && venue && round);
+    var button = byId("generate-button");
+    var status = byId("selection-status");
+    button.disabled = !ready;
+    button.setAttribute("aria-disabled", ready ? "false" : "true");
+    if (ready) {
+      status.textContent = venue + "競輪  " + round + "R  ・  " + formatDateDisplay(date);
+      status.classList.add("ready");
+    } else {
+      var missing = [];
+      if (!date) missing.push("開催日");
+      if (!venue) missing.push("開催場");
+      if (!round) missing.push("レース番号");
+      status.textContent = missing.join("・") + "を選択してください";
+      status.classList.remove("ready");
+    }
+    return ready;
+  }
+
+  function readConfig() {
+    return {
+      date: byId("race-date").value,
+      venue: byId("venue").value,
+      round: byId("round-value").value,
+      mode: byId("analysis-mode").value,
+      strategy: byId("strategy").value,
+      raceBudget: byId("race-budget").value,
+      dailyCap: byId("daily-cap").value,
+      depth: byId("output-depth").value,
+      hasAttachments: byId("has-attachments").checked,
+      generatedAt: new Date().toISOString()
+    };
+  }
+
+  function setConfig(config) {
+    if (!config) return;
+    byId("race-date").value = config.date || todayInJapan();
+    byId("venue").value = config.venue || "";
+    selectRound(config.round || "");
+    byId("analysis-mode").value = config.mode || "live";
+    byId("strategy").value = config.strategy || "balanced";
+    byId("race-budget").value = config.raceBudget || 2000;
+    byId("daily-cap").value = config.dailyCap || 5000;
+    byId("output-depth").value = config.depth || "detailed";
+    byId("has-attachments").checked = Boolean(config.hasAttachments);
+    updateGenerateState();
+  }
+
+  function showError(message) {
+    var error = byId("form-error");
+    error.textContent = message;
+    error.hidden = false;
+  }
+
+  function hideError() {
+    var error = byId("form-error");
+    error.hidden = true;
+    error.textContent = "";
+  }
+
+  function savePreferences(config) {
+    saveJson(PREFS_KEY, {
+      venue: config.venue,
+      round: config.round,
+      mode: config.mode,
+      strategy: config.strategy,
+      raceBudget: config.raceBudget,
+      dailyCap: config.dailyCap,
+      depth: config.depth,
+      hasAttachments: config.hasAttachments
+    });
+  }
+
+  function saveHistory(config, prompt) {
+    var history = loadJson(HISTORY_KEY, []);
+    var key = config.date + "|" + config.venue + "|" + config.round + "|" + config.mode;
+    var item = {
+      id: key,
+      config: config,
+      prompt: prompt,
+      createdAt: new Date().toISOString()
+    };
+    history = history.filter(function (entry) { return entry.id !== key; });
+    history.unshift(item);
+    saveJson(HISTORY_KEY, history.slice(0, 10));
+    renderHistory();
+  }
+
+  function renderResult(config, prompt, shouldScroll) {
+    currentConfig = config;
+    currentPrompt = prompt;
+    byId("prompt-output").value = prompt;
+    byId("char-count").textContent = prompt.length.toLocaleString("ja-JP");
+    byId("result-date").textContent = formatDateDisplay(config.date);
+    byId("result-race").textContent = config.venue + "競輪 " + config.round + "R";
+    byId("result-title").textContent = config.venue + config.round + "Rのプロンプト完成";
+    var result = byId("result-section");
+    result.hidden = false;
+    result.scrollTop = 0;
+    document.body.classList.add("result-open");
+  }
+
+  function closeResultView() {
+    byId("result-section").hidden = true;
+    document.body.classList.remove("result-open");
+  }
+
+  function handleGenerate(event) {
+    event.preventDefault();
+    hideError();
+    if (!updateGenerateState()) {
+      showError("開催日・開催場・レース番号をすべて選択してください。");
+      return;
+    }
+    try {
+      var config = engine.normalizeConfig(readConfig());
+      var prompt = engine.buildPrompt(config);
+      renderResult(config, prompt, true);
+      savePreferences(config);
+      saveHistory(config, prompt);
+      showToast(config.venue + " " + config.round + "Rのプロンプトを生成しました");
+    } catch (error) {
+      showError(error.message || "入力内容を確認してください。");
+    }
+  }
+
+  function copyWithTemporaryTextarea(text) {
+    var area = document.createElement("textarea");
+    area.value = text;
+    area.setAttribute("aria-hidden", "true");
+    area.style.position = "fixed";
+    area.style.left = "0";
+    area.style.top = "0";
+    area.style.width = "2px";
+    area.style.height = "2px";
+    area.style.padding = "0";
+    area.style.border = "0";
+    area.style.opacity = "0.01";
+    area.style.fontSize = "16px";
+    area.style.zIndex = "-1";
+    document.body.appendChild(area);
+    try {
+      try { area.focus({ preventScroll: true }); } catch (_e) { area.focus(); }
+      area.select();
+      area.setSelectionRange(0, area.value.length);
+      return document.execCommand("copy") === true;
+    } catch (_error) {
+      return false;
+    } finally {
+      area.remove();
+    }
+  }
+
+  function copyWithContentEditable(text) {
+    var node = document.createElement("div");
+    node.contentEditable = "true";
+    node.setAttribute("aria-hidden", "true");
+    node.textContent = text;
+    node.style.position = "fixed";
+    node.style.left = "0";
+    node.style.top = "0";
+    node.style.width = "2px";
+    node.style.height = "2px";
+    node.style.overflow = "hidden";
+    node.style.opacity = "0.01";
+    node.style.fontSize = "16px";
+    node.style.zIndex = "-1";
+    document.body.appendChild(node);
+    var selection = window.getSelection();
+    try {
+      var range = document.createRange();
+      range.selectNodeContents(node);
+      selection.removeAllRanges();
+      selection.addRange(range);
+      return document.execCommand("copy") === true;
+    } catch (_error) {
+      return false;
+    } finally {
+      selection.removeAllRanges();
+      node.remove();
+    }
+  }
+
+  function selectPromptForManualCopy(text) {
+    var output = byId("prompt-output");
+    if (!output) return false;
+    try {
+      output.removeAttribute("readonly");
+      try { output.focus({ preventScroll: true }); } catch (_e) { output.focus(); }
+      output.select();
+      output.setSelectionRange(0, text.length);
+      window.setTimeout(function () { output.setAttribute("readonly", "readonly"); }, 0);
+      return true;
+    } catch (_error) {
+      output.setAttribute("readonly", "readonly");
+      return false;
+    }
+  }
+
+  async function copyPrompt(text, notify) {
+    if (!text) return false;
+    var copied = false;
+
+    if (window.AndroidBridge && typeof window.AndroidBridge.copyText === "function") {
+      try {
+        window.AndroidBridge.copyText(text);
+        copied = true;
+      } catch (_bridgeError) {}
+    }
+
+    if (!copied && navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+      try {
+        await navigator.clipboard.writeText(text);
+        copied = true;
+      } catch (_clipboardError) {
+        /* Local HTML / iOS preview may expose Clipboard API but reject writes. Continue to legacy fallbacks. */
+      }
+    }
+
+    if (!copied) copied = copyWithTemporaryTextarea(text);
+    if (!copied) copied = copyWithContentEditable(text);
+
+    if (copied) {
+      if (notify !== false) showToast("プロンプトをコピーしました");
+      return true;
+    }
+
+    if (selectPromptForManualCopy(text)) {
+      if (notify !== false) showToast("全文を選択しました。長押ししてコピーしてください", true);
+    } else if (notify !== false) {
+      showToast("コピーできませんでした。共有ボタンをお試しください", true);
+    }
+    return false;
+  }
+
+  async function sharePrompt() {
+    if (!currentPrompt || !currentConfig) return;
+    var title = currentConfig.venue + "競輪 " + currentConfig.round + "R AI予想プロンプト";
+    try {
+      if (window.AndroidBridge && typeof window.AndroidBridge.shareText === "function") {
+        window.AndroidBridge.shareText(title, currentPrompt);
+        return;
+      }
+      if (navigator.share) {
+        await navigator.share({ title: title, text: currentPrompt });
+        return;
+      }
+      await copyPrompt(currentPrompt, false);
+      showToast("共有非対応のためコピーしました。LINE等へ貼り付けてください");
+    } catch (error) {
+      if (error && error.name === "AbortError") return;
+      showToast("共有できませんでした", true);
+    }
+  }
+
+  async function downloadPrompt() {
+    if (!currentPrompt || !currentConfig) return;
+    var name = engine.fileName(currentConfig);
+    if (window.AndroidBridge && typeof window.AndroidBridge.saveText === "function") {
+      window.AndroidBridge.saveText(name, currentPrompt, "text/plain");
+      return;
+    }
+    var blob = new Blob([currentPrompt], { type: "text/plain;charset=utf-8" });
+    try {
+      if (typeof File === "function" && navigator.share && navigator.canShare) {
+        var file = new File([blob], name, { type: "text/plain;charset=utf-8" });
+        if (navigator.canShare({ files: [file] })) {
+          await navigator.share({ files: [file], title: name });
+          return;
+        }
+      }
+    } catch (error) {
+      if (error && error.name === "AbortError") return;
+    }
+    var url = URL.createObjectURL(blob);
+    var anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = name;
+    anchor.rel = "noopener";
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    window.setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+    showToast(name + " を保存しました");
+  }
+
+  function renderHistory() {
+    var history = loadJson(HISTORY_KEY, []);
+    var section = byId("history-section");
+    var list = byId("history-list");
+    list.textContent = "";
+    section.hidden = history.length === 0;
+    history.forEach(function (entry) {
+      var item = document.createElement("article");
+      item.className = "history-item";
+
+      var openButton = document.createElement("button");
+      openButton.type = "button";
+      openButton.className = "history-main";
+      var title = document.createElement("strong");
+      title.textContent = entry.config.venue + "競輪 " + entry.config.round + "R";
+      var meta = document.createElement("small");
+      meta.textContent = formatDateDisplay(entry.config.date) + " · " + (engine.MODE_LABELS[entry.config.mode] || "事前予想");
+      openButton.appendChild(title);
+      openButton.appendChild(meta);
+      openButton.addEventListener("click", function () {
+        setConfig(entry.config);
+        renderResult(entry.config, entry.prompt, true);
+      });
+
+      var actions = document.createElement("div");
+      actions.className = "history-actions";
+      var copy = document.createElement("button");
+      copy.type = "button";
+      copy.textContent = "コピー";
+      copy.addEventListener("click", function () { copyPrompt(entry.prompt); });
+      var remove = document.createElement("button");
+      remove.type = "button";
+      remove.textContent = "削除";
+      remove.addEventListener("click", function () {
+        var updated = loadJson(HISTORY_KEY, []).filter(function (saved) { return saved.id !== entry.id; });
+        saveJson(HISTORY_KEY, updated);
+        renderHistory();
+      });
+      actions.appendChild(copy);
+      actions.appendChild(remove);
+      item.appendChild(openButton);
+      item.appendChild(actions);
+      list.appendChild(item);
+    });
+  }
+
+  function clearHistory() {
+    if (!window.confirm("端末に保存されたプロンプト履歴をすべて消去しますか？")) return;
+    try { localStorage.removeItem(HISTORY_KEY); } catch (_error) {}
+    renderHistory();
+    showToast("履歴を消去しました");
+  }
+
+  function restorePreferences() {
+    var prefs = loadJson(PREFS_KEY, {});
+    setConfig({
+      date: todayInJapan(),
+      venue: prefs.venue || "",
+      round: prefs.round || "",
+      mode: prefs.mode || "live",
+      strategy: prefs.strategy || "balanced",
+      raceBudget: prefs.raceBudget || 2000,
+      dailyCap: prefs.dailyCap || 5000,
+      depth: prefs.depth || "detailed",
+      hasAttachments: prefs.hasAttachments
+    });
+  }
+
+  function init() {
+    initViews();
+    fillVenues();
+    buildRoundGrid();
+    restorePreferences();
+    renderHistory();
+
+    byId("race-form").addEventListener("submit", handleGenerate);
+    byId("race-date").addEventListener("input", function () { hideError(); updateGenerateState(); });
+    byId("venue").addEventListener("change", function () { hideError(); updateGenerateState(); });
+    byId("copy-button").addEventListener("click", function () { copyPrompt(currentPrompt); });
+    byId("share-button").addEventListener("click", sharePrompt);
+    byId("download-button").addEventListener("click", downloadPrompt);
+    byId("select-all-button").addEventListener("click", function () {
+      var output = byId("prompt-output");
+      output.focus();
+      output.select();
+      output.setSelectionRange(0, output.value.length);
+      showToast("全文を選択しました");
+    });
+    byId("clear-history-button").addEventListener("click", clearHistory);
+    byId("result-close-button").addEventListener("click", closeResultView);
+    updateGenerateState();
+
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
+
+    </script>
+  
+<script>
+(function(){
+  function isStandalone(){ return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true; }
+  function setupInstallHint(){
+    var card=document.getElementById('pwa-install-card');
+    var close=document.getElementById('pwa-install-close');
+    if(!card) return;
+    var dismissed=false; try{ dismissed=sessionStorage.getItem('krg-pwa-hint-dismissed')==='1'; }catch(e){}
+    card.hidden = isStandalone() || dismissed;
+    if(close) close.addEventListener('click',function(){ card.hidden=true; try{sessionStorage.setItem('krg-pwa-hint-dismissed','1');}catch(e){} });
+  }
+  function registerSW(){
+    if('serviceWorker' in navigator && location.protocol !== 'file:'){
+      window.addEventListener('load',function(){ navigator.serviceWorker.register('./sw.js').catch(function(){}); });
+    }
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',setupInstallHint); else setupInstallHint();
+  registerSW();
+})();
+</script>
+
+  </body>
+</html>

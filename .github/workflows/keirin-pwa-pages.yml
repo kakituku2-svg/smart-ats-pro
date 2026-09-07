@@ -1,4 +1,4 @@
-name: Deploy KEIRIN RACE GATE PWA + APK
+name: Deploy KEIRIN RACE GATE PWA + Android Standalone
 
 on:
   workflow_dispatch:
@@ -6,7 +6,7 @@ on:
     branches: [main]
     paths:
       - "keirin-race-gate/**"
-      - "keirin-android/**"
+      - "keirin-android-standalone/**"
       - ".github/workflows/keirin-pwa-pages.yml"
 
 permissions:
@@ -30,28 +30,42 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Validate PWA
+      - name: Validate PWA source
         run: |
           test -f keirin-race-gate/index.html
           test -f keirin-race-gate/manifest.webmanifest
           test -f keirin-race-gate/sw.js
           test -f keirin-race-gate/icon.svg
-          grep -q "KEIRIN" keirin-race-gate/index.html
-          grep -q "manifest.webmanifest" keirin-race-gate/index.html
-          grep -q "serviceWorker" keirin-race-gate/index.html
-          grep -q "v4.3.1" keirin-race-gate/index.html
-          grep -q "RACE_STAGE_AND_ADVANCEMENT" keirin-race-gate/index.html
-          grep -q "DOUBLE_SECOND_WHEEL" keirin-race-gate/index.html
+          grep -q "v4.4.0" keirin-race-gate/index.html
+          grep -q "WINTICKET_CARD_AND_COMMENTS" keirin-race-gate/index.html
+          grep -q "WINTICKET_CURRENT_ODDS" keirin-race-gate/index.html
+          grep -q "FINAL_PRE_RACE_AUDIT" keirin-race-gate/index.html
           ! grep -Eq 'id="generate-button"[^>]*[[:space:]]disabled([[:space:]]|>)' keirin-race-gate/index.html
           python3 - <<'PY'
           import re, pathlib
-          html = pathlib.Path("keirin-race-gate/index.html").read_text(encoding="utf-8")
-          scripts = re.findall(r'<script(?:\s[^>]*)?>([\s\S]*?)</script>', html, flags=re.I)
-          assert len(scripts) >= 3, f"expected >=3 scripts, got {len(scripts)}"
-          for i, script in enumerate(scripts, 1):
-              pathlib.Path(f"/tmp/keirin-script-{i}.js").write_text(script, encoding="utf-8")
+          for src, prefix in [
+              ("keirin-race-gate/index.html", "web"),
+              ("keirin-android-standalone/app/src/main/assets/index.html", "android")
+          ]:
+              html = pathlib.Path(src).read_text(encoding="utf-8")
+              scripts = re.findall(r'<script(?:\s[^>]*)?>([\s\S]*?)</script>', html, flags=re.I)
+              assert len(scripts) >= 3, f"{src}: expected >=3 scripts, got {len(scripts)}"
+              for i, script in enumerate(scripts, 1):
+                  pathlib.Path(f"/tmp/{prefix}-script-{i}.js").write_text(script, encoding="utf-8")
           PY
-          for f in /tmp/keirin-script-*.js; do node --check "$f"; done
+          for f in /tmp/web-script-*.js /tmp/android-script-*.js; do node --check "$f"; done
+
+      - name: Validate Android Standalone source
+        run: |
+          test -f keirin-android-standalone/app/src/main/assets/index.html
+          test -f keirin-android-standalone/app/src/main/java/jp/kakituku/keirinracegate/standalone/MainActivity.java
+          grep -q "v4.4.0" keirin-android-standalone/app/src/main/assets/index.html
+          grep -q "WINTICKET_CARD_AND_COMMENTS" keirin-android-standalone/app/src/main/assets/index.html
+          grep -q "WINTICKET_CURRENT_ODDS" keirin-android-standalone/app/src/main/assets/index.html
+          grep -q 'file:///android_asset/index.html' keirin-android-standalone/app/src/main/java/jp/kakituku/keirinracegate/standalone/MainActivity.java
+          grep -q 'addJavascriptInterface' keirin-android-standalone/app/src/main/java/jp/kakituku/keirinracegate/standalone/MainActivity.java
+          grep -q 'AndroidBridge' keirin-android-standalone/app/src/main/assets/index.html
+          ! grep -q 'uses-permission android:name="android.permission.INTERNET"' keirin-android-standalone/app/src/main/AndroidManifest.xml
 
       - name: Set up Java 17
         uses: actions/setup-java@v4
@@ -72,38 +86,22 @@ jobs:
         with:
           gradle-version: '8.10.2'
 
-      - name: Build KEIRIN Android web-wrapper APK
-        working-directory: keirin-android
-        run: gradle :app:assembleDebug --stacktrace
-
-      - name: Build KEIRIN Android Standalone APK
+      - name: Build Android Standalone APK
         working-directory: keirin-android-standalone
         run: gradle :app:assembleDebug --stacktrace
 
-      - name: Validate Android Standalone source
-        run: |
-          test -f keirin-android-standalone/app/src/main/assets/index.html
-          test -f keirin-android-standalone/app/src/main/java/jp/kakituku/keirinracegate/standalone/MainActivity.java
-          grep -q 'file:///android_asset/index.html' keirin-android-standalone/app/src/main/java/jp/kakituku/keirinracegate/standalone/MainActivity.java
-          grep -q 'addJavascriptInterface' keirin-android-standalone/app/src/main/java/jp/kakituku/keirinracegate/standalone/MainActivity.java
-          grep -q 'AndroidBridge' keirin-android-standalone/app/src/main/assets/index.html
-          ! grep -q 'uses-permission android:name="android.permission.INTERNET"' keirin-android-standalone/app/src/main/AndroidManifest.xml
-
-      - name: Stage direct-download APKs
+      - name: Stage Android Standalone APK
         run: |
           mkdir -p keirin-race-gate/downloads
-          cp keirin-android/app/build/outputs/apk/debug/app-debug.apk keirin-race-gate/downloads/KEIRIN-RACE-GATE-v4.3.1.apk
-          cp keirin-android-standalone/app/build/outputs/apk/debug/app-debug.apk keirin-race-gate/downloads/KEIRIN-RACE-GATE-Android-Standalone-v4.3.1.apk
-          sha256sum keirin-race-gate/downloads/KEIRIN-RACE-GATE-v4.3.1.apk > keirin-race-gate/downloads/KEIRIN-RACE-GATE-v4.3.1.apk.sha256
-          sha256sum keirin-race-gate/downloads/KEIRIN-RACE-GATE-Android-Standalone-v4.3.1.apk > keirin-race-gate/downloads/KEIRIN-RACE-GATE-Android-Standalone-v4.3.1.apk.sha256
-          test -s keirin-race-gate/downloads/KEIRIN-RACE-GATE-v4.3.1.apk
-          test -s keirin-race-gate/downloads/KEIRIN-RACE-GATE-Android-Standalone-v4.3.1.apk
+          cp keirin-android-standalone/app/build/outputs/apk/debug/app-debug.apk keirin-race-gate/downloads/KEIRIN-RACE-GATE-Android-Standalone-v4.4.0.apk
+          sha256sum keirin-race-gate/downloads/KEIRIN-RACE-GATE-Android-Standalone-v4.4.0.apk > keirin-race-gate/downloads/KEIRIN-RACE-GATE-Android-Standalone-v4.4.0.apk.sha256
+          test -s keirin-race-gate/downloads/KEIRIN-RACE-GATE-Android-Standalone-v4.4.0.apk
 
-      - name: Upload Android Standalone APK artifact
+      - name: Upload Android Standalone artifact
         uses: actions/upload-artifact@v4
         with:
-          name: KEIRIN-RACE-GATE-Android-Standalone-v4.3.1-APK
-          path: keirin-race-gate/downloads/KEIRIN-RACE-GATE-Android-Standalone-v4.3.1.apk
+          name: KEIRIN-RACE-GATE-Android-Standalone-v4.4.0-APK
+          path: keirin-race-gate/downloads/KEIRIN-RACE-GATE-Android-Standalone-v4.4.0.apk
           if-no-files-found: error
           retention-days: 30
 
@@ -127,9 +125,10 @@ jobs:
             if curl -fsSL --retry 2 --retry-delay 2 "$PAGE_URL" -o /tmp/index.html; then break; fi
             sleep 3
           done
-          grep -q "KEIRIN" /tmp/index.html
-          grep -q "KEIRIN-RACE-GATE-Android-Standalone-v4.3.1.apk" /tmp/index.html
+          grep -q "v4.4.0" /tmp/index.html
+          grep -q "WINTICKET_CARD_AND_COMMENTS" /tmp/index.html
+          grep -q "KEIRIN-RACE-GATE-Android-Standalone-v4.4.0.apk" /tmp/index.html
           curl -fsSL "${PAGE_URL}manifest.webmanifest" | grep -q "RACE GATE"
-          curl -fsSL "${PAGE_URL}sw.js" | grep -q "keirin-race-gate"
-          curl -fsSL "${PAGE_URL}downloads/KEIRIN-RACE-GATE-Android-Standalone-v4.3.1.apk" -o /tmp/keirin-standalone.apk
+          curl -fsSL "${PAGE_URL}sw.js" | grep -q "keirin-race-gate-v4.4.0"
+          curl -fsSL "${PAGE_URL}downloads/KEIRIN-RACE-GATE-Android-Standalone-v4.4.0.apk" -o /tmp/keirin-standalone.apk
           test -s /tmp/keirin-standalone.apk

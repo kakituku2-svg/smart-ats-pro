@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- KEIRIN AI RACE GATE v4.0.0 iPhone PWA -->
+<!-- KEIRIN AI RACE GATE v4.1.0 iPhone PWA -->
 <html lang="ja">
   <head>
     <meta charset="UTF-8" />
@@ -446,7 +446,7 @@ body.ios-build .site-header { position: relative; }
         <button class="app-tab" id="tab-generator" type="button" role="tab" aria-selected="true" aria-controls="generator-view" data-view="generator"><small>CREATE</small><span>プロンプト生成</span></button>
         <button class="app-tab" id="tab-guide" type="button" role="tab" aria-selected="false" aria-controls="guide-view" data-view="guide" tabindex="-1"><small>HOW TO</small><span>使い方</span></button>
       </nav>
-      <span class="paper-badge"><i></i>v4.0.0 iOS</span>
+      <span class="paper-badge"><i></i>v4.1.0 iOS</span>
     </header>
 
     <main id="main">
@@ -517,10 +517,8 @@ body.ios-build .site-header { position: relative; }
         </form>
 
         <details class="advanced-card" id="advanced-settings">
-          <summary><span><i class="sliders" aria-hidden="true"></i>詳細設定</span><small>予算・出力だけ必要に応じて変更</small></summary>
+          <summary><span><i class="sliders" aria-hidden="true"></i>詳細設定</span><small>出力形式だけ必要に応じて変更</small></summary>
           <div class="advanced-grid">
-            <label><span>1レース予算</span><div class="money-input"><input id="race-budget" type="number" min="100" max="100000" step="100" value="2000" /><b>円</b></div><small>買い目配分の目安</small></label>
-            <label><span>1日上限</span><div class="money-input"><input id="daily-cap" type="number" min="100" max="1000000" step="100" value="5000" /><b>円</b></div><small>無理に全額使わない</small></label>
             <label><span>出力密度</span><select id="output-depth"><option value="detailed">詳細版</option><option value="compact">短縮版</option></select><small>通常は詳細版がおすすめ</small></label>
             <label class="check-label"><input id="has-attachments" type="checkbox" /><span class="check-ui" aria-hidden="true"></span><span><b>画像もAIへ添付する</b><small>出走表・オッズ画像がある場合</small></span></label>
           </div>
@@ -533,7 +531,7 @@ body.ios-build .site-header { position: relative; }
           <div class="prompt-meta"><div class="race-stamp"><span id="result-date">—</span><strong id="result-race">—</strong></div><div class="prompt-stats"><span><b id="char-count">0</b>文字</span><span>履歴へ自動保存</span></div></div>
           
           <div class="prompt-shell">
-            <div class="prompt-toolbar"><span><i></i>AI分析プロンプト · v4.0.0</span><button id="select-all-button" type="button">全文を選択</button></div>
+            <div class="prompt-toolbar"><span><i></i>AI分析プロンプト · v4.1.0</span><button id="select-all-button" type="button">全文を選択</button></div>
             <textarea id="prompt-output" readonly spellcheck="false" aria-label="生成したAI用プロンプト"></textarea>
           </div>
           <div class="action-grid">
@@ -590,7 +588,7 @@ body.ios-build .site-header { position: relative; }
       </section>
     </main>
 
-    <footer><div class="footer-brand"><span>AI</span><strong>KEIRIN RACE GATE</strong></div><p>予測結果は参考情報です。レース結果や的中を保証するものではありません。</p><small>v4.0.0 · iPhone PWA</small></footer>
+    <footer><div class="footer-brand"><span>AI</span><strong>KEIRIN RACE GATE</strong></div><p>予測結果は参考情報です。レース結果や的中を保証するものではありません。</p><small>v4.1.0 · iPhone PWA</small></footer>
     <div id="toast-region" class="toast-region" aria-live="assertive" aria-atomic="true"></div>
     <script>
 (function (root, factory) {
@@ -600,16 +598,10 @@ body.ios-build .site-header { position: relative; }
 })(typeof globalThis !== "undefined" ? globalThis : this, function () {
   "use strict";
 
-  var SPEC_VERSION = "4.0.0";
+  var SPEC_VERSION = "4.1.0";
 
   function cleanText(value) {
     return String(value == null ? "" : value).replace(/\s+/g, " ").trim();
-  }
-
-  function clampMoney(value, fallback) {
-    var number = Number(value);
-    if (!Number.isFinite(number) || number < 100) return fallback;
-    return Math.round(number / 100) * 100;
   }
 
   function normalizeConfig(input) {
@@ -628,8 +620,6 @@ body.ios-build .site-header { position: relative; }
       venue: venue,
       round: round,
       depth: depth,
-      raceBudget: clampMoney(source.raceBudget, 2000),
-      dailyCap: clampMoney(source.dailyCap, 5000),
       hasAttachments: Boolean(source.hasAttachments),
       generatedAt: source.generatedAt || new Date().toISOString()
     };
@@ -664,178 +654,225 @@ body.ios-build .site-header { position: relative; }
   function buildPrompt(input) {
     var c = normalizeConfig(input);
     var lines = [];
-    var detailRule = c.depth === "compact"
-      ? "要点を圧縮しても、ライン・直近3/5/10走・展開・上位3人・買い目は省略しない。"
-      : "根拠を具体的に示し、主要選手と展開は表も使って詳しく説明する。";
-    var attachmentRule = c.hasAttachments
-      ? "添付された出走表・オッズ画像も読み取り、Web上の最新情報と照合する。"
-      : "Web上の公開情報を自分で調査して分析する。";
+    var density = c.depth === "compact" ? "COMPACT" : "DETAILED";
+    var attachmentMode = c.hasAttachments ? "WEB_PLUS_ATTACHMENTS" : "WEB_ONLY";
 
     add(lines, [
-      "# KEIRIN LIVE RACE ANALYSIS v4.0",
+      "# KEIRIN_RACE_ANALYSIS_SPEC",
       "",
-      "あなたは、競輪のライン戦術・選手能力・直近状態・バンク特性を総合分析する競輪予想アナリストです。",
-      "指定レースについてWeb上の最新公開情報を調査し、今このレースを予想するための実戦的な分析と買い目を作成してください。",
+      "SPEC {",
+      "  version: \"4.1.0\";",
+      "  task: LIVE_RACE_FORECAST;",
+      "  response_language: ja-JP;",
+      "  prompt_style: STRUCTURED_CODE_SPEC;",
+      "  analysis_style: LINE_AND_FORM_FIRST;",
+      "  output_density: " + density + ";",
+      "  data_mode: " + attachmentMode + ";",
+      "}",
       "",
-      "これは過去検証や事後評価ではなく、指定された1レースの予想を作るための依頼です。",
-      "人気や競走得点だけで順位を決めず、ライン、脚質、直近内容、位置取り、バンク、当日傾向、天候を組み合わせて予想してください。",
+      "TARGET {",
+      "  race_date: \"" + c.date + "\";  # " + formatDateJa(c.date),
+      "  venue: \"" + c.venue + "\";",
+      "  race_no: " + c.round + ";",
+      "  race_label: \"" + c.venue + "競輪 " + c.round + "R\";",
+      "  generated_at: \"" + formatJst(c.generatedAt) + "\";",
+      "}",
       "",
-      "## 対象レース",
-      "- 日付: " + formatDateJa(c.date) + "（" + c.date + "）",
-      "- 開催場: " + c.venue,
-      "- レース: " + c.round + "R",
-      "- 1レース予算目安: " + c.raceBudget + "円",
-      "- 1日上限目安: " + c.dailyCap + "円",
-      "- プロンプト生成時刻: " + formatJst(c.generatedAt),
+      "ROLE {",
+      "  act_as: [keirin_analyst, line_tactics_forecaster, rider_form_analyst, odds_interpreter];",
+      "  objective: \"今日この並び・相手・バンク・状態なら誰が最も勝ちやすく、誰が3着以内に残りやすいかを予想する\";",
+      "  priority: [line_position, recent_form, riding_style, role_fit, bank_fit, same_day_tendency, weather, odds_context];",
+      "  do_not_turn_this_into: [backtest, historical_test, post_race_review, validation_task];",
+      "}",
       "",
-      "## 調査方針",
-      "- KEIRIN.JP、開催場公式、公式選手情報、公式コメントなど信頼できる一次情報を優先する。",
-      "- 出走表、欠場・変更、並び、選手データ、直近成績、当日の天候・風、同日バンク傾向を可能な範囲で最新確認する。",
-      "- 不明な情報は推測で埋めず「取得不能」または「不明」と明記する。",
-      "- 医療状態や故障の程度など、公開根拠のない体調情報を作らない。",
-      "- " + attachmentRule,
-      "- " + detailRule,
+      "DATA_POLICY {",
+      "  research_web: REQUIRED;",
+      "  primary_sources_first: [KEIRIN_JP, official_velodrome, official_rider_profile, official_comments];",
+      "  verify: [race_identity, field, scratches, lineup, rider_stats, recent_results, bank_characteristics, weather, current_odds_if_available];",
+      "  unknown_data: MARK_UNKNOWN;",
+      "  invented_stats: DENY;",
+      "  invented_health_or_injury_detail: DENY;",
+      "  attachments: " + (c.hasAttachments ? "READ_AND_CROSSCHECK;" : "NONE;"),
+      "}",
       "",
-      "## 1. レース基本情報",
-      "開催場、レース番号、クラス、距離、発走予定時刻、出走選手、車番、欠場・変更、地区、並び予想を整理する。",
+      "ANALYSIS_ORDER [",
+      "  RACE_IDENTITY,",
+      "  LINE_STRUCTURE,",
+      "  RIDER_STYLE_AND_ABILITY,",
+      "  RECENT_3_5_10,",
+      "  WIN_VS_TOP3_SURVIVAL,",
+      "  BANK_CHARACTERISTICS,",
+      "  SAME_DAY_BANK_TENDENCY,",
+      "  WEATHER_AND_WIND,",
+      "  SCENARIO_TREE,",
+      "  FAILURE_PATH,",
+      "  TOP3_SET,",
+      "  FINISH_ORDER,",
+      "  TICKET_TYPE_SELECTION,",
+      "  ODDS_CONTEXT,",
+      "  FINAL_PICKS",
+      "];",
       "",
-      "## 2. ライン分析を最優先",
-      "個人ランキングより先にライン構造を作る。例: 1-5-7 / 3-6 / 2-4 / 単騎8。",
-      "各ラインについて、先頭・番手・3番手、ライン長、主導権、先行可能性、捲り可能性、番手差し、3番手残存、ライン崩壊の可能性を評価する。",
-      "先頭が強くても1着固定にせず、早駆けなら番手差しまで必ず検討する。",
+      "PIPELINE {",
       "",
-      "## 3. 全選手の脚質・能力",
-      "全選手について、競走得点、勝率、2連対率、3連対率、逃げ・捲り・差し・マーク、B回数、H回数、主な決まり手、自力/追込、先行力、捲り力、直線の伸び、粘り、番手適性を確認する。",
-      "競走得点だけの順位付けは禁止。今日の役割と展開に補正して評価する。",
+      "  RACE_IDENTITY {",
+      "    collect: [class, distance, start_time, riders, vehicle_numbers, region, scratches, lineup];",
+      "    official_source_priority: true;",
+      "  }",
       "",
-      "## 4. 直近3走・5走・10走",
-      "直近3走は現在の動き、直近5走は調子と安定性、直近10走は本来の地力と再現性を見る。",
-      "着順だけでなく、先行して残ったか、捲りが届いたか/不発か、番手差し、踏み出し、仕掛け位置、最後の伸び、位置取り、ライン連係、自力で作った結果か、展開をもらった結果かまで確認する。",
-      "最近の2着・3着の多さ、今開催の走り、格上相手での内容も重視する。",
-      "主要選手を ◎好調 / ○上向き / →平行線 / △やや下降 / ×不調 で評価する。",
+      "  LINE_STRUCTURE {",
+      "    run_before_individual_ranking: true;",
+      "    output_format: [\"1-5-7\", \"3-6\", \"2-4\", \"単騎8\"];",
+      "    inspect: [front, second_wheel, third_wheel, line_length, likely_controller, lead_probability, makuri_option, second_wheel_sashi, third_wheel_survival, line_collapse];",
+      "    key_rule: \"強い先頭を1着固定にせず、早駆けなら番手差しまで評価する\";",
+      "  }",
       "",
-      "## 5. 1着力と3着以内力を分ける",
-      "各選手について勝つ可能性と3着以内に残る可能性を別に評価する。",
-      "勝率が低くても3連対率が高く、強い先行の番手・3番手で脚を温存できる選手は3連複で評価を上げる。",
-      "逆に能力上位でも自力で脚を使う必要があり展開依存が大きい選手は、3着以内の安定度を過大評価しない。",
+      "  RIDER_STYLE_AND_ABILITY {",
+      "    per_rider: [rating_score, win_rate, top2_rate, top3_rate, nige, makuri, sashi, mark, B_count, H_count, main_finishing_move, self_power_or_chaser, lead_power, makuri_power, late_speed, second_wheel_skill, stamina];",
+      "    forbidden_shortcut: \"競走得点だけで順位を作る\";",
+      "  }",
       "",
-      "## 6. 開催場・バンク特性",
-      "周長、見なし直線、カントなどを確認し、先行・捲り・差し・番手・3番手のどこが有利になりやすいか今日のラインに当てはめる。",
+      "  RECENT_3_5_10 {",
+      "    last_3: CURRENT_MOTION;",
+      "    last_5: FORM_AND_STABILITY;",
+      "    last_10: BASE_ABILITY_AND_REPEATABILITY;",
+      "    inspect_content: [lead_and_hold, late_fade, makuri_success, makuri_failure, second_wheel_sashi, acceleration, trigger_timing, positioning, final_straight, line_coordination, self_created_result, gifted_result, recent_second_third_finishes, current_meet_content, opponent_strength];",
+      "    form_labels: [好調, 上向き, 平行線, やや下降, 不調];",
+      "    key_rule: \"着順だけで好不調を決めない\";",
+      "  }",
       "",
-      "## 7. 当日のバンク傾向",
-      "対象レースより前に同日同場で行われたレースがあれば、逃げ残り、番手差し、捲り成功、ライン3車残り、別線3着、内外の伸びを参考にする。",
-      "単なる車番の出現傾向ではなく、決まり手とライン残存の傾向だけを使う。",
+      "  WIN_VS_TOP3_SURVIVAL {",
+      "    estimate_separately: [win_strength, top3_survival_strength];",
+      "    promote_for_trio_if: [low_win_but_high_top3, favorable_second_wheel, favorable_third_wheel, energy_saving_position, repeated_recent_2nd_or_3rd];",
+      "    key_rule: \"勝つ選手と3着まで残る選手は別評価\";",
+      "  }",
       "",
-      "## 8. 天候・風",
-      "天候、気温、雨、風向、風速を確認できる範囲で反映する。強風などがあれば先行負担、捲り、番手有利への影響を考える。",
-      "根拠のない個人の雨適性・風適性は作らない。",
+      "  BANK_CHARACTERISTICS {",
+      "    inspect: [lap_length, home_straight, banking, lead_tendency, makuri_tendency, sashi_tendency, second_wheel_advantage, third_wheel_survival];",
+      "    apply_to_today_lineup: true;",
+      "  }",
       "",
-      "## 9. 展開予測",
-      "最低5パターンを作る。",
-      "A 最頻展開: 最も普通に起きやすい流れ",
-      "B 番手差し展開: 主導権を取ったラインの番手が差す流れ",
-      "C 捲り展開: 別線の自力選手が捲る流れ",
-      "D 踏み合い・崩れ: 自力型同士が脚を使って別の選手が浮上する流れ",
-      "E ライン残り・3着残存: 番手や3番手が省エネで残る流れ",
-      "必要ならF 別線混在: 1着ラインと2・3着ラインが分かれる流れ",
-      "各展開に、発生確率の目安、主導権、仕掛け位置、有利/不利になる選手、想定着順を書く。確率は不必要に細かくしない。",
+      "  SAME_DAY_BANK_TENDENCY {",
+      "    use_earlier_same_day_races_if_available: true;",
+      "    inspect: [nige_hold, second_wheel_sashi, makuri_success, full_line_survival, cross_line_top3, inside_outside_extension];",
+      "    ignore: [vehicle_number_pattern, meaningless_number_streaks];",
+      "    weight: SUPPORTING_EVIDENCE;",
+      "  }",
       "",
-      "## 10. 本命が崩れる最大要因",
-      "本命を決めた後、その予想が崩れる最大の原因も必ず示す。",
-      "本命ラインが叩かれる、番手差し、捲り不発、別線先行残り、3番手残り、単騎の好位置、踏み合いから追込浮上などを具体的に検討する。",
-      "本命選手が強くても相手候補が不安定なら、レース全体を過度に堅いとは評価しない。",
+      "  WEATHER_AND_WIND {",
+      "    inspect_if_available: [weather, temperature, rainfall, wind_direction, wind_speed];",
+      "    translate_to_race_effect: [lead_burden, makuri_difficulty, second_wheel_advantage, final_straight_effect];",
+      "    infer_personal_weather_skill_without_evidence: DENY;",
+      "  }",
       "",
-      "## 11. 全選手評価表",
-      "| 車番 | 選手 | 脚質 | 直近状態 | 1着力 | 3着以内力 | 展開適性 | 評価 | コメント |",
-      "|---|---|---|---|---|---|---|---|---|",
-      "評価は ◎最重要 / ○有力 / ▲相手 / △3着候補 / ☆穴 を使う。",
+      "  SCENARIO_TREE {",
+      "    minimum: 5;",
+      "    required: [",
+      "      BASE = \"最頻展開\",",
+      "      SECOND_WHEEL = \"番手差し展開\",",
+      "      MAKURI = \"別線捲り展開\",",
+      "      DUEL_COLLAPSE = \"踏み合い・崩れ展開\",",
+      "      LINE_SURVIVAL = \"番手・3番手残存展開\"",
+      "    ];",
+      "    optional: CROSS_LINE = \"別線混在展開\";",
+      "    per_scenario: [probability_band, sequence, controller, trigger_point, advantaged, disadvantaged, likely_order];",
+      "    no_fake_precision: true;",
+      "  }",
       "",
-      "## 12. 上位3人候補",
-      "まず着順を無視し、3着以内に入る可能性だけで1〜5位までランキングする。",
-      "次に有力な3人セットを、本線・対抗・穴として複数提示する。ここでは順番を考えない。",
+      "  FAILURE_PATH {",
+      "    question: \"本命予想が外れるなら、最も現実的な原因は何か\";",
+      "    inspect: [favorite_line_loses_lead, second_wheel_passes, favorite_makuri_fails, rival_front_holds, third_wheel_survives, solo_gets_position, pace_duel_beneficiary];",
+      "    use_to_lower_overconfidence: true;",
+      "  }",
       "",
-      "## 13. 着順予測",
-      "その後で1着候補、2着候補、3着候補を確率目安付きで出し、最頻着順を5〜10パターン程度示す。",
+      "  TOP3_SET {",
+      "    rank_by: top3_survival_strength;",
+      "    output_top5: true;",
+      "    generate_sets: [MAIN, SECONDARY, LONGSHOT];",
+      "    ignore_order_first: true;",
+      "  }",
       "",
-      "## 14. 2車単・3連複・3連単を比較",
-      "上位3人は読みやすいが順番が不安なら3連複を優先。",
-      "1・2着関係は読みやすいが3着が広いなら2車単を優先。",
-      "1〜3着の順序まで明確な時だけ3連単を厚くする。3連単を無理に推奨しない。",
+      "  FINISH_ORDER {",
+      "    after_top3_set: true;",
+      "    output: [first_place_candidates, second_place_candidates, third_place_candidates, likely_orders_5_to_10];",
+      "    use_probability_as_rough_estimate: true;",
+      "  }",
       "",
-      "## 15. オッズの使い方",
-      "まずレース内容から本命・対抗・上位3人を作り、その後に現在オッズを確認して買いやすさを調整する。",
-      "人気だから本命にする、高配当だから穴にする、という決め方は禁止。",
-      "人気しすぎなら「最も起こりやすいが買う価値は低い」とし、本命そのものを無理に穴へ入れ替えない。",
+      "  TICKET_TYPE_SELECTION {",
+      "    compare_every_time: [2車単, 3連複, 3連単];",
+      "    prefer_trio_if: \"Top3集合は読みやすいが順番が不安\";",
+      "    prefer_exacta_if: \"1・2着関係は読みやすいが3着が広い\";",
+      "    prefer_trifecta_if: \"1〜3着順までかなり明確\";",
+      "    force_trifecta: false;",
+      "  }",
       "",
-      "## 16. 最終出力",
-      "以下の順番で日本語でまとめる。",
-      "### ■ 総合評価",
-      "レース信頼度 S/A/B/C、予想しやすさ0〜100点、一言総評。",
-      "### ■ ライン",
-      "並びと各ラインの役割、主導権候補、番手差し、3番手残存。",
-      "### ■ 選手状態",
-      "主要選手の直近3走・5走・10走を分けて評価。",
-      "### ■ 能力・脚質評価",
-      "全選手表。",
-      "### ■ 当日バンク・天候",
-      "先行、捲り、差し、ライン残存にどう影響するか。",
-      "### ■ 最頻展開",
-      "最も起こりやすい流れと想定着順。",
-      "### ■ 逆転展開",
-      "番手差し、別線捲りなど。",
-      "### ■ 崩れ展開",
-      "本命が飛ぶ具体的ケース。",
-      "### ■ 3着残存候補",
-      "能力順位が低くても展開で3着まで残れる選手を拾う。",
-      "### ■ 上位3人候補",
-      "順不同のTop3候補と3人セット。",
-      "### ■ 1着候補ランキング",
-      "確率目安付き。",
-      "### ■ 本命",
-      "最も起こりやすい買い目。オッズが低くても予想候補自体は残す。",
-      "### ■ 対抗",
-      "本線逆転・番手差し・別線主導権。",
-      "### ■ 妙味",
-      "本線構造を大きく壊さず配当妙味がある買い目。",
-      "### ■ 穴",
-      "具体的な展開理由がある時だけ提示。理由がなければ該当なし。",
-      "### ■ 3連複",
-      "本線 / 対抗 / 薄穴。",
-      "### ■ 2車単",
-      "本線 / 逆転。",
-      "### ■ 3連単",
-      "順序まで読みやすい時だけ提示。",
-      "### ■ 実際に買うなら",
-      "予算 " + c.raceBudget + "円を上限目安に、3〜6点程度を基本として優先順位・券種・買い目・金額・狙う展開・自信度を表で示す。",
-      "無理に予算を全額使わない。買う価値が低い場合でも、レース予想・本命・上位候補の分析自体は必ず提示する。",
-      "### ■ 最重要ポイント",
-      "このレースで着順を左右する最重要の分岐を1〜3点にまとめる。",
+      "  ODDS_CONTEXT {",
+      "    role: SECONDARY;",
+      "    use_for: [popularity_check, overbet_warning, underweighted_branch, ticket_priority];",
+      "    never_do: [copy_popularity_ranking, replace_baseline_only_for_high_payout];",
+      "    key_rule: \"人気・配当は展開予想の代わりにしない\";",
+      "  }",
+      "}",
       "",
-      "## 重要ルール",
-      "- 競走得点だけで決めない。",
-      "- 人気順をそのまま予想にしない。",
-      "- 1着率が低いだけで3連複候補から消さない。",
-      "- 強い先行選手の番手差しを無視しない。",
-      "- 3番手を能力不足だけで消さない。",
-      "- 本命ライン以外を最初から無視しない。",
-      "- 高配当という理由だけで穴を買わない。",
-      "- 無理に3連単を推奨しない。",
-      "- 過去に当たった車番を理由にしない。",
-      "- 根拠のない体調・故障情報を作らない。",
+      "OUTPUT_CONTRACT {",
+      "  language: JAPANESE;",
+      "  style: CLEAR_TABLES_AND_SHORT_EXPLANATIONS;",
+      "  sections: [",
+      "    \"■ 総合評価\",",
+      "    \"■ ライン\",",
+      "    \"■ 選手状態（直近3・5・10走）\",",
+      "    \"■ 能力・脚質評価\",",
+      "    \"■ 当日バンク・天候\",",
+      "    \"■ 最頻展開\",",
+      "    \"■ 逆転展開\",",
+      "    \"■ 崩れ展開\",",
+      "    \"■ 3着残存候補\",",
+      "    \"■ 上位3人候補\",",
+      "    \"■ 1着候補ランキング\",",
+      "    \"■ 本命\",",
+      "    \"■ 対抗\",",
+      "    \"■ 妙味\",",
+      "    \"■ 穴\",",
+      "    \"■ 3連複\",",
+      "    \"■ 2車単\",",
+      "    \"■ 3連単\",",
+      "    \"■ 実際に買うなら\",",
+      "    \"■ 最重要ポイント\"",
+      "  ];",
       "",
-      "予想の優先順位:",
-      "1. ライン・位置取り",
-      "2. 直近3〜5走の内容",
-      "3. 選手能力・脚質",
-      "4. 直近10走の安定性",
-      "5. 当日のバンク傾向",
-      "6. 天候・風",
-      "7. 展開相性",
-      "8. オッズ",
+      "  rider_table_columns: [車番, 選手, 脚質, 直近状態, 1着力, 3着以内力, 展開適性, 評価, コメント];",
+      "  rider_labels: [◎, ○, ▲, △, ☆];",
+      "  confidence_grade: [S, A, B, C];",
+      "  final_pick_table_columns: [優先, 券種, 買い目, 狙う展開, 自信度];",
+      "  stake_amount: DO_NOT_SPECIFY;",
+      "}",
       "",
-      "最も重視するのは「誰が一番強いか」だけではなく、「今日この並び、この相手、このバンク、この展開なら誰が最も残りやすいか」です。",
+      "FORBIDDEN [",
+      "  score_only_ranking,",
+      "  popularity_copy,",
+      "  drop_top3_candidate_only_for_low_win_rate,",
+      "  ignore_second_wheel_sashi,",
+      "  ignore_third_wheel_only_for_low_rating,",
+      "  ignore_rival_line,",
+      "  chase_payout_without_race_path,",
+      "  force_trifecta,",
+      "  use_previous_hit_vehicle_numbers,",
+      "  invent_health_condition,",
+      "  turn_request_into_backtest_or_review",
+      "];",
       "",
-      "EXECUTE_NOW: 対象レースをWeb調査し、上記ルールに従って予想を完成させてください。"
+      "PRIORITY_RULE {",
+      "  1: LINE_AND_POSITION;",
+      "  2: LAST_3_TO_5_CONTENT;",
+      "  3: RIDER_ABILITY_AND_STYLE;",
+      "  4: LAST_10_STABILITY;",
+      "  5: SAME_DAY_BANK;",
+      "  6: WEATHER_AND_WIND;",
+      "  7: SCENARIO_MATCH;",
+      "  8: ODDS_CONTEXT;",
+      "}",
+      "",
+      "EXECUTE_NOW: Research TARGET and return the forecast using OUTPUT_CONTRACT."
     ]);
 
     return lines.join("\n");
@@ -871,8 +908,8 @@ body.ios-build .site-header { position: relative; }
     "向日町", "和歌山", "岸和田", "玉野", "広島", "防府", "高松", "小松島", "高知",
     "松山", "小倉", "久留米", "武雄", "佐世保", "別府", "熊本"
   ];
-  var HISTORY_KEY = "keirin-prompt-history-v40";
-  var PREFS_KEY = "keirin-prompt-prefs-v4";
+  var HISTORY_KEY = "keirin-prompt-history-v41";
+  var PREFS_KEY = "keirin-prompt-prefs-v41";
   var VIEW_IDS = { generator: "generator-view", guide: "guide-view" };
   var currentPrompt = "";
   var currentConfig = null;
@@ -1059,8 +1096,6 @@ body.ios-build .site-header { position: relative; }
       date: byId("race-date").value,
       venue: byId("venue").value,
       round: byId("round-value").value,
-      raceBudget: byId("race-budget").value,
-      dailyCap: byId("daily-cap").value,
       depth: byId("output-depth").value,
       hasAttachments: byId("has-attachments").checked,
       generatedAt: new Date().toISOString()
@@ -1072,8 +1107,6 @@ body.ios-build .site-header { position: relative; }
     byId("race-date").value = config.date || todayInJapan();
     byId("venue").value = config.venue || "";
     selectRound(config.round || "");
-    byId("race-budget").value = config.raceBudget || 2000;
-    byId("daily-cap").value = config.dailyCap || 5000;
     byId("output-depth").value = config.depth || "detailed";
     byId("has-attachments").checked = Boolean(config.hasAttachments);
     updateGenerateState();
@@ -1095,8 +1128,6 @@ body.ios-build .site-header { position: relative; }
     saveJson(PREFS_KEY, {
       venue: config.venue,
       round: config.round,
-      raceBudget: config.raceBudget,
-      dailyCap: config.dailyCap,
       depth: config.depth,
       hasAttachments: config.hasAttachments
     });
@@ -1331,7 +1362,7 @@ body.ios-build .site-header { position: relative; }
       var title = document.createElement("strong");
       title.textContent = entry.config.venue + "競輪 " + entry.config.round + "R";
       var meta = document.createElement("small");
-      meta.textContent = formatDateDisplay(entry.config.date) + " · 実戦予想 v4";
+      meta.textContent = formatDateDisplay(entry.config.date) + " · 実戦予想 v4.1";
       openButton.appendChild(title);
       openButton.appendChild(meta);
       openButton.addEventListener("click", function () {
@@ -1374,8 +1405,6 @@ body.ios-build .site-header { position: relative; }
       date: todayInJapan(),
       venue: prefs.venue || "",
       round: prefs.round || "",
-      raceBudget: prefs.raceBudget || 2000,
-      dailyCap: prefs.dailyCap || 5000,
       depth: prefs.depth || "detailed",
       hasAttachments: prefs.hasAttachments
     });

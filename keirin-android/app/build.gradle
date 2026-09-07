@@ -1,0 +1,28 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'jp.kakituku.keirinracegate'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId 'jp.kakituku.keirinracegate'
+        minSdk 24
+        targetSdk 35
+        versionCode 42
+        versionName '4.2.0'
+    }
+
+    buildTypes {
+        debug {
+            debuggable true
+            applicationIdSuffix ''
+            versionNameSuffix ''
+        }
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+}

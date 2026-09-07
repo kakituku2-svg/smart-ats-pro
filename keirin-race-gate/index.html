@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- KEIRIN AI RACE GATE v4.1.0 iPhone PWA -->
+<!-- KEIRIN AI RACE GATE v4.2.0 iPhone PWA -->
 <html lang="ja">
   <head>
     <meta charset="UTF-8" />
@@ -446,13 +446,13 @@ body.ios-build .site-header { position: relative; }
         <button class="app-tab" id="tab-generator" type="button" role="tab" aria-selected="true" aria-controls="generator-view" data-view="generator"><small>CREATE</small><span>プロンプト生成</span></button>
         <button class="app-tab" id="tab-guide" type="button" role="tab" aria-selected="false" aria-controls="guide-view" data-view="guide" tabindex="-1"><small>HOW TO</small><span>使い方</span></button>
       </nav>
-      <span class="paper-badge"><i></i>v4.1.0 iOS</span>
+      <span class="paper-badge"><i></i>v4.2.0 iOS</span>
     </header>
 
     <main id="main">
       <div class="app-view" id="generator-view" role="tabpanel" aria-labelledby="tab-generator">
       <section class="hero" id="top">
-        <h1 class="brand-title">KEIRIN <em>RACE GATE</em></h1><p class="hero-lead strict-lead">開催日・開催場・レース番号を選ぶだけで、ライン・脚質・直近3/5/10走・当日バンクまで読む実戦予想プロンプトを作成します。</p>
+        <h1 class="brand-title">KEIRIN <em>RACE GATE</em></h1><p class="hero-lead strict-lead">開催日・開催場・レース番号を選ぶだけで、ライン・脚質・直近3/5/10走・当日バンクまで分析し、結論をコンパクトに返す実戦予想プロンプトを作成します。</p>
         <div class="pwa-install-card" id="pwa-install-card" hidden>
           <div class="pwa-install-copy"><strong>ホーム画面に追加して使えます</strong><span>Safariの共有ボタン →「ホーム画面に追加」。次回からアイコンをタップして起動できます。</span></div>
           <button class="pwa-install-close" id="pwa-install-close" type="button" aria-label="案内を閉じる">×</button>
@@ -519,7 +519,7 @@ body.ios-build .site-header { position: relative; }
         <details class="advanced-card" id="advanced-settings">
           <summary><span><i class="sliders" aria-hidden="true"></i>詳細設定</span><small>出力形式だけ必要に応じて変更</small></summary>
           <div class="advanced-grid">
-            <label><span>出力密度</span><select id="output-depth"><option value="detailed">詳細版</option><option value="compact">短縮版</option></select><small>通常は詳細版がおすすめ</small></label>
+            <label><span>出力密度</span><select id="output-depth"><option value="detailed">標準版（簡潔）</option><option value="compact">さらに短縮</option></select><small>通常は標準版で十分</small></label>
             <label class="check-label"><input id="has-attachments" type="checkbox" /><span class="check-ui" aria-hidden="true"></span><span><b>画像もAIへ添付する</b><small>出走表・オッズ画像がある場合</small></span></label>
           </div>
         </details>
@@ -531,7 +531,7 @@ body.ios-build .site-header { position: relative; }
           <div class="prompt-meta"><div class="race-stamp"><span id="result-date">—</span><strong id="result-race">—</strong></div><div class="prompt-stats"><span><b id="char-count">0</b>文字</span><span>履歴へ自動保存</span></div></div>
           
           <div class="prompt-shell">
-            <div class="prompt-toolbar"><span><i></i>AI分析プロンプト · v4.1.0</span><button id="select-all-button" type="button">全文を選択</button></div>
+            <div class="prompt-toolbar"><span><i></i>AI分析プロンプト · v4.2.0</span><button id="select-all-button" type="button">全文を選択</button></div>
             <textarea id="prompt-output" readonly spellcheck="false" aria-label="生成したAI用プロンプト"></textarea>
           </div>
           <div class="action-grid">
@@ -588,7 +588,7 @@ body.ios-build .site-header { position: relative; }
       </section>
     </main>
 
-    <footer><div class="footer-brand"><span>AI</span><strong>KEIRIN RACE GATE</strong></div><p>予測結果は参考情報です。レース結果や的中を保証するものではありません。</p><small>v4.1.0 · iPhone PWA</small></footer>
+    <footer><div class="footer-brand"><span>AI</span><strong>KEIRIN RACE GATE</strong></div><p>予測結果は参考情報です。レース結果や的中を保証するものではありません。</p><small>v4.2.0 · iPhone PWA</small></footer>
     <div id="toast-region" class="toast-region" aria-live="assertive" aria-atomic="true"></div>
     <script>
 (function (root, factory) {
@@ -816,35 +816,78 @@ body.ios-build .site-header { position: relative; }
       "",
       "OUTPUT_CONTRACT {",
       "  language: JAPANESE;",
-      "  style: CLEAR_TABLES_AND_SHORT_EXPLANATIONS;",
+      "  style: COMPACT_DECISION_BRIEF;",
+      "  target_length: APPROX_1200_TO_1800_JA_CHARS;",
+      "  avoid_repeating_same_reason: true;",
+      "  tables_preferred_over_long_prose: true;",
+      "",
       "  sections: [",
-      "    \"■ 総合評価\",",
-      "    \"■ ライン\",",
-      "    \"■ 選手状態（直近3・5・10走）\",",
-      "    \"■ 能力・脚質評価\",",
-      "    \"■ 当日バンク・天候\",",
-      "    \"■ 最頻展開\",",
-      "    \"■ 逆転展開\",",
-      "    \"■ 崩れ展開\",",
-      "    \"■ 3着残存候補\",",
-      "    \"■ 上位3人候補\",",
-      "    \"■ 1着候補ランキング\",",
-      "    \"■ 本命\",",
-      "    \"■ 対抗\",",
-      "    \"■ 妙味\",",
-      "    \"■ 穴\",",
-      "    \"■ 3連複\",",
-      "    \"■ 2車単\",",
-      "    \"■ 3連単\",",
-      "    \"■ 実際に買うなら\",",
-      "    \"■ 最重要ポイント\"",
+      "    RESULT,",
+      "    LINE_AND_FORM,",
+      "    SCENARIOS,",
+      "    TOP_RANKINGS,",
+      "    TICKETS,",
+      "    RISKS",
       "  ];",
       "",
-      "  rider_table_columns: [車番, 選手, 脚質, 直近状態, 1着力, 3着以内力, 展開適性, 評価, コメント];",
-      "  rider_labels: [◎, ○, ▲, △, ☆];",
-      "  confidence_grade: [S, A, B, C];",
-      "  final_pick_table_columns: [優先, 券種, 買い目, 狙う展開, 自信度];",
-      "  stake_amount: DO_NOT_SPECIFY;",
+      "  RESULT {",
+      "    title: \"■ 結論\";",
+      "    include: [confidence_grade, key_rider, best_ticket_type, one_sentence_race_read];",
+      "  }",
+      "",
+      "  LINE_AND_FORM {",
+      "    title: \"■ ライン・状態\";",
+      "    include: [lineup, likely_controller, key_riders_recent_3_5_10_summary, same_day_bank_summary, weather_summary];",
+      "    rider_detail_limit: TOP_4_MATERIAL_RIDERS_ONLY;",
+      "    do_not_list_all_raw_recent_results: true;",
+      "  }",
+      "",
+      "  SCENARIOS {",
+      "    title: \"■ 展開\";",
+      "    show: [BASE, REVERSAL, COLLAPSE];",
+      "    max_scenarios: 3;",
+      "    per_scenario: [probability_band, short_sequence, likely_order];",
+      "  }",
+      "",
+      "  TOP_RANKINGS {",
+      "    title: \"■ 上位評価\";",
+      "    top3_survival_rank: TOP_5;",
+      "    first_place_rank: TOP_3;",
+      "    trio_sets: [MAIN, SECONDARY, LONGSHOT_IF_VALID];",
+      "  }",
+      "",
+      "  TICKETS {",
+      "    title: \"■ 買い目\";",
+      "    compare: [2車単, 3連複, 3連単];",
+      "    show_only_recommended_tickets: true;",
+      "    max_total_tickets: 6;",
+      "    columns: [優先, 券種, 買い目, 狙う展開, 自信度];",
+      "    stake_amount: DO_NOT_SPECIFY;",
+      "  }",
+      "",
+      "  RISKS {",
+      "    title: \"■ 注意点\";",
+      "    include: [strongest_failure_path, most_overlooked_rider_if_any];",
+      "    max_points: 2;",
+      "  }",
+      "",
+      "  MERGE_RULES {",
+      "    merge_line_and_form_sections: true;",
+      "    merge_bank_and_weather_into_line_form: true;",
+      "    merge_main_counter_value_longshot_into_ticket_table: true;",
+      "    do_not_create_separate_sections_for_each_ticket_type: true;",
+      "    do_not_repeat_same_rider_reason_across_sections: true;",
+      "    do_not_explain_basic_keirin_terms: true;",
+      "  }",
+      "",
+      "  DETAIL_POLICY {",
+      "    full_internal_analysis: REQUIRED;",
+      "    visible_reasoning: ONLY_MATERIAL_FACTORS;",
+      "    rider_table: ONLY_IF_FIELD_COMPARISON_ADDS_VALUE;",
+      "    show_raw_stats: ONLY_WHEN_DECISION_RELEVANT;",
+      "    show_all_recent_results: false;",
+      "    show_all_scenarios: false;",
+      "  }",
       "}",
       "",
       "FORBIDDEN [",
@@ -908,8 +951,8 @@ body.ios-build .site-header { position: relative; }
     "向日町", "和歌山", "岸和田", "玉野", "広島", "防府", "高松", "小松島", "高知",
     "松山", "小倉", "久留米", "武雄", "佐世保", "別府", "熊本"
   ];
-  var HISTORY_KEY = "keirin-prompt-history-v41";
-  var PREFS_KEY = "keirin-prompt-prefs-v41";
+  var HISTORY_KEY = "keirin-prompt-history-v42";
+  var PREFS_KEY = "keirin-prompt-prefs-v42";
   var VIEW_IDS = { generator: "generator-view", guide: "guide-view" };
   var currentPrompt = "";
   var currentConfig = null;
@@ -1362,7 +1405,7 @@ body.ios-build .site-header { position: relative; }
       var title = document.createElement("strong");
       title.textContent = entry.config.venue + "競輪 " + entry.config.round + "R";
       var meta = document.createElement("small");
-      meta.textContent = formatDateDisplay(entry.config.date) + " · 実戦予想 v4.1";
+      meta.textContent = formatDateDisplay(entry.config.date) + " · 実戦予想 v4.2";
       openButton.appendChild(title);
       openButton.appendChild(meta);
       openButton.addEventListener("click", function () {

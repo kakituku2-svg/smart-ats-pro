@@ -1,0 +1,20 @@
+{
+  "name": "KEIRIN AI RACE GATE",
+  "short_name": "RACE GATE",
+  "description": "競輪レース指定から予測用プロンプトを生成",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#061019",
+  "theme_color": "#061019",
+  "orientation": "portrait",
+  "lang": "ja",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

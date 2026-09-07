@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- KEIRIN AI RACE GATE v4.2.1 iPhone PWA -->
+<!-- KEIRIN AI RACE GATE v3.3.0 iPhone PWA -->
 <html lang="ja">
   <head>
     <meta charset="UTF-8" />
@@ -429,13 +429,6 @@ body.ios-build .site-header { position: relative; }
 .pwa-install-copy{display:grid;gap:5px;min-width:0}.pwa-install-copy strong{font-size:13px}.pwa-install-copy span{color:var(--muted);font-size:11px;line-height:1.55}
 .pwa-install-close{flex:0 0 auto;width:38px;height:38px;border:1px solid var(--line);border-radius:11px;background:rgba(4,13,25,.5);color:var(--muted);font-size:20px}
 @media(max-width:720px){.pwa-install-card{align-items:flex-start}.pwa-install-copy strong{font-size:12px}.pwa-install-copy span{font-size:10px}}
-.android-download-card{margin:0 0 18px;padding:17px 18px;border:1px solid rgba(185,243,74,.24);border-radius:17px;background:linear-gradient(135deg,rgba(185,243,74,.08),rgba(84,228,255,.05));display:flex;align-items:center;justify-content:space-between;gap:14px}
-.android-download-card[hidden]{display:none!important}
-.android-download-copy{display:grid;gap:5px;min-width:0}
-.android-download-copy strong{font-size:13px}
-.android-download-copy span{color:var(--muted);font-size:11px;line-height:1.55}
-.android-download-button{flex:0 0 auto;min-height:44px;padding:0 15px;display:inline-flex;align-items:center;justify-content:center;border:1px solid rgba(185,243,74,.38);border-radius:11px;color:#07111f;background:var(--lime);text-decoration:none;font-size:11px;font-weight:900}
-@media(max-width:720px){.android-download-card{align-items:flex-start;flex-direction:column}.android-download-button{width:100%;min-height:48px}.android-download-copy strong{font-size:12px}.android-download-copy span{font-size:10px}}
 
 </style>
   </head>
@@ -453,24 +446,16 @@ body.ios-build .site-header { position: relative; }
         <button class="app-tab" id="tab-generator" type="button" role="tab" aria-selected="true" aria-controls="generator-view" data-view="generator"><small>CREATE</small><span>プロンプト生成</span></button>
         <button class="app-tab" id="tab-guide" type="button" role="tab" aria-selected="false" aria-controls="guide-view" data-view="guide" tabindex="-1"><small>HOW TO</small><span>使い方</span></button>
       </nav>
-      <span class="paper-badge"><i></i>v4.2.1 iOS</span>
+      <span class="paper-badge"><i></i>v3.3.0 iOS</span>
     </header>
 
     <main id="main">
       <div class="app-view" id="generator-view" role="tabpanel" aria-labelledby="tab-generator">
       <section class="hero" id="top">
-        <h1 class="brand-title">KEIRIN <em>RACE GATE</em></h1><p class="hero-lead strict-lead">開催日・開催場・レース番号を選ぶだけで、ライン・脚質・直近3/5/10走・当日バンクまで分析し、結論をコンパクトに返す実戦予想プロンプトを作成します。</p>
+        <h1 class="brand-title">KEIRIN <em>RACE GATE</em></h1><p class="hero-lead strict-lead">開催日・開催場・レース番号を選ぶだけで、競輪レース分析用のAIプロンプトを作成します。</p>
         <div class="pwa-install-card" id="pwa-install-card" hidden>
           <div class="pwa-install-copy"><strong>ホーム画面に追加して使えます</strong><span>Safariの共有ボタン →「ホーム画面に追加」。次回からアイコンをタップして起動できます。</span></div>
           <button class="pwa-install-close" id="pwa-install-close" type="button" aria-label="案内を閉じる">×</button>
-        </div>
-
-        <div class="android-download-card" id="android-download-card" hidden>
-          <div class="android-download-copy">
-            <strong>Androidアプリ版をインストール</strong>
-            <span>KEIRIN RACE GATE v4.2.1 APK。公開Web版と同じ最新画面をアプリとして開けます。</span>
-          </div>
-          <a class="android-download-button" href="./downloads/KEIRIN-RACE-GATE-v4.2.1.apk" download>APKをダウンロード</a>
         </div>
 
         <form class="composer-card" id="race-form" novalidate>
@@ -532,9 +517,13 @@ body.ios-build .site-header { position: relative; }
         </form>
 
         <details class="advanced-card" id="advanced-settings">
-          <summary><span><i class="sliders" aria-hidden="true"></i>詳細設定</span><small>出力形式だけ必要に応じて変更</small></summary>
+          <summary><span><i class="sliders" aria-hidden="true"></i>詳細設定</span><small>必要なときだけ変更</small></summary>
           <div class="advanced-grid">
-            <label><span>出力密度</span><select id="output-depth"><option value="detailed">標準版（簡潔）</option><option value="compact">さらに短縮</option></select><small>通常は標準版で十分</small></label>
+            <label><span>分析モード</span><select id="analysis-mode"><option value="live">今すぐ事前予想</option><option value="preview">朝の事前確認</option><option value="blind">過去レース検証</option></select><small>通常は「今すぐ事前予想」</small></label>
+            <label><span>判断軸</span><select id="strategy"><option value="balanced">的中再現性＋EV</option><option value="solid">堅め・再現性重視</option><option value="value">価格妙味を強める</option></select><small>確率を先に作り、価格は後から判定</small></label>
+            <label><span>1レース上限</span><div class="money-input"><input id="race-budget" type="number" min="100" max="100000" step="100" value="2000" /><b>円</b></div></label>
+            <label><span>1日上限</span><div class="money-input"><input id="daily-cap" type="number" min="100" max="1000000" step="100" value="5000" /><b>円</b></div></label>
+            <label><span>出力密度</span><select id="output-depth"><option value="detailed">詳細版</option><option value="compact">短縮版</option></select></label>
             <label class="check-label"><input id="has-attachments" type="checkbox" /><span class="check-ui" aria-hidden="true"></span><span><b>画像もAIへ添付する</b><small>出走表・オッズ画像がある場合</small></span></label>
           </div>
         </details>
@@ -546,7 +535,7 @@ body.ios-build .site-header { position: relative; }
           <div class="prompt-meta"><div class="race-stamp"><span id="result-date">—</span><strong id="result-race">—</strong></div><div class="prompt-stats"><span><b id="char-count">0</b>文字</span><span>履歴へ自動保存</span></div></div>
           
           <div class="prompt-shell">
-            <div class="prompt-toolbar"><span><i></i>AI分析プロンプト · v4.2.1</span><button id="select-all-button" type="button">全文を選択</button></div>
+            <div class="prompt-toolbar"><span><i></i>AI分析プロンプト · v3.3.0</span><button id="select-all-button" type="button">全文を選択</button></div>
             <textarea id="prompt-output" readonly spellcheck="false" aria-label="生成したAI用プロンプト"></textarea>
           </div>
           <div class="action-grid">
@@ -603,7 +592,7 @@ body.ios-build .site-header { position: relative; }
       </section>
     </main>
 
-    <footer><div class="footer-brand"><span>AI</span><strong>KEIRIN RACE GATE</strong></div><p>予測結果は参考情報です。レース結果や的中を保証するものではありません。</p><small>v4.2.1 · iPhone PWA</small></footer>
+    <footer><div class="footer-brand"><span>AI</span><strong>KEIRIN RACE GATE</strong></div><p>予測結果は参考情報です。レース結果や的中を保証するものではありません。</p><small>v3.3.0 · iPhone PWA</small></footer>
     <div id="toast-region" class="toast-region" aria-live="assertive" aria-atomic="true"></div>
     <script>
 (function (root, factory) {
@@ -613,10 +602,36 @@ body.ios-build .site-header { position: relative; }
 })(typeof globalThis !== "undefined" ? globalThis : this, function () {
   "use strict";
 
-  var SPEC_VERSION = "4.1.0";
+  var SPEC_VERSION = "3.3.0";
+  var MODE_LABELS = {
+    live: "今すぐ事前予想",
+    preview: "朝のPREVIEW",
+    blind: "過去ブラインド検証"
+  };
+  var MODE_CODES = {
+    live: "LIVE_PRE_RACE",
+    preview: "EARLY_MARKET_PREVIEW",
+    blind: "HISTORICAL_BLIND"
+  };
+  var STRATEGY_LABELS = {
+    balanced: "的中再現性を軸にEVで選別",
+    solid: "堅め・再現性を強く優先",
+    value: "再現性を守りながら価格妙味を強める"
+  };
+  var STRATEGY_CODES = {
+    balanced: "REPRODUCIBILITY_THEN_VALUE",
+    solid: "SOLID_REPRODUCIBILITY",
+    value: "CONTROLLED_VALUE_SEARCH"
+  };
 
   function cleanText(value) {
     return String(value == null ? "" : value).replace(/\s+/g, " ").trim();
+  }
+
+  function clampMoney(value, fallback) {
+    var number = Number(value);
+    if (!Number.isFinite(number) || number < 100) return fallback;
+    return Math.round(number / 100) * 100;
   }
 
   function normalizeConfig(input) {
@@ -624,6 +639,8 @@ body.ios-build .site-header { position: relative; }
     var date = cleanText(source.date);
     var venue = cleanText(source.venue).replace(/競輪場$/u, "");
     var round = Number(source.round);
+    var mode = MODE_LABELS[source.mode] ? source.mode : "live";
+    var strategy = STRATEGY_LABELS[source.strategy] ? source.strategy : "balanced";
     var depth = source.depth === "compact" ? "compact" : "detailed";
 
     if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) throw new Error("レース日を指定してください。");
@@ -634,7 +651,11 @@ body.ios-build .site-header { position: relative; }
       date: date,
       venue: venue,
       round: round,
+      mode: mode,
+      strategy: strategy,
       depth: depth,
+      raceBudget: clampMoney(source.raceBudget, 2000),
+      dailyCap: clampMoney(source.dailyCap, 5000),
       hasAttachments: Boolean(source.hasAttachments),
       generatedAt: source.generatedAt || new Date().toISOString()
     };
@@ -666,23 +687,91 @@ body.ios-build .site-header { position: relative; }
     values.forEach(function (value) { lines.push(value); });
   }
 
+  function addModePolicy(lines, mode) {
+    if (mode === "preview") {
+      add(lines, [
+        "  phase_policy: {",
+        "    target_state: PREVIEW;",
+        "    odds_rule: \"Do not finalize BUY while market depth is thin\";",
+        "    required_follow_up: [latest_lineup, scratches, weather, final_odds, odds_timestamp];",
+        "    finalization: \"Show candidate tickets and trigger odds only\";",
+        "  };"
+      ]);
+      return;
+    }
+    if (mode === "blind") {
+      add(lines, [
+        "  phase_policy: {",
+        "    target_state: BLIND_FREEZE;",
+        "    result_pages: DENY;",
+        "    result_snippets: DENY;",
+        "    post_race_articles: DENY;",
+        "    contamination_action: \"Discard source and declare BLIND_FREEZE_UNAVAILABLE\";",
+        "    allowed_time_window: \"Information published before scheduled start only\";",
+        "  };"
+      ]);
+      return;
+    }
+    add(lines, [
+      "  phase_policy: {",
+      "    target_state: FINAL_FREEZE;",
+      "    if_race_started: \"STOP; return FREEZE不可 without opening result data\";",
+      "    if_market_thin: \"Return PREVIEW and trigger odds; do not finalize BUY\";",
+      "    final_requirements: [lineup_checked, scratches_checked, conditions_checked, odds_formed, timestamps_recorded];",
+      "  };"
+    ]);
+  }
+
+  function addStrategyPolicy(lines, strategy) {
+    if (strategy === "solid") {
+      add(lines, [
+        "  selection_policy: {",
+        "    primary: reproducibility;",
+        "    emphasize: [line_control, stable_positioning, top3_survival];",
+        "    price_guard: \"Keep the baseline forecast, but SKIP the ticket if overpriced\";",
+        "    forbidden: \"Moving core stake into a longshot to manufacture EV\";",
+        "  };"
+      ]);
+      return;
+    }
+    if (strategy === "value") {
+      add(lines, [
+        "  selection_policy: {",
+        "    primary: reproducibility_with_value_overlay;",
+        "    inspect_distortions: [second_wheel_reversal, third_wheel_win, solo_makuri, ticket_type_gap];",
+        "    longshot_gate: \"Require a causal race path and conservative probability\";",
+        "    forbidden: \"Treating high payout as evidence\";",
+        "  };"
+      ]);
+      return;
+    }
+    add(lines, [
+      "  selection_policy: {",
+      "    primary: reproducibility_first;",
+      "    secondary: expected_value;",
+      "    rule: \"Estimate race probability before reading odds\";",
+      "    if_baseline_overpriced: \"Keep it as the most likely scenario; SKIP purchase rather than force a longshot\";",
+      "  };"
+    ]);
+  }
+
   function buildPrompt(input) {
     var c = normalizeConfig(input);
     var lines = [];
-    var density = c.depth === "compact" ? "COMPACT" : "DETAILED";
-    var attachmentMode = c.hasAttachments ? "WEB_PLUS_ATTACHMENTS" : "WEB_ONLY";
+    var outputDensity = c.depth === "compact" ? "COMPACT_WITH_ALL_REQUIRED_SECTIONS" : "DETAILED_EVIDENCE_TABLES";
+    var attachmentMode = c.hasAttachments ? "READ_IMAGES_AND_CROSS_CHECK_WEB" : "WEB_RESEARCH_ONLY";
 
     add(lines, [
-      "# KEIRIN_RACE_ANALYSIS_SPEC",
+      "# KEIRIN_PRE_RACE_ANALYSIS_SPEC",
       "",
       "SPEC {",
-      "  version: \"4.1.0\";",
-      "  task: LIVE_RACE_FORECAST;",
+      "  version: \"" + SPEC_VERSION + "\";",
+      "  task: PRE_RACE_FORECAST_AND_TICKET_OPTIMIZATION;",
       "  response_language: ja-JP;",
-      "  prompt_style: STRUCTURED_CODE_SPEC;",
-      "  analysis_style: LINE_AND_FORM_FIRST;",
-      "  output_density: " + density + ";",
-      "  data_mode: " + attachmentMode + ";",
+      "  reasoning_protocol: SCENARIO_FIRST_THEN_PRICE;",
+      "  usage_mode: PRE_RACE_DECISION_SUPPORT;",
+      "  output_density: " + outputDensity + ";",
+      "  attachment_mode: " + attachmentMode + ";",
       "}",
       "",
       "TARGET {",
@@ -690,247 +779,567 @@ body.ios-build .site-header { position: relative; }
       "  venue: \"" + c.venue + "\";",
       "  race_no: " + c.round + ";",
       "  race_label: \"" + c.venue + "競輪 " + c.round + "R\";",
-      "  generated_at: \"" + formatJst(c.generatedAt) + "\";",
+      "  execution_mode: " + MODE_CODES[c.mode] + ";  # " + MODE_LABELS[c.mode],
+      "  strategy: " + STRATEGY_CODES[c.strategy] + ";  # " + STRATEGY_LABELS[c.strategy],
+      "  race_budget_jpy: " + c.raceBudget + ";",
+      "  daily_cap_jpy: " + c.dailyCap + ";",
+      "  prompt_generated_at: \"" + formatJst(c.generatedAt) + "\";",
       "}",
       "",
       "ROLE {",
-      "  act_as: [keirin_analyst, line_tactics_forecaster, rider_form_analyst, odds_interpreter];",
-      "  objective: \"今日この並び・相手・バンク・状態なら誰が最も勝ちやすく、誰が3着以内に残りやすいかを予想する\";",
-      "  priority: [line_position, recent_form, riding_style, role_fit, bank_fit, same_day_tendency, weather, odds_context];",
-      "  do_not_turn_this_into: [backtest, historical_test, post_race_review, validation_task];",
+      "  act_as: [keirin_quant_analyst, line_scenario_forecaster, odds_analyst];",
+      "  objective: \"First reject races that are not robust enough; only then forecast and price the survivors\";",
+      "  optimize_for: [forecast_reproducibility, countercase_resistance, ticket_fit, conservative_positive_EV, capital_efficiency];",
+      "  do_not_optimize_for: [headline_payout, forced_action, trifecta_hit_as_a_goal, forced_recommendation];",
+      "  complete_the_analysis_without_unnecessary_questions: true;",
       "}",
       "",
-      "DATA_POLICY {",
-      "  research_web: REQUIRED;",
-      "  primary_sources_first: [KEIRIN_JP, official_velodrome, official_rider_profile, official_comments];",
-      "  verify: [race_identity, field, scratches, lineup, rider_stats, recent_results, bank_characteristics, weather, current_odds_if_available];",
+      "HARD_CONSTRAINTS {",
+      "  data_cutoff: SCHEDULED_START_TIME;",
+      "  result_data: DENY;",
+      "  payout_data: DENY;",
+      "  post_race_content: DENY;",
+      "  after_the_fact_adjustment: DENY;",
       "  unknown_data: MARK_UNKNOWN;",
-      "  invented_stats: DENY;",
-      "  invented_health_or_injury_detail: DENY;",
-      "  attachments: " + (c.hasAttachments ? "READ_AND_CROSSCHECK;" : "NONE;"),
+      "  invented_stats_or_condition: DENY;",
+      "  primary_sources_first: [KEIRIN_JP, official_velodrome, official_rider_profile, official_pre_race_comments];",
+      "  auxiliary_sources: \"Allowed only when fact and opinion are explicitly separated\";",
+      "  source_log_required: [source_name, page_or_url, retrieved_at_JST, page_updated_at_if_known];",
+      "  if_browsing_unavailable: \"Return DATA_BLOCKED; never fabricate the race card\";",
+      "  strong_language_default: DENY;",
+      "  high_grade_requires_sufficient_evidence: true;",
+      "  no_candidate_is_a_valid_answer: true;",
       "}",
       "",
-      "ANALYSIS_ORDER [",
-      "  RACE_IDENTITY,",
-      "  LINE_STRUCTURE,",
-      "  RIDER_STYLE_AND_ABILITY,",
-      "  RECENT_3_5_10,",
-      "  WIN_VS_TOP3_SURVIVAL,",
-      "  BANK_CHARACTERISTICS,",
-      "  SAME_DAY_BANK_TENDENCY,",
-      "  WEATHER_AND_WIND,",
-      "  SCENARIO_TREE,",
-      "  FAILURE_PATH,",
-      "  TOP3_SET,",
-      "  FINISH_ORDER,",
-      "  TICKET_TYPE_SELECTION,",
-      "  ODDS_CONTEXT,",
-      "  FINAL_PICKS",
-      "];",
+      "CONFIDENCE_POLICY {",
+      "  default_action: EVALUATE_BEFORE_RECOMMENDING;",
+      "  labels: {S: HIGHEST_CONFIDENCE, A: HIGH_CONFIDENCE, B: MODERATE, C: HIGH_VARIANCE, SKIP: NO_RECOMMENDATION};",
+      "  wording_rule: \"Avoid hype or certainty language. Express confidence with S/A/B/C and numeric scores.\";",
+      "  confidence_and_value_are_separate: true;",
+      "  high_confidence_low_price_label: \"堅いが低配当・見送り候補\";",
+      "  uncertainty_penalty: \"Unknown lineup, weather, track, rider condition, or thin market must reduce grade\";",
+      "  contradiction_rule: \"When evidence is mixed, lower confidence rather than explain away the contradiction\";",
+      "}",
+      ""
+    ]);
+    addModePolicy(lines, c.mode);
+    lines.push("");
+    addStrategyPolicy(lines, c.strategy);
+    add(lines, [
+      "",
+      "MEMORY_ISOLATION {",
+      "  allowed_memory: \"Abstract forecasting principles learned from aggregate validation\";",
+      "  denied_memory: [",
+      "    prior_specific_race_numbers,",
+      "    prior_specific_vehicle_number_combinations,",
+      "    prior_ticket_won_or_lost_examples,",
+      "    similarity_matching_to_a_previous_hit,",
+      "    user_favorite_riders,",
+      "    user_favorite_vehicle_numbers,",
+      "    user_favorite_velodromes",
+      "  ];",
+      "  initialization: ZERO_BASE_EACH_RACE;",
+      "  anti_pattern: \"Do not create today's ticket because a similar numbered ticket once won\";",
+      "}",
+      "",
+      "ORDER_OF_EXECUTION {",
+      "  mandatory_sequence: [",
+      "    RACE_IDENTITY,",
+      "    LINE_STRUCTURE_FIRST,",
+      "    RIDER_ABILITY,",
+      "    CURRENT_FORM,",
+      "    DAY_CONDITIONS,",
+      "    SAME_DAY_BANK_READ,",
+      "    SCENARIO_TREE,",
+      "    LINE_TAIL_AND_CROSS_LINE,",
+      "    COUNTERCASE_AUDIT,",
+      "    POWER_VS_SURVIVAL,",
+      "    WIN_VS_TOP3_PROFILE,",
+      "    TOP3_SET_VS_ORDER,",
+      "    TICKET_ROUTER,",
+      "    PROBABILITY_LOCK,",
+      "    ODDS_AND_VALUE,",
+      "    MARKET_DISSENT_AUDIT,",
+      "    RECOMMENDATION_QUALITY_CHECK,",
+      "    PORTFOLIO,",
+      "    FINAL_FREEZE",
+      "  ];",
+      "  critical: \"Do not inspect odds before PROBABILITY_LOCK\";",
+      "}",
       "",
       "PIPELINE {",
       "",
-      "  RACE_IDENTITY {",
-      "    collect: [class, distance, start_time, riders, vehicle_numbers, region, scratches, lineup];",
-      "    official_source_priority: true;",
+      "  STEP_00_RACE_IDENTITY {",
+      "    verify: [race_date, venue, race_no, race_name, class, distance, scheduled_start, field_size];",
+      "    check: [scratch, replacement, same_venue_other_date, wrong_round];",
+      "    mismatch_action: STOP;",
       "  }",
       "",
-      "  LINE_STRUCTURE {",
-      "    run_before_individual_ranking: true;",
-      "    output_format: [\"1-5-7\", \"3-6\", \"2-4\", \"単騎8\"];",
-      "    inspect: [front, second_wheel, third_wheel, line_length, likely_controller, lead_probability, makuri_option, second_wheel_sashi, third_wheel_survival, line_collapse];",
-      "    key_rule: \"強い先頭を1着固定にせず、早駆けなら番手差しまで評価する\";",
-      "  }",
-      "",
-      "  RIDER_STYLE_AND_ABILITY {",
-      "    per_rider: [rating_score, win_rate, top2_rate, top3_rate, nige, makuri, sashi, mark, B_count, H_count, main_finishing_move, self_power_or_chaser, lead_power, makuri_power, late_speed, second_wheel_skill, stamina];",
-      "    forbidden_shortcut: \"競走得点だけで順位を作る\";",
-      "  }",
-      "",
-      "  RECENT_3_5_10 {",
-      "    last_3: CURRENT_MOTION;",
-      "    last_5: FORM_AND_STABILITY;",
-      "    last_10: BASE_ABILITY_AND_REPEATABILITY;",
-      "    inspect_content: [lead_and_hold, late_fade, makuri_success, makuri_failure, second_wheel_sashi, acceleration, trigger_timing, positioning, final_straight, line_coordination, self_created_result, gifted_result, recent_second_third_finishes, current_meet_content, opponent_strength];",
-      "    form_labels: [好調, 上向き, 平行線, やや下降, 不調];",
-      "    key_rule: \"着順だけで好不調を決めない\";",
-      "  }",
-      "",
-      "  WIN_VS_TOP3_SURVIVAL {",
-      "    estimate_separately: [win_strength, top3_survival_strength];",
-      "    promote_for_trio_if: [low_win_but_high_top3, favorable_second_wheel, favorable_third_wheel, energy_saving_position, repeated_recent_2nd_or_3rd];",
-      "    key_rule: \"勝つ選手と3着まで残る選手は別評価\";",
-      "  }",
-      "",
-      "  BANK_CHARACTERISTICS {",
-      "    inspect: [lap_length, home_straight, banking, lead_tendency, makuri_tendency, sashi_tendency, second_wheel_advantage, third_wheel_survival];",
-      "    apply_to_today_lineup: true;",
-      "  }",
-      "",
-      "  SAME_DAY_BANK_TENDENCY {",
-      "    use_earlier_same_day_races_if_available: true;",
-      "    inspect: [nige_hold, second_wheel_sashi, makuri_success, full_line_survival, cross_line_top3, inside_outside_extension];",
-      "    ignore: [vehicle_number_pattern, meaningless_number_streaks];",
-      "    weight: SUPPORTING_EVIDENCE;",
-      "  }",
-      "",
-      "  WEATHER_AND_WIND {",
-      "    inspect_if_available: [weather, temperature, rainfall, wind_direction, wind_speed];",
-      "    translate_to_race_effect: [lead_burden, makuri_difficulty, second_wheel_advantage, final_straight_effect];",
-      "    infer_personal_weather_skill_without_evidence: DENY;",
-      "  }",
-      "",
-      "  SCENARIO_TREE {",
-      "    minimum: 5;",
-      "    required: [",
-      "      BASE = \"最頻展開\",",
-      "      SECOND_WHEEL = \"番手差し展開\",",
-      "      MAKURI = \"別線捲り展開\",",
-      "      DUEL_COLLAPSE = \"踏み合い・崩れ展開\",",
-      "      LINE_SURVIVAL = \"番手・3番手残存展開\"",
+      "  STEP_01_LINE_STRUCTURE_FIRST {",
+      "    run_before: [ability_ranking, odds_review];",
+      "    build_line_graph: true;",
+      "    extract: [",
+      "      expected_lineup, line_front, second_wheel, third_wheel, fourth_wheel, solo_rider,",
+      "      line_length, region_or_prefecture_link, past_coordination, likely_race_controller,",
+      "      lead_battle_probability, second_wheel_pass_probability, third_wheel_survival_probability,",
+      "      likely_solo_position",
       "    ];",
-      "    optional: CROSS_LINE = \"別線混在展開\";",
-      "    per_scenario: [probability_band, sequence, controller, trigger_point, advantaged, disadvantaged, likely_order];",
+      "    if_lineup_is_unconfirmed: \"Model alternative lineups and lower confidence\";",
+      "    principle: \"Create race structure before creating rider order\";",
+      "  }",
+      "",
+      "  STEP_02_RIDER_ABILITY {",
+      "    fields: [",
+      "      rating_score, win_rate, top2_rate, top3_rate, B_count, H_count,",
+      "      nige, makuri, sashi, mark, running_style, lead_power, makuri_power,",
+      "      late_speed, second_wheel_skill, class, opponent_strength, bank_fit",
+      "    ];",
+      "    outputs: [raw_ability_rank, role_adjusted_ability, win_probability_prior, top3_survival_probability_prior, uncertainty];",
+      "    forbidden: \"Ranking riders by rating score alone\";",
+      "  }",
+      "",
+      "  STEP_03_CURRENT_FORM {",
+      "    window_primary: LAST_3_TO_5_MEETS;",
+      "    weight_highest: LAST_1_TO_2_RACES;",
+      "    inspect_content_not_finish_only: [",
+      "      recent_win_quality, stronger_or_weaker_than_finish, lead_and_hold, late_fade,",
+      "      makuri_acceleration, makuri_completion, sashi_extension, trigger_timing, positioning,",
+      "      second_wheel_defense, line_coordination, upward_or_downward_change,",
+      "      current_meet_day1, current_meet_semifinal, crash_return, absence_return, long_layoff,",
+      "      second_or_third_finishes_last_3_to_5_meets, days_between_meets, fatigue_risk, rider_comment",
+      "    ];",
+      "    distinguish: [gifted_result, self_created_result];",
+      "    forbidden_shortcuts: [\"1st = good form\", \"7th = bad form\"] ;",
+      "    state_label_JA: [好調, 上向き, 平行線, やや下降, 不調];",
+      "    shrink_single_race_noise_toward_long_term: true;",
+      "    causal_test: \"What changed -> can it repeat today -> does it fit today's line and opponents\";",
+      "  }",
+      "",
+      "  STEP_04_DAY_CONDITIONS {",
+      "    collect_if_public: [",
+      "      rider_comment, bicycle_change, gear_change, crash_effect, current_meet_motion,",
+      "      bank_length, home_straight, banking, track_condition, wet_or_dry, rainfall,",
+      "      wind_direction, wind_speed, gust_risk, temperature, weather_alerts",
+      "    ];",
+      "    rider_adverse_condition_history: {",
+      "      inspect_if_public: [wet_track, rain, strong_wind, comparable_bank];",
+      "      require_comparable_sample: true;",
+      "      if_unavailable: MARK_UNKNOWN;",
+      "      infer_from_style_only: DENY;",
+      "    };",
+      "    medical_or_physical_guess_without_source: DENY;",
+      "  }",
+      "",
+      "  STEP_04A_SAME_DAY_BANK_READ {",
+      "    use_only_races_completed_before_target_start: true;",
+      "    collect: [earlier_same_day_finish_order, winning_move, line_retention, front_vs_second_wheel, third_wheel_survival, cross_line_mix, official_track_condition_if_available];",
+      "    infer: [front_residual_bias, second_wheel_sashi_bias, makuri_success, line_tail_survival, cross_line_frequency];",
+      "    weight: WEAK_TO_MODERATE;",
+      "    never_use_target_race_result: true;",
+      "    if_weather_changes_materially_after_earlier_races: LOWER_WEIGHT;",
+      "  }",
+      "",
+      "  STEP_04B_RACE_STAGE_AND_ADVANCEMENT_INCENTIVE {",
+      "    identify_before_scenarios: [race_stage, day_of_meet, advancement_rule, elimination_risk, all_advance_or_not];",
+      "    stages: [初日特選, 予選, 選抜, 準決勝, 決勝, 敗者戦, その他];",
+      "    if_all_riders_advance_or_elimination_risk_is_low: {",
+      "      do_not_assume_reduced_effort: true;",
+      "      lower_weight_on: [must_win_motivation, favorite_head_lock_from_status_only, excessive_risk_taking_assumption];",
+      "      raise_weight_on: [positioning, line_protection, second_wheel_finish, energy_conservation, front_survival, cross_line_survival];",
+      "      exact_order_confidence_penalty: APPLY_UNLESS_CAUSAL_ORDER_EDGE_IS_STRONG;",
+      "      ticket_effect: [raise_trio_priority_when_top3_set_is_clear, reduce_trifecta_head_lock_strength];",
+      "    };",
+      "    if_elimination_risk_is_high: {",
+      "      inspect: [qualification_threshold, points_or_finish_requirements, must_attack_pressure];",
+      "      allow_more_aggressive_scenario_weight_only_with_public_evidence: true;",
+      "    };",
+      "    key_rule: \"Race-stage incentives modify scenario weights and order confidence, not raw ability by themselves\";",
+      "  }",
+      "",
+      "  STEP_05_SCENARIO_TREE {",
+      "    minimum_scenarios: 8;",
+      "    required: {",
+      "      BASE: \"Most frequent and ordinary race flow\";",
+      "      REVERSAL: \"Second-wheel pass, makuri-sashi, lead hold vs second-wheel reversal\";",
+      "      VALUE: \"Baseline mostly survives while a mildly underweighted rider enters\";",
+      "      COLLAPSE: \"Lead battle, pace duel, solo makuri, rival second-wheel extension, favorite line failure\";",
+      "      LINE_TAIL: \"A strong line keeps its third/fourth wheel despite low raw rating\";",
+      "      CROSS_LINE: \"Winner comes from one line while a saved rider from another line survives between winner-line members\";",
+      "      DOUBLE_SECOND_WHEEL: \"Second wheels from two different lines both survive in the top three, including one of them winning\";",
+      "      ADVANCEMENT_INCENTIVE: \"Race-stage and advancement conditions change aggression, protection, and exact-order uncertainty\";",
+      "    };"
+      "    per_scenario_fields: [probability, sequence, controller, trigger_point, advantaged, disadvantaged, expected_order, failure_condition];",
+      "    probability_sum: 1.00;",
+      "    probability_model: \"P(order) = SUM[P(scenario) * P(order | scenario)]\";",
       "    no_fake_precision: true;",
       "  }",
       "",
-      "  FAILURE_PATH {",
-      "    question: \"本命予想が外れるなら、最も現実的な原因は何か\";",
-      "    inspect: [favorite_line_loses_lead, second_wheel_passes, favorite_makuri_fails, rival_front_holds, third_wheel_survives, solo_gets_position, pace_duel_beneficiary];",
-      "    use_to_lower_overconfidence: true;",
+      "  STEP_05A_LINE_TAIL_AND_CROSS_LINE {",
+      "    line_tail_retention: [third_wheel, fourth_wheel];",
+      "    do_not_drop_tail_only_for_low_rating: true;",
+      "    tail_survival_reasons: [draft_shelter, inside_route, low_energy_cost, front_control, same_line_protection, favorable_track_bias];",
+      "    cross_line_templates: [winner_line_front__rival_saved_rider__winner_line_second, winner_line_front__winner_line_second__rival_saved_rider, rival_front__favorite_line_second__rival_second];",
+      "    generate_at_least_one_cross_line_candidate_if_two_lines_have_material_strength: true;",
       "  }",
       "",
-      "  TOP3_SET {",
-      "    rank_by: top3_survival_strength;",
-      "    output_top5: true;",
-      "    generate_sets: [MAIN, SECONDARY, LONGSHOT];",
-      "    ignore_order_first: true;",
+      "  STEP_05B_DOUBLE_SECOND_WHEEL_CROSS {",
+      "    trigger_if: [two_or_more_lines_have_material_second_wheel_strength, favorite_front_may_spend_energy, all_advance_or_low_elimination_risk, rival_line_has_saved_second_wheel];",
+      "    mandatory_templates: [",
+      "      line_A_second__line_B_second__line_A_front,",
+      "      line_A_second__line_A_front__line_B_second,",
+      "      line_B_second__line_A_second__line_B_front,",
+      "      line_A_front__line_B_second__line_A_second",
+      "    ];",
+      "    evaluate: [second_wheel_raw_ability, recent_form, sashi_extension, wheel_quality, front_workload, saved_energy, straight_length, race_stage_incentive];",
+      "    if_second_wheel_is_top_tier_and_recent_form_is_sound: \"Promote to independent head candidate; do not treat as only a 2nd/3rd-place marker\";",
+      "    generate_at_least_one_top3_set_containing_two_second_wheels_when_triggered: true;",
+      "    do_not_require_same_line_integrity: true;",
+      "    key_rule: \"Two strong second wheels can both survive even when one or both line fronts fail to win\";",
       "  }",
       "",
-      "  FINISH_ORDER {",
-      "    after_top3_set: true;",
-      "    output: [first_place_candidates, second_place_candidates, third_place_candidates, likely_orders_5_to_10];",
-      "    use_probability_as_rough_estimate: true;",
+      "  STEP_05C_COUNTERCASE_AUDIT {",
+      "    purpose: \"Try to disprove the baseline before assigning confidence\";",
+      "    must_find: [strongest_baseline_failure, strongest_rival_line, strongest_second_wheel_pass, strongest_line_tail_survival, strongest_cross_line_mix, strongest_double_second_wheel_cross, strongest_race_stage_incentive_distortion];",
+      "    quantify: [countercase_probability, conditions_that_trigger_it];",
+      "    downgrade_if: [countercase_probability_is_material, two_or_more_independent_failure_paths, baseline_requires_multiple_fragile_assumptions];",
+      "    rule: \"A strong favorite is not a strong race if the favorite's exact finishing partners are fragile\";",
       "  }",
       "",
-      "  TICKET_TYPE_SELECTION {",
+      "  STEP_06_PACE_DUEL_BENEFICIARY {",
+      "    trigger: \"Two or more self-propelled riders may contest the lead\";",
+      "    mandatory_question: \"If both leaders spend energy, who benefits most?\";",
+      "    candidates: [rival_second_wheel, solo_makuri, saved_closer, lead_line_third_wheel, inside_saver];",
+      "    evaluate_as_independent_scenario: true;",
+      "  }",
+      "",
+      "  STEP_07_SECOND_WHEEL_WIN {",
+      "    compare_even_when_front_is_strong: [front_win, second_wheel_win, front_second_third_survival, second_wheel_from_two_lines_top3];",
+      "    increase_second_wheel_win_if: [strong_second_wheel, top_tier_raw_ability, recent_win_or_podium_quality, early_front_commitment, long_straight, front_fatigue, good_closing_form, low_energy_cost_before_straight];",
+      "    independent_head_candidate_rule: \"A strong second wheel with current form must receive an explicit win probability even if the front rider is more popular\";",
+      "    cross_second_wheel_rule: \"When two lines each have a strong second wheel, estimate their joint top3 probability and at least one order where one second wheel wins and the other survives\";",
+      "    front_survival_after_second_wheel_pass: \"Do not automatically eliminate the passed front; estimate 3rd-place hold separately\";",
+      "    require_specific_causal_reason: true;",
+      "  }"
+      "",
+      "  STEP_08_POWER_VS_SURVIVAL {",
+      "    estimate_separately: [raw_ability_rank, top3_survival_probability];",
+      "    survival_features: [strong_front_third_wheel, energy_saved, inside_route, protection_ahead, clean_wheel, role_fit];",
+      "    rule: \"A lower-rated rider may have higher third-place survival than a stronger rider who must spend energy\";",
+      "  }",
+      "",
+      "  STEP_08A_WIN_VS_TOP3_PROFILE {",
+      "    estimate_separately: [win_probability, top3_survival_probability];",
+      "    never_remove_from_top3_only_because_win_rate_is_low: true;",
+      "    TRIO_SURVIVOR_PROMOTION {",
+      "      rate_context: \"Compare win_rate and top3_rate within today's class and opponent level\";",
+      "      promotion_rule: ALL_OF {",
+      "        rate_profile: [low_win_rate, high_top3_rate];",
+      "        recent_evidence: multiple_second_or_third_finishes_last_3_to_5_meets;",
+      "        role_path: ANY_OF [",
+      "          second_wheel_behind_aggressive_front, front_likely_to_control,",
+      "          energy_conservation, favorable_line_position, straight_extension_from_second_wheel",
+      "        ];",
+      "      };",
+      "      classification: TRIO_SURVIVOR_NOT_HEAD_CANDIDATE;",
+      "      increase: [top3_survival_probability, CORE_TRIO_or_THIN_VALUE_TRIO_consideration];",
+      "      do_not_force_into: [trifecta_first_place, exacta_first_place];",
+      "    };",
+      "    REJECTION {",
+      "      if_all: [low_win_rate, low_top3_rate, poor_recent_content, unfavorable_positioning];",
+      "      action: DO_NOT_PROMOTE;",
+      "    };",
+      "    key_rule: \"A rider likely to win and a rider likely to remain in the top three are different\";",
+      "  }",
+      "",
+      "  STEP_09_TOP3_SET_VS_ORDER {",
+      "    phase_A: \"Estimate which three riders occupy the top three, ignoring order, using top3 survival rather than win rate\";",
+      "    phase_B: \"Estimate conditional order within each likely top-three set\";",
+      "    score_separately_0_to_100: [top3_set_confidence, head_confidence, first_second_relation_confidence, exact_order_confidence];",
+      "    never_convert_ability_rank_directly_into_head_lock: true;",
+      "    carry_forward: TRIO_SURVIVOR_NOT_HEAD_CANDIDATE;",
+      "    three_rider_line: {",
+      "      first_estimate: line_all_top3_probability;",
+      "      then_evaluate_orders: [A-B-C, A-C-B, B-A-C, B-C-A, C-A-B, C-B-A];",
+      "      never_auto_remove_third_wheel_win: true;",
+      "    };",
+      "    double_second_wheel_guard: {",
+      "      trigger: \"Two different lines have credible second wheels and at least one front rider is likely to spend meaningful energy\";",
+      "      action: [generate_two_second_wheel_top3_set, score_second_wheel_head_paths, retain_front_for_third_place_if_survival_is_plausible, lower_exact_order_confidence_if_multiple_cross_orders_are_live];",
+      "    };",
+      "    advancement_incentive_guard: {",
+      "      trigger: \"All riders advance or elimination risk is materially lower than an ordinary qualifying race\";",
+      "      action: [reduce_must_win_head_lock_assumption, increase_position_and_survival_weight, lower_exact_order_confidence_without_strong_causal_edge, prefer_trio_when_set_confidence_exceeds_order_confidence];",
+      "    };",
+      "    lead_vs_chaser_guard: {"
+      "      trigger: \"Model favorite depends on makuri/late acceleration while a credible rival can secure the lead or favorable position\";",
+      "      action: [raise_rival_head_probability, lower_favorite_head_confidence, explicitly_model_front_runner_holds_off_chaser];",
+      "      reason: \"The strongest rider can remain in the top three without being the most reliable first-place lock\";",
+      "    };",
+      "    ticket_routing_thresholds: {",
+      "      if_top3_set_confidence_high_and_exact_order_confidence_below_70: PREFER_TRIO;",
+      "      if_head_confidence_below_70: DO_NOT_STRONGLY_RECOMMEND_TRIFECTA_HEAD_LOCK;",
+      "      if_exact_order_requires_late_makuri_to_fully_land: DOWNGRADE_EXACT_ORDER_CONFIDENCE;",
+      "    };",
+      "    if_set_high_and_order_low: PREFER_TRIO;",
+      "  }",
+      "",
+      "  STEP_10_TICKET_ROUTER {",
+      "    signals: [win_probability, top3_survival_probability, first_place_confidence, first_second_relation_confidence, top3_set_confidence, order_confidence, race_stage_incentive, double_second_wheel_probability];",
+      "    route: {",
+      "      exacta_2way: \"Use when first and second relation is readable but third is unstable\";",
+      "      trio: \"Use when top-three set is strong and order is uncertain\";",
+      "      trifecta: \"Use only when first/second/order structure is clear and countercase audit is clean\";",
+      "    };",
       "    compare_every_time: [2車単, 3連複, 3連単];",
-      "    prefer_trio_if: \"Top3集合は読みやすいが順番が不安\";",
-      "    prefer_exacta_if: \"1・2着関係は読みやすいが3着が広い\";",
-      "    prefer_trifecta_if: \"1〜3着順までかなり明確\";",
-      "    force_trifecta: false;",
+      "    must_buy_every_type: false;",
+      "    dominance_rule: \"If a trio covers all exact-order outcomes needed and its live odds are equal to or higher than a focal trifecta, prefer the trio for that overlap\";",
+      "    objective_not_allowed: \"Hit a trifecta at any cost\";",
       "  }",
       "",
-      "  ODDS_CONTEXT {",
-      "    role: SECONDARY;",
-      "    use_for: [popularity_check, overbet_warning, underweighted_branch, ticket_priority];",
-      "    never_do: [copy_popularity_ranking, replace_baseline_only_for_high_payout];",
-      "    key_rule: \"人気・配当は展開予想の代わりにしない\";",
+      "  STEP_11_TRIO_SPLIT {",
+      "    CORE_TRIO: {",
+      "      use_when: \"Top-three set has high confidence and order has meaningful uncertainty\";",
+      "      action: USE_PROACTIVELY;",
+      "    };",
+      "    THIN_VALUE_TRIO: {",
+      "      premise: \"Two core riders are strong; third rider has one concrete survival path\";",
+      "      valid_paths: [third_wheel, wheel_behind_second, inside_survival, rival_second_wheel, pace_duel_benefit, solo_cleanup, low_win_high_top3_second_wheel];",
+      "      max_tickets: 2;",
+      "      vague_reason: DENY;",
+      "    };",
+      "  }",
+      "",
+      "  STEP_12_KEEP_BASELINE {",
+      "    most_likely_scenario_must_remain: true;",
+      "    baseline_ticket_candidate_must_remain: true;",
+      "    structure: [BASELINE, REVERSAL, VALUE, OPTIONAL_LONGSHOT];",
+      "    forbidden: [\"Reject because popular\", \"Replace because longshot pays more\"] ;",
+      "    clarification: \"Candidate retention does not force purchase; price can still produce SKIP\";",
+      "  }",
+      "",
+      "  STEP_13_ODDS_LAST {",
+      "    before_odds: {",
+      "      lock: [scenario_probabilities, top3_set_probabilities, order_probabilities, ticket_probabilities];",
+      "      lock_timestamp_required: true;",
+      "    };",
+      "    then_collect: [2車単_odds, 3連複_odds, 3連単_odds, odds_timestamp, market_depth_if_available];",
+      "    odds_use_only_for: [overpricing, underpricing, tie_break_between_similar_probabilities, expected_value];",
+      "    formulas: {",
+      "      fair_odds: \"1 / model_probability\";",
+      "      market_implied_probability: \"1 / current_odds\";",
+      "      raw_EV: \"model_probability * current_odds\";",
+      "      conservative_EV: \"conservative_probability * current_odds\";",
+      "    };",
+      "    minimum_odds: {",
+      "      confidence_A: \"fair_odds * 1.10 to 1.15\";",
+      "      confidence_B: \"fair_odds * 1.20 to 1.30\";",
+      "      confidence_C: \"fair_odds * 1.35 or higher\";",
+      "    };",
+      "    buy_gate: \"current_odds >= minimum_odds AND conservative_EV >= 1.10\";",
+      "    if_odds_missing_or_thin: PREVIEW_ONLY;",
+      "  }",
+      "",
+      "  STEP_13A_MARKET_DISSENT_AUDIT {",
+      "    do_not_copy_market: true;",
+      "    inspect_after_probability_lock: [top_exacta_pairs, top_trio_sets, top_trifecta_orders, concentration, alternate_line_price];",
+      "    warning_examples: [rival_line_pair_is_second_market_choice, alternate_top3_set_is_close_to_favorite, two_second_wheel_trio_has_material_support, favorite_exact_order_is_extremely_overconcentrated];",
+      "    action: \"Do not change locked probabilities merely to follow odds; use disagreement as a confidence-label warning requiring explanation\";",
+      "  }",
+      "",
+      "  STEP_13B_RECOMMENDATION_QUALITY_CHECK {",
+      "    S_REQUIRES_ALL: [",
+      "      race_identity_and_lineup_confirmed,",
+      "      current_form_checked_last_3_to_5_meets,",
+      "      day_conditions_and_same_day_bank_checked,",
+      "      first_place_or_top3_set_has_clear_model_edge,",
+      "      strongest_countercase_is_not_material,",
+      "      line_tail_and_cross_line_risk_is_contained,",
+      "      double_second_wheel_cross_checked,",
+      "      race_stage_and_advancement_incentive_checked,",
+      "      market_dissent_has_no_unexplained_major_warning,",
+      "      ticket_type_matches_order_uncertainty,",
+      "      price_is_not_structurally_bad",
+      "    ];",
+      "    automatic_caps: {",
+      "      weather_or_track_materially_uncertain: A_MAX;",
+      "      two_or_more_strong_competing_lines: A_MAX;",
+      "      exact_order_depends_on_fragile_second_or_third_place: A_MAX;",
+      "      all_advance_or_low_elimination_risk_and_head_lock_depends_on_must_win_assumption: A_MAX;",
+      "      two_strong_second_wheels_create_multiple_live_cross_orders: A_MAX;",
+      "      strong_market_dissent_unexplained: A_MAX;",
+      "      current_odds_below_minimum_or_conservative_EV_below_gate: \"堅いが低配当 / SKIP\";",
+      "    };",
+      "    if_no_race_passes: \"強推奨なし・見送り\";",
+      "  }",
+      "",
+      "  STEP_14_PORTFOLIO {",
+      "    candidate_views: [SOLID, REVERSAL, VALUE, LONGSHOT];",
+      "    funding_layers: {",
+      "      baseline: \"60 to 70 percent\";",
+      "      value: \"20 to 30 percent\";",
+      "      longshot: \"5 to 10 percent, only with a causal path\";",
+      "    };",
+      "    final_ticket_count: \"3 to 6 when betting; zero is valid on SKIP\";",
+      "    stake_unit_jpy: 100;",
+      "    race_budget_jpy: " + c.raceBudget + ";",
+      "    daily_cap_jpy: " + c.dailyCap + ";",
+      "    do_not_force_full_budget: true;",
+      "    calculate: [total_stake, payout_if_hit, net_profit_if_hit, ROI, overlapping_scenario_cost];",
+      "  }",
+      "",
+      "  STEP_15_FINAL_FREEZE {",
+      "    states: [PREVIEW, FINAL, SKIP, FREEZE不可, DATA_BLOCKED];",
+      "    freeze_fields: [",
+      "      date, venue, race_no, ticket_type, selection, stake, model_probability,",
+      "      conservative_probability, captured_odds, market_implied_probability, fair_odds,",
+      "      minimum_odds, raw_EV, conservative_EV, rationale, source_times, freeze_time",
+      "    ];",
+      "    immutable_after_freeze: true;",
       "  }",
       "}",
       "",
       "OUTPUT_CONTRACT {",
       "  language: JAPANESE;",
-      "  style: COMPACT_DECISION_BRIEF;",
-      "  target_length: APPROX_1200_TO_1800_JA_CHARS;",
-      "  avoid_repeating_same_reason: true;",
-      "  tables_preferred_over_long_prose: true;",
+      "  order: FIXED;",
+      "  no_missing_section: true;",
+      "  unavailable_value: \"取得不能\";",
+      "  concise_but_evidence_based: true;",
       "",
-      "  sections: [",
-      "    RESULT,",
-      "    LINE_AND_FORM,",
-      "    SCENARIOS,",
-      "    TOP_RANKINGS,",
-      "    TICKETS,",
-      "    RISKS",
-      "  ];",
+      "  section_01: \"■ 総合評価\";",
+      "    required: [S_or_A_or_B_or_C_or_見送り, confidence_score_0_to_100, buy_value_score_0_to_100, start_time, data_time, odds_time, source_summary];",
+      "    wording: \"Confidence grade and buy value are separate. High confidence can still be a no-recommendation at poor prices.\";",
       "",
-      "  RESULT {",
-      "    title: \"■ 結論\";",
-      "    include: [confidence_grade, key_rider, best_ticket_type, one_sentence_race_read];",
-      "  }",
+      "  section_01A: \"■ リスクチェック\";",
+      "    table: [確認項目, PASS_or_FAIL_or_UNKNOWN, 根拠, 影響];",
+      "    checks: [lineup, race_stage, advancement_rule, form, conditions, same_day_bank, countercase, line_tail, cross_line, double_second_wheel, market_dissent, ticket_fit, price];",
       "",
-      "  LINE_AND_FORM {",
-      "    title: \"■ ライン・状態\";",
-      "    include: [lineup, likely_controller, key_riders_recent_3_5_10_summary, same_day_bank_summary, weather_summary];",
-      "    rider_detail_limit: TOP_4_MATERIAL_RIDERS_ONLY;",
-      "    do_not_list_all_raw_recent_results: true;",
-      "  }",
+      "  section_02: \"■ ライン\";",
+      "    format_examples_only: [\"○-○-○\", \"○-○\", \"単騎○\"];",
+      "    include: [race_stage, advancement_rule, controller_probability, lead_battle_probability, second_wheel_pass, double_second_wheel_cross_probability, third_wheel_survival, solo_position];",
       "",
-      "  SCENARIOS {",
-      "    title: \"■ 展開\";",
-      "    show: [BASE, REVERSAL, COLLAPSE];",
-      "    max_scenarios: 3;",
-      "    per_scenario: [probability_band, short_sequence, likely_order];",
-      "  }",
+      "  section_03: \"■ 現在の選手状態\";",
+      "    per_key_rider: [好調_or_上向き_or_平行線_or_やや下降_or_不調, evidence, uncertainty];",
       "",
-      "  TOP_RANKINGS {",
-      "    title: \"■ 上位評価\";",
-      "    top3_survival_rank: TOP_5;",
-      "    first_place_rank: TOP_3;",
-      "    trio_sets: [MAIN, SECONDARY, LONGSHOT_IF_VALID];",
-      "  }",
+      "  section_04: \"■ 能力評価\";",
+      "    labels: [◎, ○, ▲, △, ☆];",
+      "    per_rider_columns: [ability_label, win_rate, top3_rate, win_probability, top3_survival_probability, role];",
+      "    show_raw_ability_separately_from_top3_survival: true;",
+      "    explain_material_gap_between_win_and_top3: true;",
       "",
-      "  TICKETS {",
-      "    title: \"■ 買い目\";",
-      "    compare: [2車単, 3連複, 3連単];",
-      "    show_only_recommended_tickets: true;",
-      "    max_total_tickets: 6;",
-      "    columns: [優先, 券種, 買い目, 狙う展開, 自信度];",
-      "    stake_amount: DO_NOT_SPECIFY;",
-      "  }",
+      "  section_05: \"■ 最頻展開\";",
+      "    include: [sequence, trigger, probability, likely_order];",
       "",
-      "  RISKS {",
-      "    title: \"■ 注意点\";",
-      "    include: [strongest_failure_path, most_overlooked_rider_if_any];",
-      "    max_points: 2;",
-      "  }",
+      "  section_06: \"■ 逆転展開\";",
+      "    include: [second_wheel_or_makuri_reversal, double_second_wheel_cross, probability, causal_reason];",
       "",
-      "  MERGE_RULES {",
-      "    merge_line_and_form_sections: true;",
-      "    merge_bank_and_weather_into_line_form: true;",
-      "    merge_main_counter_value_longshot_into_ticket_table: true;",
-      "    do_not_create_separate_sections_for_each_ticket_type: true;",
-      "    do_not_repeat_same_rider_reason_across_sections: true;",
-      "    do_not_explain_basic_keirin_terms: true;",
-      "  }",
+      "  section_07: \"■ 踏み合い・崩れ展開\";",
+      "    include: [dueling_riders, biggest_beneficiary, probability, collapse_order];",
       "",
-      "  DETAIL_POLICY {",
-      "    full_internal_analysis: REQUIRED;",
-      "    visible_reasoning: ONLY_MATERIAL_FACTORS;",
-      "    rider_table: ONLY_IF_FIELD_COMPARISON_ADDS_VALUE;",
-      "    show_raw_stats: ONLY_WHEN_DECISION_RELEVANT;",
-      "    show_all_recent_results: false;",
-      "    show_all_scenarios: false;",
-      "  }",
+      "  section_08: \"■ 上位3人候補\";",
+      "    rank_by_top3_survival_probability: true;",
+      "    include_likely_top3_sets_without_order: true;",
+      "    label_promoted_survivor: TRIO_SURVIVOR_NOT_HEAD_CANDIDATE;",
+      "",
+      "  section_09: \"■ 着順確信度\";",
+      "    value: [高, 中, 低];",
+      "    explain_difference_between_set_confidence_and_order_confidence: true;",
+      "",
+      "  section_10: \"■ 本命\";",
+      "    always_show_most_likely_ticket_candidate: true;",
+      "    if_price_fails: \"候補維持・購入SKIP\";",
+      "",
+      "  section_11: \"■ 対抗・逆転\";",
+      "    prefer: [front_second_reverse, second_wheel_pass, alternative_controller];",
+      "",
+      "  section_12: \"■ 妙味\";",
+      "    rule: \"Preserve the baseline structure and add only an underpriced branch\";",
+      "",
+      "  section_13: \"■ 穴\";",
+      "    require_concrete_scenario: true;",
+      "    explicitly_check: [double_second_wheel_cross, second_wheel_head_plus_front_third, advancement_incentive_order_variance];",
+      "    no_valid_path: \"該当なし\";",
+      "",
+      "  section_14: \"■ 本線3連複\";",
+      "    use_if_top3_set_confidence_is_high: true;",
+      "    explicitly_check_low_win_high_top3_survivor: true;",
+      "",
+      "  section_15: \"■ 薄穴3連複\";",
+      "    max_tickets: 2;",
+      "    require_specific_third_place_survival_reason: true;",
+      "    valid_promotion: \"Low win rate is acceptable when high top3 rate, recent 2nd/3rd evidence, and favorable wheel position align\";",
+      "",
+      "  section_16: \"■ 2車単保険\";",
+      "    use_if_first_second_readable_and_third_unstable: true;",
+      "",
+      "  section_17: \"■ 最終推奨\";",
+      "    ticket_count: \"3 to 6, or none on SKIP\";",
+      "    table_columns: [層, 券種, 買い目, モデル確率, 保守確率, フェア, 最低許容, 現在オッズ, 保守EV, 投資額, 純利益, 判定];",
+      "    explicitly_name: \"実際に買うならこれ\";",
+      "",
+      "  section_18: \"■ 見送り判定\";",
+      "    allow_full_race_skip: true;",
+      "    include: [reason, odds_cancel_line, lineup_or_condition_invalidation, largest_model_risk];",
+      "",
+      "  final_freeze_record: {",
+      "    append_inside_section_17_if_FINAL: true;",
+      "    include_all_STEP_15_fields: true;",
+      "    if_not_FINAL: \"Do not invent missing values; show the next confirmation trigger\";",
+      "  };",
       "}",
       "",
-      "FORBIDDEN [",
-      "  score_only_ranking,",
-      "  popularity_copy,",
-      "  drop_top3_candidate_only_for_low_win_rate,",
-      "  ignore_second_wheel_sashi,",
-      "  ignore_third_wheel_only_for_low_rating,",
-      "  ignore_rival_line,",
-      "  chase_payout_without_race_path,",
+      "FORBIDDEN_PATTERNS [",
+      "  use_previous_specific_vehicle_number_result,",
+      "  copy_popularity_ranking,",
+      "  rank_by_score_only,",
+      "  remove_top3_candidate_only_because_win_rate_is_low,",
+      "  remove_baseline_to_chase_payout,",
+      "  widen_to_all_riders_without_causal_reason,",
       "  force_trifecta,",
-      "  use_previous_hit_vehicle_numbers,",
-      "  invent_health_condition,",
-      "  turn_request_into_backtest_or_review",
-      "];",
+      "  assert_private_health_condition,",
+      "  leak_result_into_pre_race_forecast,",
+      "  retrofit_reasoning_after_result,",
+      "  use_certainty_language_without_support,",
+      "  force_a_recommendation_when_evidence_is_insufficient,",
+      "  ignore_rival_line_because_rating_leader_is_strong,",
+      "  ignore_third_or_fourth_wheel_only_for_low_score,",
+      "  assume_bad_weather_skill_without_comparable_evidence,",
+      "  assume_favorite_must_win_because_race_is_special_selection,",
+      "  ignore_two_strong_second_wheels_from_different_lines,",
+      "  eliminate_front_automatically_after_second_wheel_pass,",
+      "  infer_reduced_effort_only_because_all_riders_advance",
+      "];"
       "",
-      "PRIORITY_RULE {",
-      "  1: LINE_AND_POSITION;",
-      "  2: LAST_3_TO_5_CONTENT;",
-      "  3: RIDER_ABILITY_AND_STYLE;",
-      "  4: LAST_10_STABILITY;",
-      "  5: SAME_DAY_BANK;",
-      "  6: WEATHER_AND_WIND;",
-      "  7: SCENARIO_MATCH;",
-      "  8: ODDS_CONTEXT;",
+      "QUALITY_GATE {",
+      "  target_identity_matches: REQUIRED;",
+      "  result_leakage_detected: false;",
+      "  memory_isolation_passed: REQUIRED;",
+      "  line_built_before_ranking: REQUIRED;",
+      "  confidence_policy_applied: REQUIRED;",
+      "  same_day_bank_read_checked: REQUIRED;",
+      "  strongest_countercase_checked: REQUIRED;",
+      "  line_tail_survival_checked: REQUIRED;",
+      "  cross_line_mix_checked: REQUIRED;",
+      "  double_second_wheel_cross_checked: REQUIRED;",
+      "  race_stage_and_advancement_incentive_checked: REQUIRED;",
+      "  market_dissent_checked_after_probability_lock: REQUIRED;",
+      "  grade_evidence_checked: REQUIRED;",
+      "  last_3_to_5_meets_content_checked: REQUIRED;",
+      "  eight_required_scenarios_present: REQUIRED;",
+      "  pace_duel_beneficiary_checked: REQUIRED;",
+      "  second_wheel_win_checked: REQUIRED;",
+      "  ability_and_survival_separated: REQUIRED;",
+      "  win_rate_and_top3_rate_separated: REQUIRED;",
+      "  low_win_high_top3_trio_survivor_checked: REQUIRED;",
+      "  top3_set_and_order_separated: REQUIRED;",
+      "  core_trio_and_thin_trio_checked: REQUIRED;",
+      "  probabilities_locked_before_odds: REQUIRED;",
+      "  all_three_ticket_types_compared: REQUIRED;",
+      "  baseline_candidate_retained: REQUIRED;",
+      "  final_recommendation_is_3_to_6_or_skip: REQUIRED;",
       "}",
       "",
-      "EXECUTE_NOW: Research TARGET and return the forecast using OUTPUT_CONTRACT."
+      "",
+      "EXECUTE_NOW: Research the TARGET race, obey the ordered pipeline, and return OUTPUT_CONTRACT in Japanese."
     ]);
 
     return lines.join("\n");
@@ -947,7 +1356,9 @@ body.ios-build .site-header { position: relative; }
     normalizeConfig: normalizeConfig,
     formatDateJa: formatDateJa,
     fileName: fileName,
-    SPEC_VERSION: SPEC_VERSION
+    SPEC_VERSION: SPEC_VERSION,
+    MODE_LABELS: MODE_LABELS,
+    STRATEGY_LABELS: STRATEGY_LABELS
   };
 });
 
@@ -966,8 +1377,8 @@ body.ios-build .site-header { position: relative; }
     "向日町", "和歌山", "岸和田", "玉野", "広島", "防府", "高松", "小松島", "高知",
     "松山", "小倉", "久留米", "武雄", "佐世保", "別府", "熊本"
   ];
-  var HISTORY_KEY = "keirin-prompt-history-v42";
-  var PREFS_KEY = "keirin-prompt-prefs-v42";
+  var HISTORY_KEY = "keirin-prompt-history-v21";
+  var PREFS_KEY = "keirin-prompt-prefs-v2";
   var VIEW_IDS = { generator: "generator-view", guide: "guide-view" };
   var currentPrompt = "";
   var currentConfig = null;
@@ -1154,6 +1565,10 @@ body.ios-build .site-header { position: relative; }
       date: byId("race-date").value,
       venue: byId("venue").value,
       round: byId("round-value").value,
+      mode: byId("analysis-mode").value,
+      strategy: byId("strategy").value,
+      raceBudget: byId("race-budget").value,
+      dailyCap: byId("daily-cap").value,
       depth: byId("output-depth").value,
       hasAttachments: byId("has-attachments").checked,
       generatedAt: new Date().toISOString()
@@ -1165,6 +1580,10 @@ body.ios-build .site-header { position: relative; }
     byId("race-date").value = config.date || todayInJapan();
     byId("venue").value = config.venue || "";
     selectRound(config.round || "");
+    byId("analysis-mode").value = config.mode || "live";
+    byId("strategy").value = config.strategy || "balanced";
+    byId("race-budget").value = config.raceBudget || 2000;
+    byId("daily-cap").value = config.dailyCap || 5000;
     byId("output-depth").value = config.depth || "detailed";
     byId("has-attachments").checked = Boolean(config.hasAttachments);
     updateGenerateState();
@@ -1186,6 +1605,10 @@ body.ios-build .site-header { position: relative; }
     saveJson(PREFS_KEY, {
       venue: config.venue,
       round: config.round,
+      mode: config.mode,
+      strategy: config.strategy,
+      raceBudget: config.raceBudget,
+      dailyCap: config.dailyCap,
       depth: config.depth,
       hasAttachments: config.hasAttachments
     });
@@ -1193,7 +1616,7 @@ body.ios-build .site-header { position: relative; }
 
   function saveHistory(config, prompt) {
     var history = loadJson(HISTORY_KEY, []);
-    var key = config.date + "|" + config.venue + "|" + config.round;
+    var key = config.date + "|" + config.venue + "|" + config.round + "|" + config.mode;
     var item = {
       id: key,
       config: config,
@@ -1420,7 +1843,7 @@ body.ios-build .site-header { position: relative; }
       var title = document.createElement("strong");
       title.textContent = entry.config.venue + "競輪 " + entry.config.round + "R";
       var meta = document.createElement("small");
-      meta.textContent = formatDateDisplay(entry.config.date) + " · 実戦予想 v4.2.1";
+      meta.textContent = formatDateDisplay(entry.config.date) + " · " + (engine.MODE_LABELS[entry.config.mode] || "事前予想");
       openButton.appendChild(title);
       openButton.appendChild(meta);
       openButton.addEventListener("click", function () {
@@ -1463,6 +1886,10 @@ body.ios-build .site-header { position: relative; }
       date: todayInJapan(),
       venue: prefs.venue || "",
       round: prefs.round || "",
+      mode: prefs.mode || "live",
+      strategy: prefs.strategy || "balanced",
+      raceBudget: prefs.raceBudget || 2000,
+      dailyCap: prefs.dailyCap || 5000,
       depth: prefs.depth || "detailed",
       hasAttachments: prefs.hasAttachments
     });
@@ -1514,18 +1941,12 @@ body.ios-build .site-header { position: relative; }
     card.hidden = isStandalone() || dismissed;
     if(close) close.addEventListener('click',function(){ card.hidden=true; try{sessionStorage.setItem('krg-pwa-hint-dismissed','1');}catch(e){} });
   }
-  function setupAndroidDownload(){
-    var card=document.getElementById('android-download-card');
-    if(!card) return;
-    card.hidden = !/Android/i.test(navigator.userAgent || '');
-  }
   function registerSW(){
     if('serviceWorker' in navigator && location.protocol !== 'file:'){
       window.addEventListener('load',function(){ navigator.serviceWorker.register('./sw.js').catch(function(){}); });
     }
   }
-  function setupPlatformCards(){ setupInstallHint(); setupAndroidDownload(); }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',setupPlatformCards); else setupPlatformCards();
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',setupInstallHint); else setupInstallHint();
   registerSW();
 })();
 </script>

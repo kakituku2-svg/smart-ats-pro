@@ -1,0 +1,1573 @@
+<!doctype html>
+<!-- KEIRIN AI RACE GATE v4.3.1 iPhone PWA -->
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    <meta name="theme-color" content="#07111f" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="description" content="iPhone向けPWA版の競輪AI予想プロンプト生成アプリ" />
+    <meta name="application-name" content="KEIRIN AI RACE GATE" />
+    <meta name="apple-mobile-web-app-title" content="KEIRIN RACE GATE" />
+    <meta name="format-detection" content="telephone=no" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="apple-touch-icon" sizes="180x180" href="./icon.svg" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <title>KEIRIN AI RACE GATE</title>
+    <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiByb2xlPSJpbWciIGFyaWEtbGFiZWw9Iuertui8qkFJIFByb21wdCI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImJnIiB4MT0iNTQiIHkxPSIzNSIgeDI9IjQ1OCIgeTI9IjQ3NyIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgogICAgICA8c3RvcCBzdG9wLWNvbG9yPSIjMTEyYjQ1Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzA1MGQxOCIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iZ2xvdyIgeDE9IjEyMSIgeTE9IjEwMyIgeDI9IjQwMCIgeTI9IjQyMyIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgogICAgICA8c3RvcCBzdG9wLWNvbG9yPSIjOGFlZWZmIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzJmZDBlZiIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CiAgPHJlY3Qgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHJ4PSIxMTgiIGZpbGw9InVybCgjYmcpIi8+CiAgPHBhdGggZD0iTTg4IDEzNiAxMzYgODhoMjQwbDQ4IDQ4djI0MGwtNDggNDhIMTM2bC00OC00OFYxMzZaIiBmaWxsPSJub25lIiBzdHJva2U9IiM1NGU0ZmYiIHN0cm9rZS1vcGFjaXR5PSIuMjQiIHN0cm9rZS13aWR0aD0iMTAiLz4KICA8cGF0aCBkPSJtMTIxIDE2MCAxMzUtNjggMTM1IDY4djE5MmwtMTM1IDY4LTEzNS02OFYxNjBaIiBmaWxsPSIjMDcxNTIyIiBzdHJva2U9InVybCgjZ2xvdykiIHN0cm9rZS13aWR0aD0iMTIiLz4KICA8cGF0aCBkPSJtMjU2IDEzNyAxNyA0OCA0OCAxNy00OCAxNy0xNyA0OC0xNy00OC00OC0xNyA0OC0xNyAxNy00OFoiIGZpbGw9IiM1NGU0ZmYiLz4KICA8cGF0aCBkPSJNMTc0IDMzMWgzMWwxMC0yOWg4MmwxMCAyOWgzMWwtNzMtMTc4aC0xOGwtNzMgMTc4Wm01MS01NyAzMS04MiAzMSA4MmgtNjJaIiBmaWxsPSIjZjVmOGZiIi8+CiAgPHJlY3QgeD0iMzUxIiB5PSIyNTgiIHdpZHRoPSIyNiIgaGVpZ2h0PSI3MyIgcng9IjgiIGZpbGw9IiNiOWYzNGEiLz4KPC9zdmc+Cg==" type="image/svg+xml" />
+    <style>
+:root {
+  --bg: #06101d;
+  --bg-deep: #030913;
+  --panel: rgba(12, 25, 43, 0.84);
+  --panel-solid: #0d1b2d;
+  --panel-soft: #11243a;
+  --line: rgba(155, 185, 214, 0.16);
+  --line-strong: rgba(110, 231, 255, 0.34);
+  --text: #f5f8fb;
+  --muted: #91a5b9;
+  --muted-2: #667c92;
+  --cyan: #54e4ff;
+  --lime: #b9f34a;
+  --danger: #ff7c83;
+  --shadow: 0 28px 80px rgba(0, 0, 0, 0.32);
+  --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+  overflow-x: hidden;
+  background: radial-gradient(circle at 50% -10%, rgba(29, 104, 151, 0.2), transparent 38rem), linear-gradient(180deg, var(--bg), var(--bg-deep));
+  color: var(--text);
+  font-family: Inter, "Noto Sans JP", "Hiragino Sans", "Yu Gothic UI", system-ui, sans-serif;
+  line-height: 1.65;
+}
+button, input, select, textarea { font: inherit; }
+button { color: inherit; }
+.skip-link { position: fixed; left: 16px; top: -60px; z-index: 100; padding: 10px 16px; background: var(--cyan); color: #03101a; border-radius: 8px; font-weight: 800; }
+.skip-link:focus { top: 12px; }
+.ambient { position: fixed; pointer-events: none; border-radius: 50%; opacity: .55; z-index: -1; }
+.ambient-one { width: 420px; height: 420px; right: -250px; top: 280px; border: 1px solid rgba(84,228,255,.12); box-shadow: inset 0 0 100px rgba(84,228,255,.05); }
+.ambient-two { width: 300px; height: 300px; left: -210px; top: 900px; background: rgba(79,124,255,.05); }
+.site-header { width: min(1160px, calc(100% - 40px)); min-height: 88px; margin: 0 auto; display: grid; grid-template-columns: minmax(210px,1fr) auto minmax(210px,1fr); align-items: center; gap: 20px; border-bottom: 1px solid var(--line); }
+.brand { display: inline-flex; align-items: center; gap: 13px; color: inherit; text-decoration: none; }
+.brand-mark { width: 42px; height: 42px; display: grid; place-items: center; background: linear-gradient(145deg,var(--cyan),#29b9dc); color: #04111d; clip-path: polygon(0 0,78% 0,100% 22%,100% 100%,22% 100%,0 78%); font-family: var(--mono); font-weight: 950; letter-spacing: -.08em; }
+.brand-copy { display: grid; line-height: 1.15; }
+.brand-copy strong { font-size: 14px; letter-spacing: .16em; }
+.brand-copy small { margin-top: 5px; color: var(--muted-2); font: 9px/1 var(--mono); letter-spacing: .18em; }
+.app-tabs { display: inline-flex; align-items: center; gap: 4px; padding: 4px; border: 1px solid var(--line); border-radius: 13px; background: rgba(4,13,25,.55); }
+.app-tab { min-height: 44px; padding: 7px 15px; border: 0; border-radius: 9px; display: grid; gap: 3px; background: transparent; color: var(--muted); cursor: pointer; line-height: 1.1; transition: color .18s,background .18s,box-shadow .18s; }
+.app-tab small { color: var(--muted-2); font: 700 7px/1 var(--mono); letter-spacing: .14em; }
+.app-tab span { font-size: 11px; font-weight: 800; white-space: nowrap; }
+.app-tab:hover { color: var(--text); background: rgba(84,228,255,.05); }
+.app-tab[aria-selected="true"] { color: #03111c; background: var(--cyan); box-shadow: 0 7px 20px rgba(84,228,255,.16); }
+.app-tab[aria-selected="true"] small { color: rgba(3,17,28,.58); }
+.app-tab:focus-visible { outline: 2px solid var(--lime); outline-offset: 3px; }
+.paper-badge { justify-self: end; }
+.paper-badge, .ready-badge { display: inline-flex; align-items: center; gap: 8px; border: 1px solid rgba(185,243,74,.25); color: var(--lime); background: rgba(185,243,74,.05); padding: 7px 11px; border-radius: 99px; font: 700 10px/1 var(--mono); letter-spacing: .1em; }
+.paper-badge i, .ready-badge i { width: 6px; height: 6px; border-radius: 50%; background: currentColor; box-shadow: 0 0 10px currentColor; }
+main { width: min(1040px, calc(100% - 40px)); margin: 0 auto; }
+.app-view[hidden] { display: none !important; }
+.hero { padding: 82px 0 72px; }
+.eyebrow { display: flex; align-items: center; gap: 12px; color: var(--cyan); font: 700 10px/1 var(--mono); letter-spacing: .18em; text-transform: uppercase; }
+.eyebrow span { color: var(--muted-2); }
+.eyebrow::after { content: ""; width: 36px; height: 1px; background: var(--line-strong); }
+h1 { max-width: 900px; margin: 0 0 38px; font-size: clamp(42px,7vw,82px); line-height: 1.02; letter-spacing: -.055em; font-weight: 820; }
+.brand-title { text-transform: uppercase; letter-spacing: -.04em; text-wrap: balance; }
+h1 em { color: var(--cyan); font-style: normal; }
+.hero-lead { max-width: 730px; margin: 0 0 40px; color: var(--muted); font-size: clamp(15px,1.8vw,18px); }
+.composer-card, .result-card { position: relative; border: 1px solid var(--line); border-radius: 28px; background: linear-gradient(145deg,rgba(15,32,53,.95),rgba(7,18,32,.95)); box-shadow: var(--shadow); overflow: hidden; }
+.composer-card::before, .result-card::before { content: ""; position: absolute; inset: 0 auto auto 0; width: 150px; height: 1px; background: var(--cyan); box-shadow: 0 0 25px var(--cyan); }
+.composer-card { padding: 28px; }
+.primary-fields { display: grid; grid-template-columns: 1fr 1.3fr; gap: 14px; }
+.field, .round-field { min-width: 0; margin: 0; border: 1px solid var(--line); background: rgba(4,13,25,.55); border-radius: 17px; transition: border-color .2s,background .2s; }
+.field:focus-within, .round-field:focus-within { border-color: var(--line-strong); background: rgba(8,24,40,.92); }
+.field { position: relative; min-height: 110px; padding: 20px; display: grid; grid-template-columns: 32px 1fr; align-items: start; }
+.field-number { padding-top: 4px; color: var(--cyan); font: 700 10px/1.2 var(--mono); }
+.field-copy { display: grid; line-height: 1.2; }
+.field-copy small { color: var(--muted-2); font: 700 9px/1 var(--mono); letter-spacing: .16em; }
+.field-copy b { margin-top: 8px; font-size: 13px; }
+.field input { grid-column: 2; width: 100%; margin-top: 14px; padding: 0; border: 0; outline: 0; background: transparent; color: var(--text); font-size: 21px; font-weight: 700; }
+.field input::placeholder { color: #536a80; }
+.field input::-webkit-calendar-picker-indicator { filter: invert(1); opacity: .65; cursor: pointer; }
+.native-select-wrap { grid-column: 2; position: relative; width: 100%; margin-top: 12px; }
+.native-select-wrap select { width: 100%; min-height: 50px; padding: 0 42px 0 0; border: 0; outline: 0; appearance: none; -webkit-appearance: none; background: transparent; color: var(--text); font-size: 20px; font-weight: 800; line-height: 1.2; cursor: pointer; touch-action: manipulation; }
+.native-select-wrap select:invalid { color: #536a80; }
+.native-select-wrap option, .native-select-wrap optgroup { color: #111; background: #fff; }
+.select-chevron { position: absolute; right: 2px; top: 50%; transform: translateY(-53%); color: var(--cyan); font: 900 25px/1 var(--mono); pointer-events: none; }
+.tap-select-field:focus-within { border-color: rgba(84,228,255,.52); box-shadow: inset 0 0 0 1px rgba(84,228,255,.08); }
+.round-button { -webkit-tap-highlight-color: transparent; touch-action: manipulation; user-select: none; -webkit-user-select: none; }
+.round-button span { display: block; font-size: 17px; line-height: 1; }
+.round-field { grid-column: 1/-1; padding: 20px; }
+.round-field legend { width: 100%; padding: 0; display: grid; grid-template-columns: 32px 1fr; }
+.round-grid { display: grid; grid-template-columns: repeat(12,1fr); gap: 7px; margin-top: 18px; }
+.round-button { min-width: 0; height: 52px; border: 1px solid var(--line); border-radius: 12px; background: rgba(12,31,49,.7); cursor: pointer; font-family: var(--mono); font-size: 15px; font-weight: 700; transition: .18s ease; }
+.round-button:hover { transform: translateY(-2px); border-color: rgba(84,228,255,.4); }
+.round-button[aria-checked="true"] { color: #03111c; border-color: var(--cyan); background: var(--cyan); box-shadow: 0 0 22px rgba(84,228,255,.22); }
+.round-button small { display: block; font-size: 8px; opacity: .62; }
+.tap-input-note { margin-top: 12px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 10px 12px; border: 1px solid rgba(84,228,255,.13); border-radius: 12px; background: rgba(84,228,255,.045); color: var(--muted); font-size: 11px; }
+.tap-input-note b { color: var(--cyan); font: 800 9px/1 var(--mono); letter-spacing: .08em; }
+.form-error { margin-top: 14px; border: 1px solid rgba(255,124,131,.25); color: #ffb2b6; background: rgba(255,124,131,.07); border-radius: 12px; padding: 10px 14px; font-size: 13px; }
+.generate-button { width: 100%; min-height: 78px; margin-top: 18px; padding: 0 22px; border: 0; border-radius: 17px; display: grid; grid-template-columns: 48px 1fr 28px; align-items: center; gap: 15px; color: #02111b; background: linear-gradient(100deg,var(--cyan),#89edff); cursor: pointer; text-align: left; font-weight: 850; font-size: 17px; box-shadow: 0 16px 40px rgba(20,196,230,.17); transition: transform .2s,box-shadow .2s; }
+.generate-button:hover { transform: translateY(-2px); box-shadow: 0 20px 50px rgba(20,196,230,.25); }
+.generate-button:active { transform: translateY(0); }
+.generate-button small { display: block; margin-bottom: 7px; opacity: .58; font: 700 8px/1 var(--mono); letter-spacing: .16em; }
+.button-icon { width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; background: rgba(2,17,27,.11); }
+.button-icon svg { width: 24px; fill: none; stroke: currentColor; stroke-width: 1.7; }
+.button-arrow { width: 23px; fill: none; stroke: currentColor; stroke-width: 2; }
+.logic-strip { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 19px; padding-top: 20px; color: var(--muted-2); font: 700 9px/1 var(--mono); letter-spacing: .08em; }
+.logic-strip span::before { content: "✓"; color: var(--cyan); margin-right: 6px; }
+.strict-lead { margin-top: -18px; margin-bottom: 34px; max-width: 820px; }
+.strict-gate-card { margin-top: 18px; padding: 16px 18px; border: 1px solid rgba(185,243,74,.23); border-radius: 15px; background: linear-gradient(135deg,rgba(185,243,74,.07),rgba(84,228,255,.035)); }
+.strict-gate-card > div { display:flex; flex-wrap:wrap; align-items:center; gap:10px; }
+.strict-gate-card b { color:#03111c; background:var(--lime); border-radius:99px; padding:6px 9px; font:900 9px/1 var(--mono); letter-spacing:.1em; }
+.strict-gate-card span { font-size:13px; font-weight:850; }
+.strict-gate-card p { margin:8px 0 0; color:var(--muted); font-size:11px; line-height:1.65; }
+.advanced-card { margin-top: 16px; border: 1px solid var(--line); border-radius: 17px; background: rgba(10,22,38,.65); overflow: hidden; }
+.advanced-card summary { min-height: 58px; padding: 0 20px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; list-style: none; }
+.advanced-card summary::-webkit-details-marker { display: none; }
+.advanced-card summary > span { display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 700; }
+.advanced-card summary > small { color: var(--muted-2); font-size: 11px; }
+.advanced-card summary::after { content: "+"; margin-left: 12px; color: var(--cyan); font: 20px/1 var(--mono); }
+.advanced-card[open] summary::after { content: "−"; }
+.sliders { width: 17px; height: 13px; background: linear-gradient(var(--cyan),var(--cyan)) 0 1px/17px 1px no-repeat,linear-gradient(var(--cyan),var(--cyan)) 0 6px/17px 1px no-repeat,linear-gradient(var(--cyan),var(--cyan)) 0 11px/17px 1px no-repeat; }
+.advanced-grid { padding: 20px; border-top: 1px solid var(--line); display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+.advanced-grid label { display: grid; gap: 8px; color: var(--muted); font-size: 12px; }
+.advanced-grid label > span:first-child { color: var(--text); font-weight: 700; }
+.advanced-grid label > small { color: var(--muted-2); font-size: 10px; }
+.advanced-grid select, .money-input { width: 100%; min-height: 44px; border: 1px solid var(--line); border-radius: 11px; background: #081625; color: var(--text); outline: 0; }
+.advanced-grid select { padding: 0 12px; }
+.money-input { display: grid; grid-template-columns: 1fr 30px; align-items: center; }
+.money-input input { width: 100%; min-width: 0; padding: 0 12px; border: 0; outline: 0; color: var(--text); background: transparent; }
+.money-input b { color: var(--muted-2); font-size: 11px; }
+.check-label { grid-template-columns: 22px 1fr; align-items: center; align-content: center; }
+.check-label input { position: absolute; opacity: 0; pointer-events: none; }
+.check-ui { width: 20px; height: 20px; border: 1px solid var(--line-strong); border-radius: 6px; background: #081625; }
+.check-label input:checked + .check-ui { background: var(--cyan); box-shadow: inset 0 0 0 5px #081625; }
+.check-label > span:last-child { display: grid; gap: 2px; }
+.check-label b { color: var(--text); font-size: 12px; }
+.check-label small { color: var(--muted-2); font-size: 10px; }
+.result-section, .method-section, .history-section { padding: 70px 0 20px; scroll-margin-top: 24px; }
+.section-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; margin-bottom: 24px; }
+.section-head h2 { margin: 17px 0 0; font-size: clamp(27px,4vw,42px); line-height: 1.18; letter-spacing: -.04em; }
+.section-head.compact h2 { font-size: clamp(25px,3vw,35px); }
+.result-card { padding: 26px; }
+.prompt-meta { display: flex; justify-content: space-between; gap: 18px; align-items: center; margin-bottom: 18px; }
+.race-stamp { display: grid; }
+.race-stamp span { color: var(--muted); font: 11px/1.4 var(--mono); }
+.race-stamp strong { margin-top: 5px; font-size: 23px; }
+.prompt-stats { display: flex; gap: 18px; color: var(--muted-2); font-size: 10px; }
+.prompt-stats b { color: var(--cyan); font-family: var(--mono); }
+.coverage-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 16px; }
+.coverage-chips span { padding: 6px 9px; border: 1px solid rgba(84,228,255,.11); border-radius: 7px; color: #a9bed0; background: rgba(84,228,255,.05); font-size: 9px; font-weight: 700; }
+.prompt-shell { border: 1px solid var(--line); border-radius: 15px; overflow: hidden; background: #030a12; }
+.prompt-toolbar { min-height: 44px; padding: 0 14px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); color: var(--muted-2); font: 700 9px/1 var(--mono); letter-spacing: .11em; }
+.prompt-toolbar > span { display: flex; align-items: center; gap: 8px; }
+.prompt-toolbar i { width: 6px; height: 6px; border-radius: 50%; background: var(--cyan); }
+.prompt-toolbar button, .text-button { padding: 7px; border: 0; background: transparent; color: var(--cyan); cursor: pointer; font-size: 10px; }
+#prompt-output { display: block; width: 100%; height: min(62vh,650px); min-height: 420px; resize: vertical; padding: 20px; border: 0; outline: 0; color: #c9d8e5; background: transparent; font: 13px/1.72 var(--mono); white-space: pre-wrap; tab-size: 2; }
+.action-grid { display: grid; grid-template-columns: 1.45fr 1fr auto; gap: 10px; margin-top: 16px; }
+.action-grid button { min-height: 60px; border-radius: 13px; cursor: pointer; transition: .18s; }
+.primary-action, .secondary-action { display: flex; align-items: center; justify-content: center; gap: 12px; border: 1px solid transparent; }
+.primary-action { color: #03121c; background: var(--cyan); font-weight: 850; }
+.secondary-action { color: var(--text); background: var(--panel-soft); border-color: var(--line); font-weight: 750; }
+.action-grid svg { width: 21px; fill: none; stroke: currentColor; stroke-width: 1.8; }
+.action-grid button span { display: grid; text-align: left; line-height: 1.1; }
+.action-grid button small { margin-bottom: 6px; opacity: .58; font: 8px/1 var(--mono); letter-spacing: .12em; }
+.ghost-action { padding: 0 17px; border: 1px solid var(--line); color: var(--muted); background: transparent; font-size: 11px; }
+.action-grid button:hover { transform: translateY(-2px); border-color: var(--line-strong); }
+.paste-note { margin: 16px 0 0; color: var(--muted-2); text-align: center; font-size: 11px; }
+.method-grid { display: grid; grid-template-columns: repeat(4,1fr); border: 1px solid var(--line); border-radius: 20px; overflow: hidden; }
+.method-grid article { position: relative; min-height: 240px; padding: 24px; border-right: 1px solid var(--line); background: rgba(10,22,38,.62); }
+.method-grid article:last-child { border-right: 0; }
+.method-grid article > span { color: rgba(84,228,255,.2); font: 700 42px/1 var(--mono); }
+.method-grid i { display: block; margin-top: 27px; color: var(--cyan); font: 700 8px/1 var(--mono); letter-spacing: .15em; }
+.method-grid h3 { margin: 9px 0 10px; font-size: 16px; }
+.method-grid p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.75; }
+.history-list { display: grid; gap: 8px; }
+.history-item { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 16px; padding: 15px 17px; border: 1px solid var(--line); border-radius: 13px; background: rgba(10,22,38,.58); }
+.history-item button { all: unset; min-width: 0; cursor: pointer; }
+.history-main { display: grid; gap: 3px; }
+.history-main strong { font-size: 14px; }
+.history-main small { color: var(--muted-2); font: 9px/1.5 var(--mono); }
+.history-actions { display: flex; gap: 7px; }
+.history-actions button { padding: 7px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel-soft); color: var(--muted); cursor: pointer; font-size: 10px; }
+.guide-view { padding: 82px 0 20px; }
+.guide-hero { padding-bottom: 44px; }
+.guide-hero h1 { max-width: 850px; }
+.guide-section { padding: 30px; border: 1px solid var(--line); border-radius: 26px; background: linear-gradient(145deg,rgba(15,32,53,.88),rgba(7,18,32,.9)); box-shadow: var(--shadow); }
+.guide-section-head { display: flex; align-items: center; gap: 15px; margin-bottom: 22px; }
+.guide-section-head.small { margin-bottom: 18px; }
+.guide-step-no { width: 43px; height: 43px; flex: 0 0 auto; display: grid; place-items: center; border: 1px solid rgba(84,228,255,.34); border-radius: 12px; color: var(--cyan); background: rgba(84,228,255,.06); font: 800 12px/1 var(--mono); }
+.guide-section-head small { display: block; margin-bottom: 6px; color: var(--muted-2); font: 700 8px/1 var(--mono); letter-spacing: .16em; }
+.guide-section-head h2 { margin: 0; font-size: clamp(20px,3vw,29px); line-height: 1.15; letter-spacing: -.03em; }
+.guide-section-head.small h2 { font-size: 20px; }
+.guide-shot-card { margin: 0; padding: 12px; border: 1px solid var(--line); border-radius: 19px; background: #030a12; }
+.guide-shot-label { height: 35px; display: flex; align-items: center; gap: 8px; padding: 0 5px; color: var(--muted-2); font: 700 8px/1 var(--mono); letter-spacing: .15em; }
+.guide-shot-label i { width: 6px; height: 6px; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 9px var(--cyan); }
+.guide-shot-frame { position: relative; overflow: hidden; border: 1px solid var(--line); border-radius: 12px; background: #06101d; aspect-ratio: 8/5; }
+.guide-shot-frame img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.guide-marker { position: absolute; width: 38px; height: 38px; display: grid; place-items: center; border: 3px solid #fff; border-radius: 50%; color: #03111c; background: var(--lime); box-shadow: 0 0 0 7px rgba(185,243,74,.18),0 8px 22px rgba(0,0,0,.45); font: 900 14px/1 var(--mono); transform: translate(-50%,-50%); }
+.marker-date { left: 27%; top: 86%; }
+.marker-venue { left: 70%; top: 86%; }
+.guide-shot-card figcaption { padding: 11px 5px 1px; color: var(--muted-2); font-size: 10px; }
+.guide-callout-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; margin-top: 14px; }
+.guide-callout-grid article { display: grid; grid-template-columns: 33px 1fr; gap: 11px; padding: 15px; border: 1px solid var(--line); border-radius: 13px; background: rgba(4,13,25,.48); }
+.guide-callout-grid article > span { width: 30px; height: 30px; display: grid; place-items: center; border-radius: 9px; color: #03111c; background: var(--lime); font: 900 11px/1 var(--mono); }
+.guide-callout-grid b { font-size: 13px; }
+.guide-callout-grid p { margin: 5px 0 0; color: var(--muted); font-size: 11px; line-height: 1.7; }
+.guide-flow { display: grid; grid-template-columns: repeat(3,1fr); gap: 13px; margin-top: 18px; }
+.guide-flow-card { min-width: 0; padding: 22px; border: 1px solid var(--line); border-radius: 19px; background: rgba(10,22,38,.72); }
+.guide-flow-card > p { margin: 16px 0 0; color: var(--muted); font-size: 11px; line-height: 1.75; }
+.guide-round-demo { display: grid; grid-template-columns: repeat(5,1fr); gap: 5px; }
+.guide-round-demo span { min-width: 0; height: 39px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 8px; color: var(--muted); background: #081625; font: 700 11px/1 var(--mono); }
+.guide-round-demo span small { display: inline; font-size: 6px; }
+.guide-round-demo .active { border-color: var(--cyan); color: #03111c; background: var(--cyan); }
+.guide-generate-demo { min-height: 55px; margin-top: 9px; padding: 0 12px; border-radius: 10px; display: grid; grid-template-columns: 27px 1fr 14px; align-items: center; gap: 8px; color: #03111c; background: var(--cyan); }
+.guide-generate-demo i { font-style: normal; font-size: 18px; }
+.guide-generate-demo span { font-size: 10px; font-weight: 900; line-height: 1.2; }
+.guide-generate-demo small { display: block; margin-bottom: 4px; font: 700 5px/1 var(--mono); letter-spacing: .1em; opacity: .55; }
+.guide-prompt-demo { min-height: 101px; padding: 12px; border: 1px solid var(--line); border-radius: 10px; color: #8ba2b6; background: #030a12; overflow: hidden; font: 7px/1.6 var(--mono); }
+.guide-prompt-demo span { display: block; margin-bottom: 8px; color: var(--cyan); font-weight: 800; }
+.guide-prompt-demo i { font-style: normal; }
+.guide-copy-demo { min-height: 46px; margin-top: 9px; display: flex; align-items: center; justify-content: center; gap: 8px; border-radius: 10px; color: #03111c; background: var(--cyan); font-size: 10px; }
+.guide-chat-demo { min-height: 156px; padding: 15px; border: 1px solid var(--line); border-radius: 13px; display: grid; grid-template-columns: 34px 1fr 26px; align-items: end; gap: 10px; background: linear-gradient(180deg,#0d1b2d,#07111f); }
+.chat-symbol { align-self: center; width: 32px; height: 32px; display: grid; place-items: center; border: 1px solid var(--line-strong); border-radius: 50%; color: var(--cyan); }
+.guide-chat-demo div { min-width: 0; padding: 10px; border: 1px solid var(--line); border-radius: 11px; background: rgba(255,255,255,.04); }
+.guide-chat-demo small { color: var(--cyan); font: 700 7px/1 var(--mono); }
+.guide-chat-demo p { margin: 5px 0 0; color: var(--muted); font-size: 9px; line-height: 1.45; }
+.guide-chat-demo > b { width: 25px; height: 25px; display: grid; place-items: center; border-radius: 50%; color: #03111c; background: var(--text); }
+.guide-note { margin-top: 18px; padding: 20px 22px; border: 1px solid rgba(185,243,74,.22); border-radius: 16px; background: rgba(185,243,74,.045); }
+.guide-note > div { display: flex; align-items: center; gap: 10px; }
+.guide-note span { width: 25px; height: 25px; display: grid; place-items: center; border-radius: 50%; color: #03111c; background: var(--lime); font: 900 12px/1 var(--mono); }
+.guide-note strong { color: var(--lime); font-size: 13px; }
+.guide-note p { margin: 9px 0 0 35px; color: var(--muted); font-size: 11px; }
+.guide-start-button { width: 100%; min-height: 68px; margin-top: 18px; padding: 0 22px; border: 0; border-radius: 15px; display: flex; align-items: center; justify-content: space-between; color: #03111c; background: linear-gradient(100deg,var(--cyan),#89edff); cursor: pointer; font-size: 15px; font-weight: 900; }
+.guide-start-button span { display: grid; text-align: left; line-height: 1.1; }
+.guide-start-button small { margin-bottom: 6px; font: 700 7px/1 var(--mono); letter-spacing: .14em; opacity: .55; }
+.guide-start-button b { font-size: 21px; }
+.guide-start-button:hover { box-shadow: 0 16px 40px rgba(20,196,230,.2); transform: translateY(-2px); }
+footer { width: min(1040px,calc(100% - 40px)); margin: 90px auto 0; padding: 34px 0 max(34px,env(safe-area-inset-bottom)); border-top: 1px solid var(--line); color: var(--muted-2); text-align: center; }
+.footer-brand { display: inline-flex; align-items: center; gap: 8px; color: var(--text); font: 700 11px/1 var(--mono); letter-spacing: .1em; }
+.footer-brand span { color: var(--cyan); }
+footer p { max-width: 620px; margin: 14px auto 8px; font-size: 11px; }
+footer > small { font: 8px/1.4 var(--mono); letter-spacing: .1em; }
+.toast-region { position: fixed; z-index: 1000; left: 50%; bottom: max(22px,env(safe-area-inset-bottom)); width: min(390px,calc(100% - 32px)); transform: translateX(-50%); pointer-events: none; }
+.toast { padding: 13px 16px; border-radius: 11px; color: #05121b; background: var(--cyan); box-shadow: 0 16px 50px rgba(0,0,0,.35); text-align: center; font-size: 12px; font-weight: 800; animation: toast-in .24s ease-out; }
+.toast.error { background: #ff9aa0; }
+@keyframes toast-in { from { opacity: 0; transform: translateY(8px); } }
+@media (max-width: 820px) {
+  .site-header { grid-template-columns: minmax(170px,1fr) auto minmax(90px,1fr); gap: 10px; }
+  .app-tab { padding: 7px 10px; }
+  .round-grid { grid-template-columns: repeat(6,1fr); }
+  .advanced-grid { grid-template-columns: repeat(2,1fr); }
+  .method-grid { grid-template-columns: repeat(2,1fr); }
+  .method-grid article:nth-child(2) { border-right: 0; }
+  .method-grid article:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
+  .action-grid { grid-template-columns: 1fr 1fr; }
+  .ghost-action { grid-column: 1/-1; min-height: 42px !important; }
+  .guide-flow { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  .site-header, main, footer { width: min(100% - 26px,1040px); }
+  .site-header { min-height: 72px; padding: 13px 0; grid-template-columns: 1fr auto; gap: 12px; }
+  .app-tabs { grid-column: 1/-1; grid-row: 2; width: 100%; }
+  .app-tab { flex: 1; min-height: 42px; }
+  .brand-mark { width: 36px; height: 36px; }
+  .paper-badge { padding: 6px 8px; font-size: 8px; }
+  .hero { padding: 52px 0 45px; }
+  h1 { font-size: clamp(37px,12vw,56px); }
+  .hero-lead { margin-bottom: 28px; font-size: 14px; line-height: 1.8; }
+  .composer-card, .result-card { padding: 15px; border-radius: 20px; }
+  .primary-fields { grid-template-columns: 1fr; }
+  .round-field { grid-column: auto; }
+  .field { min-height: 102px; padding: 17px; }
+  .round-field { padding: 17px; }
+  .round-grid { grid-template-columns: repeat(4,1fr); gap: 9px; }
+  .round-button { height: 54px; border-radius: 14px; font-size: 16px; }
+  .native-select-wrap select { min-height: 54px; font-size: 19px; }
+  .generate-button { min-height: 72px; padding: 0 15px; grid-template-columns: 42px 1fr 20px; font-size: 14px; }
+  .button-icon { width: 38px; height: 38px; }
+  .logic-strip { gap: 8px 12px; }
+  .advanced-card summary > small { display: none; }
+  .advanced-grid { grid-template-columns: 1fr; }
+  .result-section, .method-section, .history-section { padding-top: 52px; }
+  .section-head { align-items: flex-start; }
+  .ready-badge { display: none; }
+  .prompt-meta { align-items: flex-end; }
+  .prompt-stats { display: grid; gap: 3px; text-align: right; }
+  #prompt-output { min-height: 430px; padding: 15px; font-size: 12px; }
+  .action-grid { grid-template-columns: 1fr; }
+  .ghost-action { grid-column: auto; }
+  .method-grid { grid-template-columns: 1fr; }
+  .method-grid article { min-height: auto; border-right: 0; border-bottom: 1px solid var(--line); }
+  .method-grid article:last-child { border-bottom: 0; }
+  .method-grid article:nth-child(2) { border-bottom: 1px solid var(--line); }
+  .method-grid i { margin-top: 14px; }
+  .history-item { grid-template-columns: 1fr; }
+  .history-actions { justify-content: flex-end; }
+  .guide-view { padding-top: 52px; }
+  .guide-hero { padding-bottom: 28px; }
+  .guide-section { padding: 14px; border-radius: 20px; }
+  .guide-shot-card { padding: 7px; border-radius: 14px; }
+  .guide-shot-label { height: 29px; }
+  .guide-marker { width: 27px; height: 27px; border-width: 2px; box-shadow: 0 0 0 4px rgba(185,243,74,.17); font-size: 10px; }
+  .guide-shot-card figcaption { font-size: 9px; }
+  .guide-callout-grid { grid-template-columns: 1fr; }
+  .guide-flow-card { padding: 17px; }
+  .guide-note { padding: 16px; }
+  .guide-note p { margin-left: 0; }
+}
+@media (prefers-reduced-motion: reduce) { *,*::before,*::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+
+    
+/* v3.1.2 clipboard reliability */
+.generate-button[aria-disabled="true"] {
+  cursor: pointer;
+  opacity: .46;
+  filter: saturate(.55);
+  transform: none !important;
+  box-shadow: none !important;
+}
+.selection-status {
+  margin-top: 14px;
+  min-height: 46px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  border: 1px solid rgba(84,228,255,.14);
+  border-radius: 13px;
+  background: rgba(84,228,255,.045);
+  color: var(--muted-2);
+  font-size: 11px;
+  line-height: 1.45;
+}
+.selection-status::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: #50677c;
+  box-shadow: 0 0 0 4px rgba(80,103,124,.08);
+}
+.selection-status.ready { color: #d8f9ff; border-color: rgba(84,228,255,.38); background: rgba(84,228,255,.075); }
+.selection-status.ready::before { background: var(--cyan); box-shadow: 0 0 12px rgba(84,228,255,.7); }
+.result-close-button {
+  display: none;
+  min-width: 42px;
+  min-height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(8,20,35,.82);
+  color: var(--text);
+  font-size: 22px;
+  line-height: 1;
+}
+@media (max-width: 720px) {
+  .selection-status { font-size: 10px; }
+}
+
+
+/* iPhone local HTML / Files preview safeguards */
+html { height: auto; min-height: 100%; scroll-behavior: auto !important; overflow-x: hidden; overflow-y: auto; }
+body.ios-build {
+  height: auto !important;
+  min-height: 100% !important;
+  min-height: 100dvh !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: auto;
+}
+body.ios-build.result-open { overflow: hidden !important; }
+body.ios-build .result-section {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
+  margin: 0;
+  padding: max(18px, env(safe-area-inset-top)) 14px max(24px, env(safe-area-inset-bottom));
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  background: linear-gradient(180deg, #07111f 0%, #030a12 100%);
+}
+body.ios-build .result-section[hidden] { display: none !important; }
+body.ios-build .result-section .section-head {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  margin: -4px -2px 14px;
+  padding: 8px 2px 12px;
+  background: linear-gradient(180deg, rgba(7,17,31,.98) 72%, rgba(7,17,31,0));
+}
+body.ios-build .result-close-button { display: inline-grid; place-items: center; }
+body.ios-build .result-card { margin-bottom: 24px; }
+body.ios-build #prompt-output {
+  min-height: 42vh;
+  max-height: none;
+  -webkit-overflow-scrolling: touch;
+}
+body.ios-build .site-header { position: relative; }
+@supports not (height: 100dvh) {
+  body.ios-build .result-section { height: 100%; }
+}
+
+
+/* iPhone PWA install surface */
+.pwa-install-card{margin:0 0 18px;padding:16px 18px;border:1px solid rgba(84,228,255,.22);border-radius:17px;background:linear-gradient(135deg,rgba(84,228,255,.09),rgba(185,243,74,.035));display:flex;align-items:center;justify-content:space-between;gap:14px}
+.pwa-install-card[hidden]{display:none!important}
+.pwa-install-copy{display:grid;gap:5px;min-width:0}.pwa-install-copy strong{font-size:13px}.pwa-install-copy span{color:var(--muted);font-size:11px;line-height:1.55}
+.pwa-install-close{flex:0 0 auto;width:38px;height:38px;border:1px solid var(--line);border-radius:11px;background:rgba(4,13,25,.5);color:var(--muted);font-size:20px}
+@media(max-width:720px){.pwa-install-card{align-items:flex-start}.pwa-install-copy strong{font-size:12px}.pwa-install-copy span{font-size:10px}}
+.android-download-card{margin:0 0 18px;padding:17px 18px;border:1px solid rgba(185,243,74,.24);border-radius:17px;background:linear-gradient(135deg,rgba(185,243,74,.08),rgba(84,228,255,.05));display:flex;align-items:center;justify-content:space-between;gap:14px}
+.android-download-card[hidden]{display:none!important}
+.android-download-copy{display:grid;gap:5px;min-width:0}
+.android-download-copy strong{font-size:13px}
+.android-download-copy span{color:var(--muted);font-size:11px;line-height:1.55}
+.android-download-button{flex:0 0 auto;min-height:44px;padding:0 15px;display:inline-flex;align-items:center;justify-content:center;border:1px solid rgba(185,243,74,.38);border-radius:11px;color:#07111f;background:var(--lime);text-decoration:none;font-size:11px;font-weight:900}
+@media(max-width:720px){.android-download-card{align-items:flex-start;flex-direction:column}.android-download-button{width:100%;min-height:48px}.android-download-copy strong{font-size:12px}.android-download-copy span{font-size:10px}}
+
+.android-standalone #pwa-install-card,
+.android-standalone #android-download-card { display:none !important; }
+.android-standalone { -webkit-tap-highlight-color: transparent; }
+.android-standalone .generate-button { touch-action: manipulation; }
+</style>
+  </head>
+  <body class="android-standalone">
+    <a class="skip-link" href="#main">メインへ移動</a>
+    <div class="ambient ambient-one" aria-hidden="true"></div>
+    <div class="ambient ambient-two" aria-hidden="true"></div>
+
+    <header class="site-header">
+      <a class="brand" href="#top" data-view-link="generator" aria-label="競輪AI Prompt ホーム">
+        <span class="brand-mark" aria-hidden="true"><span>AI</span></span>
+        <span class="brand-copy"><strong>KEIRIN RACE GATE</strong><small>AI RACE ANALYSIS</small></span>
+      </a>
+      <nav class="app-tabs" role="tablist" aria-label="アプリ画面">
+        <button class="app-tab" id="tab-generator" type="button" role="tab" aria-selected="true" aria-controls="generator-view" data-view="generator"><small>CREATE</small><span>プロンプト生成</span></button>
+        <button class="app-tab" id="tab-guide" type="button" role="tab" aria-selected="false" aria-controls="guide-view" data-view="guide" tabindex="-1"><small>HOW TO</small><span>使い方</span></button>
+      </nav>
+      <span class="paper-badge"><i></i>v4.3.1 Android</span>
+    </header>
+
+    <main id="main">
+      <div class="app-view" id="generator-view" role="tabpanel" aria-labelledby="tab-generator">
+      <section class="hero" id="top">
+        <h1 class="brand-title">KEIRIN <em>RACE GATE</em></h1><p class="hero-lead strict-lead">開催日・開催場・レース番号を選ぶだけで、ライン・脚質・直近3/5/10走・当日バンクまで分析し、結論をコンパクトに返す実戦予想プロンプトを作成します。</p>
+        <div class="pwa-install-card" id="pwa-install-card" hidden>
+          <div class="pwa-install-copy"><strong>ホーム画面に追加して使えます</strong><span>Safariの共有ボタン →「ホーム画面に追加」。次回からアイコンをタップして起動できます。</span></div>
+          <button class="pwa-install-close" id="pwa-install-close" type="button" aria-label="案内を閉じる">×</button>
+        </div>
+
+        <div class="android-download-card" id="android-download-card" hidden>
+          <div class="android-download-copy">
+            <strong>Androidアプリ版をインストール</strong>
+            <span>KEIRIN RACE GATE v4.3.1 APK。公開Web版と同じ最新画面をアプリとして開けます。</span>
+          </div>
+          <a class="android-download-button" href="./downloads/KEIRIN-RACE-GATE-v4.3.1.apk" download>APKをダウンロード</a>
+        </div>
+
+        <form class="composer-card" id="race-form" novalidate>
+          <div class="primary-fields">
+            <label class="field date-field">
+              <span class="field-number">01</span>
+              <span class="field-copy"><small>DATE</small><b>レース日</b></span>
+              <input id="race-date" name="raceDate" type="date" required />
+            </label>
+            <label class="field venue-field tap-select-field">
+              <span class="field-number">02</span>
+              <span class="field-copy"><small>VELODROME</small><b>開催場</b></span>
+              <div class="native-select-wrap">
+                <select id="venue" name="venue" required aria-label="開催場を選択">
+                  <option value="" selected disabled>タップして開催場を選択</option>
+                  <optgroup label="北日本">
+                    <option value="函館">函館</option><option value="青森">青森</option><option value="いわき平">いわき平</option>
+                  </optgroup>
+                  <optgroup label="関東">
+                    <option value="弥彦">弥彦</option><option value="前橋">前橋</option><option value="取手">取手</option><option value="宇都宮">宇都宮</option><option value="大宮">大宮</option><option value="西武園">西武園</option><option value="京王閣">京王閣</option><option value="立川">立川</option>
+                  </optgroup>
+                  <optgroup label="南関東">
+                    <option value="松戸">松戸</option><option value="TIPSTAR DOME CHIBA">TIPSTAR DOME CHIBA</option><option value="川崎">川崎</option><option value="平塚">平塚</option><option value="小田原">小田原</option><option value="伊東">伊東</option><option value="静岡">静岡</option>
+                  </optgroup>
+                  <optgroup label="中部">
+                    <option value="名古屋">名古屋</option><option value="岐阜">岐阜</option><option value="大垣">大垣</option><option value="豊橋">豊橋</option><option value="富山">富山</option><option value="松阪">松阪</option><option value="四日市">四日市</option>
+                  </optgroup>
+                  <optgroup label="近畿">
+                    <option value="福井">福井</option><option value="奈良">奈良</option><option value="向日町">向日町</option><option value="和歌山">和歌山</option><option value="岸和田">岸和田</option>
+                  </optgroup>
+                  <optgroup label="中国">
+                    <option value="玉野">玉野</option><option value="広島">広島</option><option value="防府">防府</option>
+                  </optgroup>
+                  <optgroup label="四国">
+                    <option value="高松">高松</option><option value="小松島">小松島</option><option value="高知">高知</option><option value="松山">松山</option>
+                  </optgroup>
+                  <optgroup label="九州">
+                    <option value="小倉">小倉</option><option value="久留米">久留米</option><option value="武雄">武雄</option><option value="佐世保">佐世保</option><option value="別府">別府</option><option value="熊本">熊本</option>
+                  </optgroup>
+                </select>
+                <span class="select-chevron" aria-hidden="true">⌄</span>
+              </div>
+            </label>
+            <fieldset class="round-field">
+              <legend><span class="field-number">03</span><span class="field-copy"><small>ROUND</small><b>レース番号</b></span></legend>
+              <div class="round-grid" id="round-grid" role="radiogroup" aria-label="レース番号"><button type="button" class="round-button" data-round="1" role="radio" aria-checked="false" tabindex="0"><span>1</span><small>R</small></button><button type="button" class="round-button" data-round="2" role="radio" aria-checked="false" tabindex="-1"><span>2</span><small>R</small></button><button type="button" class="round-button" data-round="3" role="radio" aria-checked="false" tabindex="-1"><span>3</span><small>R</small></button><button type="button" class="round-button" data-round="4" role="radio" aria-checked="false" tabindex="-1"><span>4</span><small>R</small></button><button type="button" class="round-button" data-round="5" role="radio" aria-checked="false" tabindex="-1"><span>5</span><small>R</small></button><button type="button" class="round-button" data-round="6" role="radio" aria-checked="false" tabindex="-1"><span>6</span><small>R</small></button><button type="button" class="round-button" data-round="7" role="radio" aria-checked="false" tabindex="-1"><span>7</span><small>R</small></button><button type="button" class="round-button" data-round="8" role="radio" aria-checked="false" tabindex="-1"><span>8</span><small>R</small></button><button type="button" class="round-button" data-round="9" role="radio" aria-checked="false" tabindex="-1"><span>9</span><small>R</small></button><button type="button" class="round-button" data-round="10" role="radio" aria-checked="false" tabindex="-1"><span>10</span><small>R</small></button><button type="button" class="round-button" data-round="11" role="radio" aria-checked="false" tabindex="-1"><span>11</span><small>R</small></button><button type="button" class="round-button" data-round="12" role="radio" aria-checked="false" tabindex="-1"><span>12</span><small>R</small></button></div>
+              <input id="round-value" name="round" type="hidden" required />
+            </fieldset>
+          </div>
+          <div class="tap-input-note"><b>タップで選択</b><span>開催場とレース番号を選ぶだけで設定できます。</span></div>
+          <div class="selection-status" id="selection-status" aria-live="polite">開催場とレース番号を選択してください</div>
+          <div class="form-error" id="form-error" role="alert" hidden></div>
+          <button class="generate-button" id="generate-button" type="submit" aria-disabled="true">
+            <span class="button-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3Z"/><path d="M19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8L19 16Z"/></svg></span>
+            <span>AI予測プロンプトを生成</span>
+            <svg class="button-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </button>
+          
+        </form>
+
+        <details class="advanced-card" id="advanced-settings">
+          <summary><span><i class="sliders" aria-hidden="true"></i>詳細設定</span><small>出力形式だけ必要に応じて変更</small></summary>
+          <div class="advanced-grid">
+            <label><span>出力密度</span><select id="output-depth"><option value="detailed">標準版（簡潔）</option><option value="compact">さらに短縮</option></select><small>通常は標準版で十分</small></label>
+            <label class="check-label"><input id="has-attachments" type="checkbox" /><span class="check-ui" aria-hidden="true"></span><span><b>画像もAIへ添付する</b><small>出走表・オッズ画像がある場合</small></span></label>
+          </div>
+        </details>
+      </section>
+
+      <section class="result-section" id="result-section" hidden>
+        <div class="section-head"><div><div class="eyebrow"><span>02</span> GENERATED BRIEF</div><h2 id="result-title">プロンプト完成</h2></div><div style="display:flex;align-items:center;gap:8px"><span class="ready-badge"><i></i>READY TO PASTE</span><button class="result-close-button" id="result-close-button" type="button" aria-label="結果を閉じる">×</button></div></div>
+        <div class="result-card">
+          <div class="prompt-meta"><div class="race-stamp"><span id="result-date">—</span><strong id="result-race">—</strong></div><div class="prompt-stats"><span><b id="char-count">0</b>文字</span><span>履歴へ自動保存</span></div></div>
+          
+          <div class="prompt-shell">
+            <div class="prompt-toolbar"><span><i></i>AI分析プロンプト · v4.3.1</span><button id="select-all-button" type="button">全文を選択</button></div>
+            <textarea id="prompt-output" readonly spellcheck="false" aria-label="生成したAI用プロンプト"></textarea>
+          </div>
+          <div class="action-grid">
+            <button class="primary-action" id="copy-button" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg><span><small>COPY</small>プロンプトをコピー</span></button>
+            <button class="secondary-action" id="share-button" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="m8.2 10.8 7.6-4.5M8.2 13.2l7.6 4.5"/></svg><span><small>SHARE / LINE</small>共有する</span></button>
+            <button class="ghost-action" id="download-button" type="button">.txtで保存</button>
+          </div>
+          <p class="paste-note">生成した内容をコピーして、ChatGPTへ貼り付けて使用してください。</p>
+        </div>
+      </section>
+
+      <section class="history-section" id="history-section" hidden>
+        <div class="section-head compact"><div><div class="eyebrow"><span>HISTORY</span> RECENT</div><h2>最近生成したレース</h2></div><button class="text-button" id="clear-history-button" type="button">履歴を消去</button></div>
+        <div class="history-list" id="history-list"></div>
+      </section>
+      </div>
+      <section class="app-view guide-view" id="guide-view" role="tabpanel" aria-labelledby="tab-guide" tabindex="0" hidden>
+        <div class="guide-hero">
+          <div class="eyebrow"><span>GUIDE</span> HOW TO USE</div>
+          <h1>選んで、生成して、<br /><em>貼り付けるだけ。</em></h1>
+          <p class="hero-lead">出走表やオッズを手入力する必要はありません。対象レースを選ぶと、AI分析用のプロンプトを作成できます。</p>
+        </div>
+
+        <div class="guide-flow" aria-label="アプリの使い方">
+          <article class="guide-flow-card">
+            <div class="guide-section-head small"><span class="guide-step-no">01</span><div><small>DATE</small><h2>レース日を選択</h2></div></div>
+            <p>カレンダーから対象レースの開催日を選びます。</p>
+          </article>
+          <article class="guide-flow-card">
+            <div class="guide-section-head small"><span class="guide-step-no">02</span><div><small>VENUE</small><h2>開催場を選択</h2></div></div>
+            <p>開催場欄をタップし、一覧から競輪場を選びます。文字入力は不要です。</p>
+          </article>
+          <article class="guide-flow-card">
+            <div class="guide-section-head small"><span class="guide-step-no">03</span><div><small>ROUND</small><h2>1〜12Rを選択</h2></div></div>
+            <div class="guide-round-demo" aria-hidden="true"><span>1<small>R</small></span><span>2<small>R</small></span><span class="active">5<small>R</small></span><span>…</span><span>12<small>R</small></span></div>
+            <p>対象のレース番号をタップします。</p>
+          </article>
+          <article class="guide-flow-card">
+            <div class="guide-section-head small"><span class="guide-step-no">04</span><div><small>GENERATE</small><h2>生成してChatGPTへ</h2></div></div>
+            <div class="guide-copy-demo" aria-hidden="true">▣ <b>プロンプトをコピー</b></div>
+            <p>「AI予測プロンプトを生成」を押し、完成したプロンプトをコピーしてChatGPTへ貼り付けます。</p>
+          </article>
+        </div>
+
+        <aside class="guide-note">
+          <div><span>i</span><strong>レース開始前に使用してください</strong></div>
+          <p>最新の出走情報やオッズが確認できる状態で使うと、より多くの事前情報を反映できます。</p>
+        </aside>
+        <aside class="guide-note">
+          <div><span>⌂</span><strong>iPhoneホーム画面対応</strong></div>
+          <p>SafariでアプリのURLを開き、ホーム画面に追加するとアプリとして利用できます。開催場とレース番号はタップ操作で選択できます。</p>
+        </aside>
+        <button class="guide-start-button" id="guide-start-button" type="button"><span><small>START</small>入力画面を開く</span><b>→</b></button>
+      </section>
+    </main>
+
+    <footer><div class="footer-brand"><span>AI</span><strong>KEIRIN RACE GATE</strong></div><p>予測結果は参考情報です。レース結果や的中を保証するものではありません。</p><small>v4.3.1 · Android Standalone</small></footer>
+    <div id="toast-region" class="toast-region" aria-live="assertive" aria-atomic="true"></div>
+    <script>
+(function (root, factory) {
+  var api = factory();
+  if (typeof module === "object" && module.exports) module.exports = api;
+  if (root) root.KeirinPromptEngine = api;
+})(typeof globalThis !== "undefined" ? globalThis : this, function () {
+  "use strict";
+
+  var SPEC_VERSION = "4.2.0";
+
+  function cleanText(value) {
+    return String(value == null ? "" : value).replace(/\s+/g, " ").trim();
+  }
+
+  function normalizeConfig(input) {
+    var source = input || {};
+    var date = cleanText(source.date);
+    var venue = cleanText(source.venue).replace(/競輪場$/u, "");
+    var round = Number(source.round);
+    var depth = source.depth === "compact" ? "compact" : "detailed";
+
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) throw new Error("レース日を指定してください。");
+    if (!venue) throw new Error("開催場を指定してください。");
+    if (!Number.isInteger(round) || round < 1 || round > 12) throw new Error("1〜12Rからレース番号を選んでください。");
+
+    return {
+      date: date,
+      venue: venue,
+      round: round,
+      depth: depth,
+      hasAttachments: Boolean(source.hasAttachments),
+      generatedAt: source.generatedAt || new Date().toISOString()
+    };
+  }
+
+  function formatDateJa(date) {
+    var parts = date.split("-");
+    return parts[0] + "年" + Number(parts[1]) + "月" + Number(parts[2]) + "日";
+  }
+
+  function formatJst(iso) {
+    try {
+      return new Intl.DateTimeFormat("ja-JP", {
+        timeZone: "Asia/Tokyo",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false
+      }).format(new Date(iso)) + " JST";
+    } catch (_error) {
+      return String(iso);
+    }
+  }
+
+  function add(lines, values) {
+    values.forEach(function (value) { lines.push(value); });
+  }
+
+  function buildPrompt(input) {
+    var c = normalizeConfig(input);
+    var lines = [];
+    var density = c.depth === "compact" ? "COMPACT" : "DETAILED";
+    var attachmentMode = c.hasAttachments ? "WEB_PLUS_ATTACHMENTS" : "WEB_ONLY";
+
+    add(lines, [
+      "# KEIRIN_RACE_ANALYSIS_SPEC",
+      "",
+      "SPEC {",
+      "  version: \"4.2.0\";",
+      "  task: LIVE_RACE_FORECAST;",
+      "  response_language: ja-JP;",
+      "  prompt_style: STRUCTURED_CODE_SPEC;",
+      "  analysis_style: LINE_AND_FORM_FIRST;",
+      "  output_density: " + density + ";",
+      "  data_mode: " + attachmentMode + ";",
+      "}",
+      "",
+      "TARGET {",
+      "  race_date: \"" + c.date + "\";  # " + formatDateJa(c.date),
+      "  venue: \"" + c.venue + "\";",
+      "  race_no: " + c.round + ";",
+      "  race_label: \"" + c.venue + "競輪 " + c.round + "R\";",
+      "  generated_at: \"" + formatJst(c.generatedAt) + "\";",
+      "}",
+      "",
+      "ROLE {",
+      "  act_as: [keirin_analyst, line_tactics_forecaster, rider_form_analyst, odds_interpreter];",
+      "  objective: \"今日この並び・相手・バンク・状態なら誰が最も勝ちやすく、誰が3着以内に残りやすいかを予想する\";",
+      "  priority: [line_position, recent_form, riding_style, role_fit, bank_fit, same_day_tendency, weather, odds_context];",
+      "  do_not_turn_this_into: [backtest, historical_test, post_race_review, validation_task];",
+      "}",
+      "",
+      "DATA_POLICY {",
+      "  research_web: REQUIRED;",
+      "  primary_sources_first: [KEIRIN_JP, official_velodrome, official_rider_profile, official_comments];",
+      "  verify: [race_identity, field, scratches, lineup, rider_stats, recent_results, bank_characteristics, weather, current_odds_if_available];",
+      "  unknown_data: MARK_UNKNOWN;",
+      "  invented_stats: DENY;",
+      "  invented_health_or_injury_detail: DENY;",
+      "  attachments: " + (c.hasAttachments ? "READ_AND_CROSSCHECK;" : "NONE;"),
+      "}",
+      "",
+      "ANALYSIS_ORDER [",
+      "  RACE_IDENTITY,",
+      "  RACE_STAGE_AND_ADVANCEMENT,",
+      "  LINE_STRUCTURE,",
+      "  RIDER_STYLE_AND_ABILITY,",
+      "  RECENT_3_5_10,",
+      "  WIN_VS_TOP3_SURVIVAL,",
+      "  BANK_CHARACTERISTICS,",
+      "  SAME_DAY_BANK_TENDENCY,",
+      "  WEATHER_AND_WIND,",
+      "  SCENARIO_TREE,",
+      "  FAILURE_PATH,",
+      "  TOP3_SET,",
+      "  FINISH_ORDER,",
+      "  TICKET_TYPE_SELECTION,",
+      "  ODDS_CONTEXT,",
+      "  FINAL_PICKS",
+      "];",
+      "",
+      "PIPELINE {",
+      "",
+      "  RACE_IDENTITY {",
+      "    collect: [class, distance, start_time, riders, vehicle_numbers, region, scratches, lineup, race_stage, day_of_meet, advancement_rule, elimination_risk];",
+      "    official_source_priority: true;",
+      "  }",
+      "",
+      "  RACE_STAGE_AND_ADVANCEMENT {",
+      "    identify: [初日特選, 予選, 選抜, 準決勝, 決勝, 敗者戦, その他, all_advance_or_not];",
+      "    if_all_riders_advance_or_elimination_risk_is_low: {",
+      "      do_not_assume_reduced_effort: true;",
+      "      lower_weight_on: [favorite_must_win_assumption, status_based_head_lock, unnecessary_all_out_risk_assumption];",
+      "      raise_weight_on: [positioning, line_protection, saved_energy, second_wheel_finish, front_survival, cross_line_survival];",
+      "      lower_exact_order_confidence_unless_causal_order_edge_is_strong: true;",
+      "      prefer_trio_when_top3_set_is_clear_but_order_is_not: true;",
+      "    };",
+      "    if_elimination_risk_is_high: inspect_qualification_pressure_with_public_evidence;",
+      "    key_rule: \"勝ち上がり条件は能力そのものではなく、展開確率と着順確信度を補正する\";",
+      "  }",
+      "",
+      "  LINE_STRUCTURE {",
+      "    run_before_individual_ranking: true;",
+      "    output_format: [\"1-5-7\", \"3-6\", \"2-4\", \"単騎8\"];",
+      "    inspect: [front, second_wheel, third_wheel, line_length, likely_controller, lead_probability, makuri_option, second_wheel_sashi, double_second_wheel_cross, third_wheel_survival, line_collapse];",
+      "    key_rule: \"強い先頭を1着固定にせず、早駆けなら番手差しまで評価する\";",
+      "  }",
+      "",
+      "  RIDER_STYLE_AND_ABILITY {",
+      "    per_rider: [rating_score, win_rate, top2_rate, top3_rate, nige, makuri, sashi, mark, B_count, H_count, main_finishing_move, self_power_or_chaser, lead_power, makuri_power, late_speed, second_wheel_skill, stamina];",
+      "    forbidden_shortcut: \"競走得点だけで順位を作る\";",
+      "  }",
+      "",
+      "  RECENT_3_5_10 {",
+      "    last_3: CURRENT_MOTION;",
+      "    last_5: FORM_AND_STABILITY;",
+      "    last_10: BASE_ABILITY_AND_REPEATABILITY;",
+      "    inspect_content: [lead_and_hold, late_fade, makuri_success, makuri_failure, second_wheel_sashi, acceleration, trigger_timing, positioning, final_straight, line_coordination, self_created_result, gifted_result, recent_second_third_finishes, current_meet_content, opponent_strength];",
+      "    form_labels: [好調, 上向き, 平行線, やや下降, 不調];",
+      "    key_rule: \"着順だけで好不調を決めない\";",
+      "  }",
+      "",
+      "  WIN_VS_TOP3_SURVIVAL {",
+      "    estimate_separately: [win_strength, top3_survival_strength];",
+      "    promote_for_trio_if: [low_win_but_high_top3, favorable_second_wheel, favorable_third_wheel, energy_saving_position, repeated_recent_2nd_or_3rd];",
+      "    key_rule: \"勝つ選手と3着まで残る選手は別評価\";",
+      "  }",
+      "",
+      "  BANK_CHARACTERISTICS {",
+      "    inspect: [lap_length, home_straight, banking, lead_tendency, makuri_tendency, sashi_tendency, second_wheel_advantage, third_wheel_survival];",
+      "    apply_to_today_lineup: true;",
+      "  }",
+      "",
+      "  SAME_DAY_BANK_TENDENCY {",
+      "    use_earlier_same_day_races_if_available: true;",
+      "    inspect: [nige_hold, second_wheel_sashi, makuri_success, full_line_survival, cross_line_top3, inside_outside_extension];",
+      "    ignore: [vehicle_number_pattern, meaningless_number_streaks];",
+      "    weight: SUPPORTING_EVIDENCE;",
+      "  }",
+      "",
+      "  WEATHER_AND_WIND {",
+      "    inspect_if_available: [weather, temperature, rainfall, wind_direction, wind_speed];",
+      "    translate_to_race_effect: [lead_burden, makuri_difficulty, second_wheel_advantage, final_straight_effect];",
+      "    infer_personal_weather_skill_without_evidence: DENY;",
+      "  }",
+      "",
+      "  SCENARIO_TREE {",
+      "    minimum: 7;",
+      "    required: [",
+      "      BASE = \"最頻展開\",",
+      "      SECOND_WHEEL = \"番手差し展開\",",
+      "      MAKURI = \"別線捲り展開\",",
+      "      DUEL_COLLAPSE = \"踏み合い・崩れ展開\",",
+      "      LINE_SURVIVAL = \"番手・3番手残存展開\",",
+      "      DOUBLE_SECOND_WHEEL = \"別ラインの番手同士が上位に残る展開\",",
+      "      ADVANCEMENT_INCENTIVE = \"勝ち上がり条件で着順確信度が変わる展開\"",
+      "    ];",
+      "    optional: CROSS_LINE = \"別線混在展開\";",
+      "    per_scenario: [probability_band, sequence, controller, trigger_point, advantaged, disadvantaged, likely_order];",
+      "    no_fake_precision: true;",
+      "  }",
+      "",
+      "  SECOND_WHEEL_CROSS {",
+      "    trigger_if: [two_or_more_lines_have_strong_second_wheels, front_riders_may_spend_energy, rival_second_wheel_can_save_energy];",
+      "    mandatory_orders_when_triggered: [A番手-B番手-A先頭, A番手-A先頭-B番手, B番手-A番手-B先頭, A先頭-B番手-A番手];",
+      "    evaluate: [second_wheel_raw_ability, recent_form, sashi_extension, wheel_quality, front_workload, saved_energy, straight_length, race_stage];",
+      "    strong_second_wheel_rule: \"能力と直近内容が上位なら番手を2・3着要員だけでなく独立した1着候補にする\";",
+      "    front_after_pass_rule: \"番手に差されても先頭の3着残りを自動で消さない\";",
+      "    generate_two_second_wheel_top3_set_if_material: true;",
+      "  }",
+      "",
+      "  FAILURE_PATH {",
+      "    question: \"本命予想が外れるなら、最も現実的な原因は何か\";",
+      "    inspect: [favorite_line_loses_lead, second_wheel_passes, two_second_wheels_survive, favorite_makuri_fails, rival_front_holds, passed_front_holds_third, third_wheel_survives, solo_gets_position, pace_duel_beneficiary, race_stage_changes_order_incentive];",
+      "    use_to_lower_overconfidence: true;",
+      "  }",
+      "",
+      "  TOP3_SET {",
+      "    rank_by: top3_survival_strength;",
+      "    output_top5: true;",
+      "    generate_sets: [MAIN, SECONDARY, LONGSHOT];",
+      "    ignore_order_first: true;",
+      "    if_double_second_wheel_is_material: generate_at_least_one_set_with_two_second_wheels;",
+      "    keep_passed_front_for_third_if_survival_path_exists: true;",
+      "  }",
+      "",
+      "  FINISH_ORDER {",
+      "    after_top3_set: true;",
+      "    output: [first_place_candidates, second_place_candidates, third_place_candidates, likely_orders_5_to_10];",
+      "    score_separately: [top3_set_confidence, head_confidence, exact_order_confidence];",
+      "    if_two_strong_second_wheels_create_multiple_live_orders: lower_exact_order_confidence;",
+      "    if_all_advance_and_head_lock_depends_on_must_win_assumption: lower_head_confidence;",
+      "    use_probability_as_rough_estimate: true;",
+      "  }",
+      "",
+      "  TICKET_TYPE_SELECTION {",
+      "    compare_every_time: [2車単, 3連複, 3連単];",
+      "    prefer_trio_if: \"Top3集合は読みやすいが順番が不安、または番手横断で複数の着順が生きている\";",
+      "    prefer_exacta_if: \"1・2着関係は読みやすいが3着が広い\";",
+      "    prefer_trifecta_if: \"1〜3着順までかなり明確\";",
+      "    force_trifecta: false;",
+      "  }",
+      "",
+      "  ODDS_CONTEXT {",
+      "    role: SECONDARY;",
+      "    use_for: [popularity_check, overbet_warning, underweighted_branch, ticket_priority];",
+      "    never_do: [copy_popularity_ranking, replace_baseline_only_for_high_payout];",
+      "    key_rule: \"人気・配当は展開予想の代わりにしない\";",
+      "  }",
+      "}",
+      "",
+      "OUTPUT_CONTRACT {",
+      "  language: JAPANESE;",
+      "  style: COMPACT_DECISION_BRIEF;",
+      "  target_length: APPROX_1200_TO_1800_JA_CHARS;",
+      "  avoid_repeating_same_reason: true;",
+      "  tables_preferred_over_long_prose: true;",
+      "",
+      "  sections: [",
+      "    RESULT,",
+      "    LINE_AND_FORM,",
+      "    SCENARIOS,",
+      "    TOP_RANKINGS,",
+      "    TICKETS,",
+      "    RISKS",
+      "  ];",
+      "",
+      "  RESULT {",
+      "    title: \"■ 結論\";",
+      "    include: [confidence_grade, key_rider, best_ticket_type, one_sentence_race_read];",
+      "  }",
+      "",
+      "  LINE_AND_FORM {",
+      "    title: \"■ ライン・状態\";",
+      "    include: [lineup, race_stage, advancement_rule, likely_controller, key_riders_recent_3_5_10_summary, same_day_bank_summary, weather_summary];",
+      "    rider_detail_limit: TOP_4_MATERIAL_RIDERS_ONLY;",
+      "    do_not_list_all_raw_recent_results: true;",
+      "  }",
+      "",
+      "  SCENARIOS {",
+      "    title: \"■ 展開\";",
+      "    show: [BASE, REVERSAL, DOUBLE_SECOND_WHEEL_if_material, COLLAPSE];",
+      "    max_scenarios: 4;",
+      "    per_scenario: [probability_band, short_sequence, likely_order];",
+      "  }",
+      "",
+      "  TOP_RANKINGS {",
+      "    title: \"■ 上位評価\";",
+      "    top3_survival_rank: TOP_5;",
+      "    first_place_rank: TOP_3;",
+      "    trio_sets: [MAIN, SECONDARY, LONGSHOT_IF_VALID];",
+      "  }",
+      "",
+      "  TICKETS {",
+      "    title: \"■ 買い目\";",
+      "    compare: [2車単, 3連複, 3連単];",
+      "    show_only_recommended_tickets: true;",
+      "    max_total_tickets: 6;",
+      "    columns: [優先, 券種, 買い目, 狙う展開, 自信度];",
+      "    stake_amount: DO_NOT_SPECIFY;",
+      "  }",
+      "",
+      "  RISKS {",
+      "    title: \"■ 注意点\";",
+      "    include: [strongest_failure_path, race_stage_order_risk_if_material, most_overlooked_rider_if_any];",
+      "    max_points: 2;",
+      "  }",
+      "",
+      "  MERGE_RULES {",
+      "    merge_line_and_form_sections: true;",
+      "    merge_bank_and_weather_into_line_form: true;",
+      "    merge_main_counter_value_longshot_into_ticket_table: true;",
+      "    do_not_create_separate_sections_for_each_ticket_type: true;",
+      "    do_not_repeat_same_rider_reason_across_sections: true;",
+      "    do_not_explain_basic_keirin_terms: true;",
+      "  }",
+      "",
+      "  DETAIL_POLICY {",
+      "    full_internal_analysis: REQUIRED;",
+      "    visible_reasoning: ONLY_MATERIAL_FACTORS;",
+      "    rider_table: ONLY_IF_FIELD_COMPARISON_ADDS_VALUE;",
+      "    show_raw_stats: ONLY_WHEN_DECISION_RELEVANT;",
+      "    show_all_recent_results: false;",
+      "    show_all_scenarios: false;",
+      "  }",
+      "}",
+      "",
+      "FORBIDDEN [",
+      "  score_only_ranking,",
+      "  popularity_copy,",
+      "  drop_top3_candidate_only_for_low_win_rate,",
+      "  ignore_second_wheel_sashi,",
+      "  ignore_third_wheel_only_for_low_rating,",
+      "  ignore_rival_line,",
+      "  chase_payout_without_race_path,",
+      "  force_trifecta,",
+      "  use_previous_hit_vehicle_numbers,",
+      "  invent_health_condition,",
+      "  turn_request_into_backtest_or_review,",
+      "  assume_favorite_must_win_because_race_is_special_selection,",
+      "  ignore_two_strong_second_wheels_from_different_lines,",
+      "  eliminate_front_automatically_after_second_wheel_pass,",
+      "  infer_reduced_effort_only_because_all_riders_advance",
+      "];",
+      "",
+      "PRIORITY_RULE {",
+      "  1: LINE_AND_POSITION;",
+      "  2: LAST_3_TO_5_CONTENT;",
+      "  3: RIDER_ABILITY_AND_STYLE;",
+      "  4: LAST_10_STABILITY;",
+      "  5: RACE_STAGE_AND_ADVANCEMENT;",
+      "  6: SAME_DAY_BANK;",
+      "  7: WEATHER_AND_WIND;",
+      "  8: SCENARIO_MATCH;",
+      "  9: ODDS_CONTEXT;",
+      "}",
+      "",
+      "EXECUTE_NOW: Research TARGET and return the forecast using OUTPUT_CONTRACT.",
+    ]);
+
+    return lines.join("\n");
+  }
+
+  function fileName(input) {
+    var c = normalizeConfig(input);
+    var safeVenue = c.venue.replace(/[\\/:*?"<>|\r\n]/g, "_");
+    return "keirin_prompt_" + c.date.replace(/-/g, "") + "_" + safeVenue + "_" + c.round + "R.txt";
+  }
+
+  return {
+    buildPrompt: buildPrompt,
+    normalizeConfig: normalizeConfig,
+    formatDateJa: formatDateJa,
+    fileName: fileName,
+    SPEC_VERSION: SPEC_VERSION
+  };
+});
+
+    </script>
+    <script>
+(function () {
+  "use strict";
+
+  var engine = window.KeirinPromptEngine;
+  if (!engine) throw new Error("Prompt engine could not be loaded.");
+
+  var VENUES = [
+    "函館", "青森", "いわき平", "弥彦", "前橋", "取手", "宇都宮", "大宮", "西武園",
+    "京王閣", "立川", "松戸", "TIPSTAR DOME CHIBA", "川崎", "平塚", "小田原", "伊東",
+    "静岡", "名古屋", "岐阜", "大垣", "豊橋", "富山", "松阪", "四日市", "福井", "奈良",
+    "向日町", "和歌山", "岸和田", "玉野", "広島", "防府", "高松", "小松島", "高知",
+    "松山", "小倉", "久留米", "武雄", "佐世保", "別府", "熊本"
+  ];
+  var HISTORY_KEY = "keirin-prompt-history-v42";
+  var PREFS_KEY = "keirin-prompt-prefs-v42";
+  var VIEW_IDS = { generator: "generator-view", guide: "guide-view" };
+  var currentPrompt = "";
+  var currentConfig = null;
+  var toastTimer = null;
+
+  function byId(id) {
+    return document.getElementById(id);
+  }
+
+  function switchView(view, options) {
+    var settings = options || {};
+    var selected = view === "guide" ? "guide" : "generator";
+    Object.keys(VIEW_IDS).forEach(function (name) {
+      var panel = byId(VIEW_IDS[name]);
+      var tab = byId("tab-" + name);
+      var active = name === selected;
+      panel.hidden = !active;
+      tab.setAttribute("aria-selected", active ? "true" : "false");
+      tab.tabIndex = active ? 0 : -1;
+    });
+    document.body.dataset.view = selected;
+    if (settings.updateHash) {
+      var nextHash = selected === "guide" ? "#guide" : "#top";
+      try {
+        window.history.replaceState(null, "", nextHash);
+      } catch (_error) {
+        window.location.hash = nextHash;
+      }
+    }
+    if (settings.scroll !== false) {
+      window.scrollTo({ top: 0, behavior: settings.instant ? "auto" : "smooth" });
+    }
+  }
+
+  function handleTabKey(event) {
+    if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+    event.preventDefault();
+    var tabs = Array.from(document.querySelectorAll(".app-tab"));
+    var index = tabs.indexOf(event.currentTarget);
+    if (event.key === "Home") index = 0;
+    else if (event.key === "End") index = tabs.length - 1;
+    else index = (index + (event.key === "ArrowLeft" ? -1 : 1) + tabs.length) % tabs.length;
+    tabs[index].focus();
+    switchView(tabs[index].dataset.view, { updateHash: true });
+  }
+
+  function initViews() {
+    document.querySelectorAll(".app-tab").forEach(function (tab) {
+      tab.addEventListener("click", function () {
+        switchView(tab.dataset.view, { updateHash: true });
+      });
+      tab.addEventListener("keydown", handleTabKey);
+    });
+    document.querySelectorAll("[data-view-link]").forEach(function (link) {
+      link.addEventListener("click", function (event) {
+        event.preventDefault();
+        switchView(link.dataset.viewLink, { updateHash: true });
+      });
+    });
+    byId("guide-start-button").addEventListener("click", function () {
+      switchView("generator", { updateHash: true });
+      window.setTimeout(function () { window.scrollTo(0, 0); }, 0);
+    });
+    window.addEventListener("hashchange", function () {
+      switchView(window.location.hash === "#guide" ? "guide" : "generator", { scroll: false });
+    });
+    switchView(window.location.hash === "#guide" ? "guide" : "generator", { scroll: false, instant: true });
+  }
+
+  function todayInJapan() {
+    var parts = new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Asia/Tokyo",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit"
+    }).formatToParts(new Date());
+    var values = {};
+    parts.forEach(function (part) { values[part.type] = part.value; });
+    return values.year + "-" + values.month + "-" + values.day;
+  }
+
+  function formatDateDisplay(date) {
+    var parsed = new Date(date + "T00:00:00+09:00");
+    return new Intl.DateTimeFormat("ja-JP", {
+      timeZone: "Asia/Tokyo",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      weekday: "short"
+    }).format(parsed);
+  }
+
+  function loadJson(key, fallback) {
+    try {
+      var value = JSON.parse(localStorage.getItem(key));
+      return value == null ? fallback : value;
+    } catch (_error) {
+      return fallback;
+    }
+  }
+
+  function saveJson(key, value) {
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+    } catch (_error) {
+      showToast("端末の保存領域に履歴を保存できませんでした", true);
+    }
+  }
+
+  function showToast(message, isError) {
+    var region = byId("toast-region");
+    window.clearTimeout(toastTimer);
+    region.textContent = "";
+    var toast = document.createElement("div");
+    toast.className = "toast" + (isError ? " error" : "");
+    toast.textContent = message;
+    region.appendChild(toast);
+    toastTimer = window.setTimeout(function () { region.textContent = ""; }, 2600);
+  }
+
+  function fillVenues() {
+    // v3.1.0: 開催場はHTMLに静的埋め込み。iPhoneでもキーボードを出さずネイティブ選択。
+  }
+
+  function selectRound(round) {
+    var value = String(round || "");
+    byId("round-value").value = value;
+    document.querySelectorAll(".round-button").forEach(function (button) {
+      var selected = button.dataset.round === value;
+      button.setAttribute("aria-checked", selected ? "true" : "false");
+      button.tabIndex = selected ? 0 : -1;
+    });
+    updateGenerateState();
+  }
+
+  function buildRoundGrid() {
+    // v3.1.0: 1〜12RボタンはHTMLに静的埋め込み。JSはイベント登録だけ行う。
+    document.querySelectorAll(".round-button").forEach(function (button) {
+      button.addEventListener("click", function (event) {
+        selectRound(event.currentTarget.dataset.round);
+        hideError();
+      });
+      button.addEventListener("keydown", handleRoundKey);
+    });
+  }
+
+  function handleRoundKey(event) {
+    if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(event.key)) return;
+    event.preventDefault();
+    var buttons = Array.from(document.querySelectorAll(".round-button"));
+    var current = buttons.indexOf(event.currentTarget);
+    var change = event.key === "ArrowLeft" || event.key === "ArrowUp" ? -1 : 1;
+    var next = (current + change + buttons.length) % buttons.length;
+    buttons[next].focus();
+    selectRound(buttons[next].dataset.round);
+  }
+
+
+  function updateGenerateState() {
+    var date = byId("race-date").value;
+    var venue = byId("venue").value;
+    var round = byId("round-value").value;
+    var ready = Boolean(date && venue && round);
+    var button = byId("generate-button");
+    var status = byId("selection-status");
+    button.disabled = false;
+    button.setAttribute("aria-disabled", ready ? "false" : "true");
+    if (ready) {
+      status.textContent = venue + "競輪  " + round + "R  ・  " + formatDateDisplay(date);
+      status.classList.add("ready");
+    } else {
+      var missing = [];
+      if (!date) missing.push("開催日");
+      if (!venue) missing.push("開催場");
+      if (!round) missing.push("レース番号");
+      status.textContent = missing.join("・") + "を選択してください";
+      status.classList.remove("ready");
+    }
+    return ready;
+  }
+
+  function readConfig() {
+    return {
+      date: byId("race-date").value,
+      venue: byId("venue").value,
+      round: byId("round-value").value,
+      depth: byId("output-depth").value,
+      hasAttachments: byId("has-attachments").checked,
+      generatedAt: new Date().toISOString()
+    };
+  }
+
+  function setConfig(config) {
+    if (!config) return;
+    byId("race-date").value = config.date || todayInJapan();
+    byId("venue").value = config.venue || "";
+    selectRound(config.round || "");
+    byId("output-depth").value = config.depth || "detailed";
+    byId("has-attachments").checked = Boolean(config.hasAttachments);
+    updateGenerateState();
+  }
+
+  function showError(message) {
+    var error = byId("form-error");
+    error.textContent = message;
+    error.hidden = false;
+  }
+
+  function hideError() {
+    var error = byId("form-error");
+    error.hidden = true;
+    error.textContent = "";
+  }
+
+  function savePreferences(config) {
+    saveJson(PREFS_KEY, {
+      venue: config.venue,
+      round: config.round,
+      depth: config.depth,
+      hasAttachments: config.hasAttachments
+    });
+  }
+
+  function saveHistory(config, prompt) {
+    var history = loadJson(HISTORY_KEY, []);
+    var key = config.date + "|" + config.venue + "|" + config.round;
+    var item = {
+      id: key,
+      config: config,
+      prompt: prompt,
+      createdAt: new Date().toISOString()
+    };
+    history = history.filter(function (entry) { return entry.id !== key; });
+    history.unshift(item);
+    saveJson(HISTORY_KEY, history.slice(0, 10));
+    renderHistory();
+  }
+
+  function renderResult(config, prompt, shouldScroll) {
+    currentConfig = config;
+    currentPrompt = prompt;
+    byId("prompt-output").value = prompt;
+    byId("char-count").textContent = prompt.length.toLocaleString("ja-JP");
+    byId("result-date").textContent = formatDateDisplay(config.date);
+    byId("result-race").textContent = config.venue + "競輪 " + config.round + "R";
+    byId("result-title").textContent = config.venue + config.round + "Rのプロンプト完成";
+    var result = byId("result-section");
+    result.hidden = false;
+    result.scrollTop = 0;
+    document.body.classList.add("result-open");
+  }
+
+  function closeResultView() {
+    byId("result-section").hidden = true;
+    document.body.classList.remove("result-open");
+  }
+
+  function handleGenerate(event) {
+    event.preventDefault();
+    hideError();
+    if (!updateGenerateState()) {
+      showError("開催日・開催場・レース番号をすべて選択してください。");
+      return;
+    }
+    try {
+      var config = engine.normalizeConfig(readConfig());
+      var prompt = engine.buildPrompt(config);
+      renderResult(config, prompt, true);
+      savePreferences(config);
+      saveHistory(config, prompt);
+      showToast(config.venue + " " + config.round + "Rのプロンプトを生成しました");
+    } catch (error) {
+      showError(error.message || "入力内容を確認してください。");
+    }
+  }
+
+  function copyWithTemporaryTextarea(text) {
+    var area = document.createElement("textarea");
+    area.value = text;
+    area.setAttribute("aria-hidden", "true");
+    area.style.position = "fixed";
+    area.style.left = "0";
+    area.style.top = "0";
+    area.style.width = "2px";
+    area.style.height = "2px";
+    area.style.padding = "0";
+    area.style.border = "0";
+    area.style.opacity = "0.01";
+    area.style.fontSize = "16px";
+    area.style.zIndex = "-1";
+    document.body.appendChild(area);
+    try {
+      try { area.focus({ preventScroll: true }); } catch (_e) { area.focus(); }
+      area.select();
+      area.setSelectionRange(0, area.value.length);
+      return document.execCommand("copy") === true;
+    } catch (_error) {
+      return false;
+    } finally {
+      area.remove();
+    }
+  }
+
+  function copyWithContentEditable(text) {
+    var node = document.createElement("div");
+    node.contentEditable = "true";
+    node.setAttribute("aria-hidden", "true");
+    node.textContent = text;
+    node.style.position = "fixed";
+    node.style.left = "0";
+    node.style.top = "0";
+    node.style.width = "2px";
+    node.style.height = "2px";
+    node.style.overflow = "hidden";
+    node.style.opacity = "0.01";
+    node.style.fontSize = "16px";
+    node.style.zIndex = "-1";
+    document.body.appendChild(node);
+    var selection = window.getSelection();
+    try {
+      var range = document.createRange();
+      range.selectNodeContents(node);
+      selection.removeAllRanges();
+      selection.addRange(range);
+      return document.execCommand("copy") === true;
+    } catch (_error) {
+      return false;
+    } finally {
+      selection.removeAllRanges();
+      node.remove();
+    }
+  }
+
+  function selectPromptForManualCopy(text) {
+    var output = byId("prompt-output");
+    if (!output) return false;
+    try {
+      output.removeAttribute("readonly");
+      try { output.focus({ preventScroll: true }); } catch (_e) { output.focus(); }
+      output.select();
+      output.setSelectionRange(0, text.length);
+      window.setTimeout(function () { output.setAttribute("readonly", "readonly"); }, 0);
+      return true;
+    } catch (_error) {
+      output.setAttribute("readonly", "readonly");
+      return false;
+    }
+  }
+
+  async function copyPrompt(text, notify) {
+    if (!text) return false;
+    var copied = false;
+
+    if (window.AndroidBridge && typeof window.AndroidBridge.copyText === "function") {
+      try {
+        window.AndroidBridge.copyText(text);
+        copied = true;
+      } catch (_bridgeError) {}
+    }
+
+    if (!copied && navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+      try {
+        await navigator.clipboard.writeText(text);
+        copied = true;
+      } catch (_clipboardError) {
+        /* Local HTML / iOS preview may expose Clipboard API but reject writes. Continue to legacy fallbacks. */
+      }
+    }
+
+    if (!copied) copied = copyWithTemporaryTextarea(text);
+    if (!copied) copied = copyWithContentEditable(text);
+
+    if (copied) {
+      if (notify !== false) showToast("プロンプトをコピーしました");
+      return true;
+    }
+
+    if (selectPromptForManualCopy(text)) {
+      if (notify !== false) showToast("全文を選択しました。長押ししてコピーしてください", true);
+    } else if (notify !== false) {
+      showToast("コピーできませんでした。共有ボタンをお試しください", true);
+    }
+    return false;
+  }
+
+  async function sharePrompt() {
+    if (!currentPrompt || !currentConfig) return;
+    var title = currentConfig.venue + "競輪 " + currentConfig.round + "R AI予想プロンプト";
+    try {
+      if (window.AndroidBridge && typeof window.AndroidBridge.shareText === "function") {
+        window.AndroidBridge.shareText(title, currentPrompt);
+        return;
+      }
+      if (navigator.share) {
+        await navigator.share({ title: title, text: currentPrompt });
+        return;
+      }
+      await copyPrompt(currentPrompt, false);
+      showToast("共有非対応のためコピーしました。LINE等へ貼り付けてください");
+    } catch (error) {
+      if (error && error.name === "AbortError") return;
+      showToast("共有できませんでした", true);
+    }
+  }
+
+  async function downloadPrompt() {
+    if (!currentPrompt || !currentConfig) return;
+    var name = engine.fileName(currentConfig);
+    if (window.AndroidBridge && typeof window.AndroidBridge.saveText === "function") {
+      window.AndroidBridge.saveText(name, currentPrompt, "text/plain");
+      return;
+    }
+    var blob = new Blob([currentPrompt], { type: "text/plain;charset=utf-8" });
+    try {
+      if (typeof File === "function" && navigator.share && navigator.canShare) {
+        var file = new File([blob], name, { type: "text/plain;charset=utf-8" });
+        if (navigator.canShare({ files: [file] })) {
+          await navigator.share({ files: [file], title: name });
+          return;
+        }
+      }
+    } catch (error) {
+      if (error && error.name === "AbortError") return;
+    }
+    var url = URL.createObjectURL(blob);
+    var anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = name;
+    anchor.rel = "noopener";
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    window.setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+    showToast(name + " を保存しました");
+  }
+
+  function renderHistory() {
+    var history = loadJson(HISTORY_KEY, []);
+    var section = byId("history-section");
+    var list = byId("history-list");
+    list.textContent = "";
+    section.hidden = history.length === 0;
+    history.forEach(function (entry) {
+      var item = document.createElement("article");
+      item.className = "history-item";
+
+      var openButton = document.createElement("button");
+      openButton.type = "button";
+      openButton.className = "history-main";
+      var title = document.createElement("strong");
+      title.textContent = entry.config.venue + "競輪 " + entry.config.round + "R";
+      var meta = document.createElement("small");
+      meta.textContent = formatDateDisplay(entry.config.date) + " · 実戦予想 v4.3.1";
+      openButton.appendChild(title);
+      openButton.appendChild(meta);
+      openButton.addEventListener("click", function () {
+        setConfig(entry.config);
+        renderResult(entry.config, entry.prompt, true);
+      });
+
+      var actions = document.createElement("div");
+      actions.className = "history-actions";
+      var copy = document.createElement("button");
+      copy.type = "button";
+      copy.textContent = "コピー";
+      copy.addEventListener("click", function () { copyPrompt(entry.prompt); });
+      var remove = document.createElement("button");
+      remove.type = "button";
+      remove.textContent = "削除";
+      remove.addEventListener("click", function () {
+        var updated = loadJson(HISTORY_KEY, []).filter(function (saved) { return saved.id !== entry.id; });
+        saveJson(HISTORY_KEY, updated);
+        renderHistory();
+      });
+      actions.appendChild(copy);
+      actions.appendChild(remove);
+      item.appendChild(openButton);
+      item.appendChild(actions);
+      list.appendChild(item);
+    });
+  }
+
+  function clearHistory() {
+    if (!window.confirm("端末に保存されたプロンプト履歴をすべて消去しますか？")) return;
+    try { localStorage.removeItem(HISTORY_KEY); } catch (_error) {}
+    renderHistory();
+    showToast("履歴を消去しました");
+  }
+
+  function restorePreferences() {
+    var prefs = loadJson(PREFS_KEY, {});
+    setConfig({
+      date: todayInJapan(),
+      venue: prefs.venue || "",
+      round: prefs.round || "",
+      depth: prefs.depth || "detailed",
+      hasAttachments: prefs.hasAttachments
+    });
+  }
+
+  function init() {
+    initViews();
+    fillVenues();
+    buildRoundGrid();
+    restorePreferences();
+    renderHistory();
+
+    byId("race-form").addEventListener("submit", handleGenerate);
+    byId("race-date").addEventListener("input", function () { hideError(); updateGenerateState(); });
+    byId("venue").addEventListener("change", function () { hideError(); updateGenerateState(); });
+    byId("copy-button").addEventListener("click", function () { copyPrompt(currentPrompt); });
+    byId("share-button").addEventListener("click", sharePrompt);
+    byId("download-button").addEventListener("click", downloadPrompt);
+    byId("select-all-button").addEventListener("click", function () {
+      var output = byId("prompt-output");
+      output.focus();
+      output.select();
+      output.setSelectionRange(0, output.value.length);
+      showToast("全文を選択しました");
+    });
+    byId("clear-history-button").addEventListener("click", clearHistory);
+    byId("result-close-button").addEventListener("click", closeResultView);
+    updateGenerateState();
+
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
+
+    </script>
+  
+<script>
+(function(){
+  function isStandalone(){ return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true; }
+  function setupInstallHint(){
+    var card=document.getElementById('pwa-install-card');
+    var close=document.getElementById('pwa-install-close');
+    if(!card) return;
+    var dismissed=false; try{ dismissed=sessionStorage.getItem('krg-pwa-hint-dismissed')==='1'; }catch(e){}
+    card.hidden = isStandalone() || dismissed;
+    if(close) close.addEventListener('click',function(){ card.hidden=true; try{sessionStorage.setItem('krg-pwa-hint-dismissed','1');}catch(e){} });
+  }
+  function setupAndroidDownload(){
+    var card=document.getElementById('android-download-card');
+    if(!card) return;
+    card.hidden = !/Android/i.test(navigator.userAgent || '');
+  }
+  function registerSW(){
+    if('serviceWorker' in navigator && location.protocol !== 'file:'){
+      window.addEventListener('load',function(){ navigator.serviceWorker.register('./sw.js').catch(function(){}); });
+    }
+  }
+  function setupPlatformCards(){ setupInstallHint(); setupAndroidDownload(); }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',setupPlatformCards); else setupPlatformCards();
+  registerSW();
+})();
+</script>
+
+  </body>
+</html>

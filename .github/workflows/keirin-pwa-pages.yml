@@ -39,9 +39,19 @@ jobs:
           grep -q "KEIRIN" keirin-race-gate/index.html
           grep -q "manifest.webmanifest" keirin-race-gate/index.html
           grep -q "serviceWorker" keirin-race-gate/index.html
-          grep -q "v4.3.0" keirin-race-gate/index.html
+          grep -q "v4.3.1" keirin-race-gate/index.html
           grep -q "RACE_STAGE_AND_ADVANCEMENT" keirin-race-gate/index.html
           grep -q "DOUBLE_SECOND_WHEEL" keirin-race-gate/index.html
+          ! grep -Eq 'id="generate-button"[^>]*[[:space:]]disabled([[:space:]]|>)' keirin-race-gate/index.html
+          python3 - <<'PY'
+          import re, pathlib
+          html = pathlib.Path("keirin-race-gate/index.html").read_text(encoding="utf-8")
+          scripts = re.findall(r'<script(?:\s[^>]*)?>([\s\S]*?)</script>', html, flags=re.I)
+          assert len(scripts) >= 3, f"expected >=3 scripts, got {len(scripts)}"
+          for i, script in enumerate(scripts, 1):
+              pathlib.Path(f"/tmp/keirin-script-{i}.js").write_text(script, encoding="utf-8")
+          PY
+          for f in /tmp/keirin-script-*.js; do node --check "$f"; done
 
       - name: Set up Java 17
         uses: actions/setup-java@v4
@@ -69,15 +79,15 @@ jobs:
       - name: Stage direct-download APK
         run: |
           mkdir -p keirin-race-gate/downloads
-          cp keirin-android/app/build/outputs/apk/debug/app-debug.apk keirin-race-gate/downloads/KEIRIN-RACE-GATE-v4.3.0.apk
-          sha256sum keirin-race-gate/downloads/KEIRIN-RACE-GATE-v4.3.0.apk > keirin-race-gate/downloads/KEIRIN-RACE-GATE-v4.3.0.apk.sha256
-          test -s keirin-race-gate/downloads/KEIRIN-RACE-GATE-v4.3.0.apk
+          cp keirin-android/app/build/outputs/apk/debug/app-debug.apk keirin-race-gate/downloads/KEIRIN-RACE-GATE-v4.3.1.apk
+          sha256sum keirin-race-gate/downloads/KEIRIN-RACE-GATE-v4.3.1.apk > keirin-race-gate/downloads/KEIRIN-RACE-GATE-v4.3.1.apk.sha256
+          test -s keirin-race-gate/downloads/KEIRIN-RACE-GATE-v4.3.1.apk
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: KEIRIN-RACE-GATE-v4.3.0-APK
-          path: keirin-race-gate/downloads/KEIRIN-RACE-GATE-v4.3.0.apk
+          name: KEIRIN-RACE-GATE-v4.3.1-APK
+          path: keirin-race-gate/downloads/KEIRIN-RACE-GATE-v4.3.1.apk
           if-no-files-found: error
           retention-days: 30
 
@@ -102,8 +112,8 @@ jobs:
             sleep 3
           done
           grep -q "KEIRIN" /tmp/index.html
-          grep -q "KEIRIN-RACE-GATE-v4.3.0.apk" /tmp/index.html
+          grep -q "KEIRIN-RACE-GATE-v4.3.1.apk" /tmp/index.html
           curl -fsSL "${PAGE_URL}manifest.webmanifest" | grep -q "RACE GATE"
           curl -fsSL "${PAGE_URL}sw.js" | grep -q "keirin-race-gate"
-          curl -fsSL "${PAGE_URL}downloads/KEIRIN-RACE-GATE-v4.3.0.apk" -o /tmp/keirin.apk
+          curl -fsSL "${PAGE_URL}downloads/KEIRIN-RACE-GATE-v4.3.1.apk" -o /tmp/keirin.apk
           test -s /tmp/keirin.apk

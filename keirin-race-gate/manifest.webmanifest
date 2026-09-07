@@ -1,7 +1,7 @@
 {
   "name": "KEIRIN AI RACE GATE",
   "short_name": "RACE GATE",
-  "description": "競輪レース指定から予測用プロンプトを生成",
+  "description": "ライン・脚質・直近3/5/10走・当日バンクを読む競輪実戦予想プロンプトを生成",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

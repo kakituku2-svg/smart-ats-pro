@@ -26,3 +26,13 @@ Every race datum must be keyed by **date + venue + race number** before being us
 - Required audit: check publicly verifiable background such as class/grade status, term points, promotion/demotion or registration-review context, supplemental entry, final-day context, home/same-prefecture context, announced retirement/last run, and public training-partner information.
 - Guardrail: background is a bounded adjustment only. Never invent private motivation, financial need, family circumstances, collusion, or a "must try harder" narrative.
 - Guardrail: supplemental entry, local status, or same-prefecture relationships never create automatic ability upgrades.
+
+
+## 2026-09-08 西武園 4R
+- Confirmed result: **5-7-4**
+- Regression lesson: the model correctly rated 5 as the main winner and 7 as a strong top-3 survivor, while 4 was already recognized as a 2nd/3rd-place candidate, but the trio **4-5-7** was never generated.
+- Failure type: **candidate-to-ticket conversion miss**, not a pure rider-identification miss.
+- Required audit: after ranking top-3 survival candidates, fix each major axis and enumerate every unordered pair among the remaining top-5 candidates.
+- Required audit: if axis + high-survival candidate + overlooked place candidate can coexist under one causal race path, compare and retain that trio even when the overlooked rider ranks only 4th or 5th overall.
+- Girls/no-fixed-line rule: because riders are not bound to a fixed line, evaluate coexistence of position-taking, following, and saved-energy riders more broadly than in a standard men's line race.
+- Guardrail: do not generate every combination blindly. A trio must have a causal coexistence path; popularity alone cannot be the reason it is dropped.

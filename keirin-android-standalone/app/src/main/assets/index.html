@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- KEIRIN AI RACE GATE v4.7.0 iPhone PWA -->
+<!-- KEIRIN AI RACE GATE v4.7.1 iPhone PWA -->
 <html lang="ja">
   <head>
     <meta charset="UTF-8" />
@@ -457,7 +457,7 @@ body.ios-build .site-header { position: relative; }
         <button class="app-tab" id="tab-generator" type="button" role="tab" aria-selected="true" aria-controls="generator-view" data-view="generator"><small>CREATE</small><span>プロンプト生成</span></button>
         <button class="app-tab" id="tab-guide" type="button" role="tab" aria-selected="false" aria-controls="guide-view" data-view="guide" tabindex="-1"><small>HOW TO</small><span>使い方</span></button>
       </nav>
-      <span class="paper-badge"><i></i>v4.7.0 Android</span>
+      <span class="paper-badge"><i></i>v4.7.1 Android</span>
     </header>
 
     <main id="main">
@@ -474,7 +474,7 @@ body.ios-build .site-header { position: relative; }
             <strong>Androidアプリ版をインストール</strong>
             <span>KEIRIN RACE GATE Android Standalone。UIと予測ロジックをAPK内に内蔵した独立アプリ版です。</span>
           </div>
-          <a class="android-download-button" href="./downloads/KEIRIN-RACE-GATE-Android-Standalone-v4.7.0.apk" download>Androidアプリをダウンロード</a>
+          <a class="android-download-button" href="./downloads/KEIRIN-RACE-GATE-Android-Standalone-v4.7.1.apk" download>Androidアプリをダウンロード</a>
         </div>
 
         <form class="composer-card" id="race-form" novalidate>
@@ -550,7 +550,7 @@ body.ios-build .site-header { position: relative; }
           <div class="prompt-meta"><div class="race-stamp"><span id="result-date">—</span><strong id="result-race">—</strong></div><div class="prompt-stats"><span><b id="char-count">0</b>文字</span><span>履歴へ自動保存</span></div></div>
           
           <div class="prompt-shell">
-            <div class="prompt-toolbar"><span><i></i>AI分析プロンプト · v4.7.0</span><button id="select-all-button" type="button">全文を選択</button></div>
+            <div class="prompt-toolbar"><span><i></i>AI分析プロンプト · v4.7.1</span><button id="select-all-button" type="button">全文を選択</button></div>
             <textarea id="prompt-output" readonly spellcheck="false" aria-label="生成したAI用プロンプト"></textarea>
           </div>
           <div class="action-grid">
@@ -607,7 +607,7 @@ body.ios-build .site-header { position: relative; }
       </section>
     </main>
 
-    <footer><div class="footer-brand"><span>AI</span><strong>KEIRIN RACE GATE</strong></div><p>予測結果は参考情報です。レース結果や的中を保証するものではありません。</p><small>v4.7.0 · Android Standalone</small></footer>
+    <footer><div class="footer-brand"><span>AI</span><strong>KEIRIN RACE GATE</strong></div><p>予測結果は参考情報です。レース結果や的中を保証するものではありません。</p><small>v4.7.1 · Android Standalone</small></footer>
     <div id="toast-region" class="toast-region" aria-live="assertive" aria-atomic="true"></div>
     <script>
 (function (root, factory) {
@@ -617,7 +617,7 @@ body.ios-build .site-header { position: relative; }
 })(typeof globalThis !== "undefined" ? globalThis : this, function () {
   "use strict";
 
-  var SPEC_VERSION = "4.7.0";
+  var SPEC_VERSION = "4.7.1";
 
   function cleanText(value) {
     return String(value == null ? "" : value).replace(/\s+/g, " ").trim();
@@ -680,7 +680,7 @@ body.ios-build .site-header { position: relative; }
       "# KEIRIN_RACE_ANALYSIS_SPEC",
       "",
       "SPEC {",
-      "  version: \"4.7.0\";",
+      "  version: \"4.7.1\";",
       "  task: LIVE_RACE_FORECAST;",
       "  response_language: ja-JP;",
       "  prompt_style: STRUCTURED_CODE_SPEC;",
@@ -722,6 +722,7 @@ body.ios-build .site-header { position: relative; }
       "",
       "ANALYSIS_ORDER [",
       "  RACE_IDENTITY,",
+      "  RACE_IDENTITY_LOCK,",
       "  WINTICKET_CARD_AND_COMMENTS,",
       "  RACE_STAGE_AND_ADVANCEMENT,",
       "  LINE_STRUCTURE,",
@@ -749,6 +750,16 @@ body.ios-build .site-header { position: relative; }
       "  RACE_IDENTITY {",
       "    collect: [class, distance, start_time, riders, vehicle_numbers, region, scratches, lineup, race_stage, day_of_meet, advancement_rule, elimination_risk];",
       "    official_source_priority: true;",
+      "  }",
+      "",
+      "  RACE_IDENTITY_LOCK {",
+      "    immutable_key: [race_date, venue, race_no];",
+      "    before_using_any_card_comment_odds_or_result: VERIFY_ALL_THREE_FIELDS_MATCH_TARGET;",
+      "    cross_race_transfer: FORBIDDEN;",
+      "    if_user_corrects_race_identity_or_result: APPLY_CORRECTION_TO_THAT_EXACT_RACE_ONLY;",
+      "    if_two_races_are_discussed_close_together: KEEP_SEPARATE_EVIDENCE_BUCKETS;",
+      "    post_race_result_rule: \"結果照合では日付・場・Rを再確認し、別レースの着順を反省材料へ混入させない\";",
+      "    learning_case_guard: \"過去の具体的着順は回帰テスト用であり、新しいレースの選手評価や買い目の根拠には使わない\";",
       "  }",
       "",
       "  WINTICKET_CARD_AND_COMMENTS {",
@@ -788,10 +799,13 @@ body.ios-build .site-header { position: relative; }
       "    per_line_tests: [front_holds, second_wheel_passes_front, front_second_one_two, front_second_plus_rival, strong_front_drags_follower, third_wheel_or_tail_survives];",
       "    strong_second_wheel_pair_rule: \"番手が能力上位なら、前の自力が仕掛ける→番手差し→前残りを独立シナリオとして必ず評価する\";",
       "    follower_survival_rule: \"追走選手は単独能力・勝率だけでなく、前の仕掛け確率・追走負荷・千切れリスク・位置利で3着残存を別評価する\";",
+      "    third_place_tail_rule: \"前の自力が主導権または捲りで展開を作る場合、低評価の番手・三番手・ライン末尾でも脚を使わず残る3着経路を必ず1回は検査する\";",
       "    no_auto_cut_rule: \"能力上位の自力選手の後ろを、低得点・低勝率だけで最下位または消しにしない\";",
       "    comment_guardrail: \"弱気コメントは補正に留め、ライン構造と位置利を単独で上書きしない\";",
-      "    required_trio_templates_if_causal: [strong_second_front_rival, strong_front_second_tail, strong_front_follower_rival];",
-      "    output: [line_pair_survival_strength, follower_top3_path, separation_risk, exact_order_reverse_path];",
+      "    head_correct_not_enough_rule: \"1着候補が当たっていても2・3着集合を拾えていなければ予測成功扱いにしない。頭評価とTOP3集合評価を別採点する\";",
+      "    cross_line_residual_rule: \"本命自力が勝つ展開でも、別線の番手・追走型が前の踏み合いを利用して2・3着へ残る経路を検査する\";",
+      "    required_trio_templates_if_causal: [strong_second_front_rival, strong_front_second_tail, strong_front_follower_rival, winning_front_crossline_chaser, front_second_lowrated_tail];",
+      "    output: [line_pair_survival_strength, follower_top3_path, cross_line_residual_path, separation_risk, exact_order_reverse_path];",
       "  }",
       "",
       "  FIELD_STYLE_COMPOSITION {",
@@ -1122,7 +1136,7 @@ body.ios-build .site-header { position: relative; }
       "}",
       "",
       "FINAL_PRE_RACE_AUDIT {",
-      "  confirm_before_output: [WINTICKET_card_checked_or_unavailable_marked, rider_comments_checked_or_unavailable_marked, recent_3_5_10_checked, field_style_composition_counted, similar_composition_history_checked_or_low_sample_marked, role_fit_and_ability_utilization_assessed, all_riders_bucketed, every_line_survival_audited, strong_second_wheel_front_hold_checked, viable_followers_top3_path_checked, negative_comments_not_overweighted, every_live_trio_set_order_expansion_checked, third_place_candidates_second_place_promotion_checked, front_second_wheel_reverse_checked, scenario_backed_longshots_checked, blind_box_avoided, main_trio_weighted_heaviest, predicted_finish_order_has_vehicle_numbers, odds_snapshot_checked_or_unavailable_marked, odds_capture_time_recorded_if_available];",
+      "  confirm_before_output: [race_identity_date_venue_round_locked, no_cross_race_evidence_mixed, WINTICKET_card_checked_or_unavailable_marked, rider_comments_checked_or_unavailable_marked, recent_3_5_10_checked, field_style_composition_counted, similar_composition_history_checked_or_low_sample_marked, role_fit_and_ability_utilization_assessed, all_riders_bucketed, every_line_survival_audited, strong_second_wheel_front_hold_checked, viable_followers_top3_path_checked, lowrated_line_tail_top3_path_checked, cross_line_residual_path_checked, head_and_top3_set_scored_separately, negative_comments_not_overweighted, every_live_trio_set_order_expansion_checked, third_place_candidates_second_place_promotion_checked, front_second_wheel_reverse_checked, scenario_backed_longshots_checked, blind_box_avoided, main_trio_weighted_heaviest, predicted_finish_order_has_vehicle_numbers, odds_snapshot_checked_or_unavailable_marked, odds_capture_time_recorded_if_available];",
       "  if_major_market_dissent_remains_unexplained: LOWER_CONFIDENCE_AND_AVOID_STRONG_RECOMMENDATION;",
       "}",
       "",
@@ -1616,7 +1630,7 @@ body.ios-build .site-header { position: relative; }
       var title = document.createElement("strong");
       title.textContent = entry.config.venue + "競輪 " + entry.config.round + "R";
       var meta = document.createElement("small");
-      meta.textContent = formatDateDisplay(entry.config.date) + " · 実戦予想 v4.7.0";
+      meta.textContent = formatDateDisplay(entry.config.date) + " · 実戦予想 v4.7.1";
       openButton.appendChild(title);
       openButton.appendChild(meta);
       openButton.addEventListener("click", function () {

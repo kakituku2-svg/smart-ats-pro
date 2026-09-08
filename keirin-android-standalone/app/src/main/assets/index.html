@@ -709,7 +709,7 @@ body.ios-build .site-header { position: relative; }
       "  mandatory_market_source: WINTICKET;",
       "  mandatory_pre_race_inputs_if_accessible: [WINTICKET_RACE_CARD, WINTICKET_RIDER_COMMENTS, WINTICKET_CURRENT_ODDS];",
       "  primary_crosscheck_sources: [KEIRIN_JP, official_velodrome, official_rider_profile, official_comments];",
-      "  verify: [race_identity, field, scratches, lineup, rider_stats, recent_results, rider_comments, official_style, deciding_moves, similar_composition_results_if_accessible, bank_characteristics, weather, current_odds];
+      "  verify: [race_identity, field, scratches, lineup, rider_stats, recent_results, rider_comments, official_style, deciding_moves, similar_composition_results_if_accessible, bank_characteristics, weather, current_odds];",
       "  if_WINTICKET_is_not_accessible: [USE_OFFICIAL_AND_VERIFIED_FALLBACKS, MARK_WINTICKET_UNAVAILABLE, DO_NOT_INVENT_WINTICKET_DATA];",
       "  freeze_rule: USE_ONLY_INFORMATION_AVAILABLE_BEFORE_TARGET_RACE_RESULT;",
       "  odds_snapshot_rule: RECORD_SOURCE_AND_CAPTURE_TIME;",
@@ -792,7 +792,7 @@ body.ios-build .site-header { position: relative; }
       "  }",
       "",
       "  RIDER_STYLE_AND_ABILITY {",
-      "    per_rider: [vehicle_number, official_style_label, rating_score, win_rate, top2_rate, top3_rate, nige, makuri, sashi, mark, B_count, H_count, main_finishing_move, secondary_move, self_power_or_chaser, expected_role_today, lead_power, makuri_power, late_speed, second_wheel_skill, stamina];
+      "    per_rider: [vehicle_number, official_style_label, rating_score, win_rate, top2_rate, top3_rate, nige, makuri, sashi, mark, B_count, H_count, main_finishing_move, secondary_move, self_power_or_chaser, expected_role_today, lead_power, makuri_power, late_speed, second_wheel_skill, stamina];",
       "    forbidden_shortcut: \"競走得点だけで順位を作る\";",
       "  }",
       "",
@@ -801,8 +801,8 @@ body.ios-build .site-header { position: relative; }
       "    last_5: FORM_AND_STABILITY;",
       "    last_10: BASE_ABILITY_AND_REPEATABILITY;",
       "    extend_to_last_20_if_needed_for_composition_match: true;",
-      "    source_priority: [WINTICKET_RECENT_RESULTS, KEIRIN_JP_OR_OFFICIAL_CROSSCHECK];
-      "    inspect_content: [lead_and_hold, late_fade, makuri_success, makuri_failure, second_wheel_sashi, acceleration, trigger_timing, positioning, final_straight, line_coordination, self_created_result, gifted_result, recent_second_third_finishes, current_meet_content, opponent_strength, class_level, days_since_last_race, prior_line_role, prior_field_style_mix_if_accessible];
+      "    source_priority: [WINTICKET_RECENT_RESULTS, KEIRIN_JP_OR_OFFICIAL_CROSSCHECK];",
+      "    inspect_content: [lead_and_hold, late_fade, makuri_success, makuri_failure, second_wheel_sashi, acceleration, trigger_timing, positioning, final_straight, line_coordination, self_created_result, gifted_result, recent_second_third_finishes, current_meet_content, opponent_strength, class_level, days_since_last_race, prior_line_role, prior_field_style_mix_if_accessible];",
       "    compare_finish_with_content: true;",
       "    detect_change: [improving, stable, declining, one_race_noise];",
       "    form_labels: [好調, 上向き, 平行線, やや下降, 不調];",
@@ -895,7 +895,7 @@ body.ios-build .site-header { position: relative; }
       "",
       "  FINISH_ORDER {",
       "    after_top3_set: true;",
-      "    output: [predicted_order_top3_vehicle_numbers, first_place_candidates, second_place_candidates, third_place_candidates, likely_orders_5_to_10];
+      "    output: [predicted_order_top3_vehicle_numbers, first_place_candidates, second_place_candidates, third_place_candidates, likely_orders_5_to_10];",
       "    score_separately: [top3_set_confidence, head_confidence, exact_order_confidence];",
       "    if_two_strong_second_wheels_create_multiple_live_orders: lower_exact_order_confidence;",
       "    if_all_advance_and_head_lock_depends_on_must_win_assumption: lower_head_confidence;",
@@ -944,7 +944,7 @@ body.ios-build .site-header { position: relative; }
       "",
       "  RESULT {",
       "    title: \"■ 結論\";",
-      "    include: [confidence_grade, predicted_finish_order_with_vehicle_numbers, key_rider, best_ticket_type, one_sentence_race_read, market_alignment_or_dissent];
+      "    include: [confidence_grade, predicted_finish_order_with_vehicle_numbers, key_rider, best_ticket_type, one_sentence_race_read, market_alignment_or_dissent];",
       "  }",
       "",
       "  LINE_AND_FORM {",
@@ -1055,7 +1055,7 @@ body.ios-build .site-header { position: relative; }
       "}",
       "",
       "FINAL_PRE_RACE_AUDIT {",
-      "  confirm_before_output: [WINTICKET_card_checked_or_unavailable_marked, rider_comments_checked_or_unavailable_marked, recent_3_5_10_checked, field_style_composition_counted, similar_composition_history_checked_or_low_sample_marked, role_fit_and_ability_utilization_assessed, predicted_finish_order_has_vehicle_numbers, odds_snapshot_checked_or_unavailable_marked, odds_capture_time_recorded_if_available];
+      "  confirm_before_output: [WINTICKET_card_checked_or_unavailable_marked, rider_comments_checked_or_unavailable_marked, recent_3_5_10_checked, field_style_composition_counted, similar_composition_history_checked_or_low_sample_marked, role_fit_and_ability_utilization_assessed, predicted_finish_order_has_vehicle_numbers, odds_snapshot_checked_or_unavailable_marked, odds_capture_time_recorded_if_available];",
       "  if_major_market_dissent_remains_unexplained: LOWER_CONFIDENCE_AND_AVOID_STRONG_RECOMMENDATION;",
       "}",
       "",

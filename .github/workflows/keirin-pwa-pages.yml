@@ -36,10 +36,13 @@ jobs:
           test -f keirin-race-gate/manifest.webmanifest
           test -f keirin-race-gate/sw.js
           test -f keirin-race-gate/icon.svg
-          grep -q "v4.6.0" keirin-race-gate/index.html
+          grep -q "v4.7.0" keirin-race-gate/index.html
           grep -q "WINTICKET_CARD_AND_COMMENTS" keirin-race-gate/index.html
           grep -q "WINTICKET_CURRENT_ODDS" keirin-race-gate/index.html
           grep -q "FINAL_PRE_RACE_AUDIT" keirin-race-gate/index.html
+          grep -q "LINE_SURVIVAL_AUDIT" keirin-race-gate/index.html
+          grep -q "mandatory_trio_retention" keirin-race-gate/index.html
+          grep -q "negative_comment_cap" keirin-race-gate/index.html
           grep -q "FIELD_STYLE_COMPOSITION" keirin-race-gate/index.html
           grep -q "SIMILAR_COMPOSITION_HISTORY" keirin-race-gate/index.html
           grep -q "ROLE_FIT_AND_ABILITY_UTILIZATION" keirin-race-gate/index.html
@@ -66,9 +69,12 @@ jobs:
         run: |
           test -f keirin-android-standalone/app/src/main/assets/index.html
           test -f keirin-android-standalone/app/src/main/java/jp/kakituku/keirinracegate/standalone/MainActivity.java
-          grep -q "v4.6.0" keirin-android-standalone/app/src/main/assets/index.html
+          grep -q "v4.7.0" keirin-android-standalone/app/src/main/assets/index.html
           grep -q "WINTICKET_CARD_AND_COMMENTS" keirin-android-standalone/app/src/main/assets/index.html
           grep -q "WINTICKET_CURRENT_ODDS" keirin-android-standalone/app/src/main/assets/index.html
+          grep -q "LINE_SURVIVAL_AUDIT" keirin-android-standalone/app/src/main/assets/index.html
+          grep -q "mandatory_trio_retention" keirin-android-standalone/app/src/main/assets/index.html
+          grep -q "negative_comment_cap" keirin-android-standalone/app/src/main/assets/index.html
           grep -q "FIELD_STYLE_COMPOSITION" keirin-android-standalone/app/src/main/assets/index.html
           grep -q "ROLE_FIT_AND_ABILITY_UTILIZATION" keirin-android-standalone/app/src/main/assets/index.html
           grep -q "RIDER_BUCKET_CLASSIFICATION" keirin-android-standalone/app/src/main/assets/index.html
@@ -105,15 +111,15 @@ jobs:
       - name: Stage Android Standalone APK
         run: |
           mkdir -p keirin-race-gate/downloads
-          cp keirin-android-standalone/app/build/outputs/apk/debug/app-debug.apk keirin-race-gate/downloads/KEIRIN-RACE-GATE-Android-Standalone-v4.6.0.apk
-          sha256sum keirin-race-gate/downloads/KEIRIN-RACE-GATE-Android-Standalone-v4.6.0.apk > keirin-race-gate/downloads/KEIRIN-RACE-GATE-Android-Standalone-v4.6.0.apk.sha256
-          test -s keirin-race-gate/downloads/KEIRIN-RACE-GATE-Android-Standalone-v4.6.0.apk
+          cp keirin-android-standalone/app/build/outputs/apk/debug/app-debug.apk keirin-race-gate/downloads/KEIRIN-RACE-GATE-Android-Standalone-v4.7.0.apk
+          sha256sum keirin-race-gate/downloads/KEIRIN-RACE-GATE-Android-Standalone-v4.7.0.apk > keirin-race-gate/downloads/KEIRIN-RACE-GATE-Android-Standalone-v4.7.0.apk.sha256
+          test -s keirin-race-gate/downloads/KEIRIN-RACE-GATE-Android-Standalone-v4.7.0.apk
 
       - name: Upload Android Standalone artifact
         uses: actions/upload-artifact@v4
         with:
-          name: KEIRIN-RACE-GATE-Android-Standalone-v4.6.0-APK
-          path: keirin-race-gate/downloads/KEIRIN-RACE-GATE-Android-Standalone-v4.6.0.apk
+          name: KEIRIN-RACE-GATE-Android-Standalone-v4.7.0-APK
+          path: keirin-race-gate/downloads/KEIRIN-RACE-GATE-Android-Standalone-v4.7.0.apk
           if-no-files-found: error
           retention-days: 30
 
@@ -137,10 +143,11 @@ jobs:
             if curl -fsSL --retry 2 --retry-delay 2 "$PAGE_URL" -o /tmp/index.html; then break; fi
             sleep 3
           done
-          grep -q "v4.6.0" /tmp/index.html
+          grep -q "v4.7.0" /tmp/index.html
           grep -q "WINTICKET_CARD_AND_COMMENTS" /tmp/index.html
-          grep -q "KEIRIN-RACE-GATE-Android-Standalone-v4.6.0.apk" /tmp/index.html
+          grep -q "LINE_SURVIVAL_AUDIT" /tmp/index.html
+          grep -q "KEIRIN-RACE-GATE-Android-Standalone-v4.7.0.apk" /tmp/index.html
           curl -fsSL "${PAGE_URL}manifest.webmanifest" | grep -q "RACE GATE"
-          curl -fsSL "${PAGE_URL}sw.js" | grep -q "keirin-race-gate-v4.6.0"
-          curl -fsSL "${PAGE_URL}downloads/KEIRIN-RACE-GATE-Android-Standalone-v4.6.0.apk" -o /tmp/keirin-standalone.apk
+          curl -fsSL "${PAGE_URL}sw.js" | grep -q "keirin-race-gate-v4.7.0"
+          curl -fsSL "${PAGE_URL}downloads/KEIRIN-RACE-GATE-Android-Standalone-v4.7.0.apk" -o /tmp/keirin-standalone.apk
           test -s /tmp/keirin-standalone.apk

@@ -1,7 +1,7 @@
 {
   "name": "KEIRIN AI RACE GATE",
   "short_name": "RACE GATE",
-  "description": "ライン・脚質人数比・直近状態に加え、番手差し＋前残り、追走3着残存、3連複本線、着順逆転まで強制監査する競輪AI予想プロンプトを生成",
+  "description": "レースID照合、ライン・脚質人数比・直近状態、番手差し＋前残り、低評価追走3着残存、別線残存、3連複本線、着順逆転まで強制監査する競輪AI予想プロンプトを生成",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

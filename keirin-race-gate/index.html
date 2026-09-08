@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- KEIRIN AI RACE GATE v4.7.1 iPhone PWA -->
+<!-- KEIRIN AI RACE GATE v4.8.0 iPhone PWA -->
 <html lang="ja">
   <head>
     <meta charset="UTF-8" />
@@ -453,7 +453,7 @@ body.ios-build .site-header { position: relative; }
         <button class="app-tab" id="tab-generator" type="button" role="tab" aria-selected="true" aria-controls="generator-view" data-view="generator"><small>CREATE</small><span>プロンプト生成</span></button>
         <button class="app-tab" id="tab-guide" type="button" role="tab" aria-selected="false" aria-controls="guide-view" data-view="guide" tabindex="-1"><small>HOW TO</small><span>使い方</span></button>
       </nav>
-      <span class="paper-badge"><i></i>v4.7.1 iOS</span>
+      <span class="paper-badge"><i></i>v4.8.0 iOS</span>
     </header>
 
     <main id="main">
@@ -470,7 +470,7 @@ body.ios-build .site-header { position: relative; }
             <strong>Androidアプリ版をインストール</strong>
             <span>KEIRIN RACE GATE Android Standalone。UIと予測ロジックをAPK内に内蔵した独立アプリ版です。</span>
           </div>
-          <a class="android-download-button" href="./downloads/KEIRIN-RACE-GATE-Android-Standalone-v4.7.1.apk" download>Androidアプリをダウンロード</a>
+          <a class="android-download-button" href="./downloads/KEIRIN-RACE-GATE-Android-Standalone-v4.8.0.apk" download>Androidアプリをダウンロード</a>
         </div>
 
         <form class="composer-card" id="race-form" novalidate>
@@ -546,7 +546,7 @@ body.ios-build .site-header { position: relative; }
           <div class="prompt-meta"><div class="race-stamp"><span id="result-date">—</span><strong id="result-race">—</strong></div><div class="prompt-stats"><span><b id="char-count">0</b>文字</span><span>履歴へ自動保存</span></div></div>
           
           <div class="prompt-shell">
-            <div class="prompt-toolbar"><span><i></i>AI分析プロンプト · v4.7.1</span><button id="select-all-button" type="button">全文を選択</button></div>
+            <div class="prompt-toolbar"><span><i></i>AI分析プロンプト · v4.8.0</span><button id="select-all-button" type="button">全文を選択</button></div>
             <textarea id="prompt-output" readonly spellcheck="false" aria-label="生成したAI用プロンプト"></textarea>
           </div>
           <div class="action-grid">
@@ -603,7 +603,7 @@ body.ios-build .site-header { position: relative; }
       </section>
     </main>
 
-    <footer><div class="footer-brand"><span>AI</span><strong>KEIRIN RACE GATE</strong></div><p>予測結果は参考情報です。レース結果や的中を保証するものではありません。</p><small>v4.7.1 · iPhone PWA</small></footer>
+    <footer><div class="footer-brand"><span>AI</span><strong>KEIRIN RACE GATE</strong></div><p>予測結果は参考情報です。レース結果や的中を保証するものではありません。</p><small>v4.8.0 · iPhone PWA</small></footer>
     <div id="toast-region" class="toast-region" aria-live="assertive" aria-atomic="true"></div>
     <script>
 (function (root, factory) {
@@ -613,7 +613,7 @@ body.ios-build .site-header { position: relative; }
 })(typeof globalThis !== "undefined" ? globalThis : this, function () {
   "use strict";
 
-  var SPEC_VERSION = "4.7.1";
+  var SPEC_VERSION = "4.8.0";
 
   function cleanText(value) {
     return String(value == null ? "" : value).replace(/\s+/g, " ").trim();
@@ -676,7 +676,7 @@ body.ios-build .site-header { position: relative; }
       "# KEIRIN_RACE_ANALYSIS_SPEC",
       "",
       "SPEC {",
-      "  version: \"4.7.1\";",
+      "  version: \"4.8.0\";",
       "  task: LIVE_RACE_FORECAST;",
       "  response_language: ja-JP;",
       "  prompt_style: STRUCTURED_CODE_SPEC;",
@@ -721,6 +721,7 @@ body.ios-build .site-header { position: relative; }
       "  RACE_IDENTITY_LOCK,",
       "  WINTICKET_CARD_AND_COMMENTS,",
       "  RACE_STAGE_AND_ADVANCEMENT,",
+      "  RIDER_BACKGROUND_AND_STAKES,",
       "  LINE_STRUCTURE,",
       "  LINE_SURVIVAL_AUDIT,",
       "  FIELD_STYLE_COMPOSITION,",
@@ -780,6 +781,21 @@ body.ios-build .site-header { position: relative; }
       "    };",
       "    if_elimination_risk_is_high: inspect_qualification_pressure_with_public_evidence;",
       "    key_rule: \"勝ち上がり条件は能力そのものではなく、展開確率と着順確信度を補正する\";",
+      "  }",
+      "",
+      "  RIDER_BACKGROUND_AND_STAKES {",
+      "    purpose: \"人が走る競技として、その一走で着を拾う意味を公開情報の範囲だけで評価する\";",
+      "    public_evidence_only: true;",
+      "    inspect_per_rider: [grade_and_class_status, promotion_or_demotion_context, forced_retirement_or_registration_review_risk_if_officially_derivable, current_term_score_context, end_of_term_point_importance, special_promotion_or_special_advance_condition, supplemental_entry, final_day_or_last_chance_context, local_or_home_region, same_prefecture_line_context, publicly_listed_training_partner, explicit_return_from_injury_or_long_absence, announced_retirement_or_last_run, advancement_or_elimination_pressure];",
+      "    role_specific_stakes: [first_place_value, second_place_value, third_place_value];",
+      "    score_output: [background_signal_NONE_LOW_MEDIUM_HIGH, target_finish_most_valuable, verified_reason, confidence_in_background_signal];",
+      "    bounded_adjustment: \"背景は基礎能力を置き換えない。原則として最終評価を最大1段階まで補正し、特に2・3着残存候補の再検査に使う\";",
+      "    low_ability_rule: \"能力下位でも3着を取る実利が大きく、位置取り・脚温存・追走など具体的経路があれば3着穴へ昇格できる\";",
+      "    supplemental_rule: \"補充出走は自動加点しない。出走受諾の背景は推測せず、位置取り自由度・情報不足・着拾い余地を再検査するトリガーにする\";",
+      "    relation_rule: \"同県・練習仲間は公開事実なら戦術的連携可能性の確認材料にするが、暗黙協力・八百長・私的便宜を推測しない\";",
+      "    forbidden_storytelling: [family_finances, private_debt, private_emotion, unverified_retirement_fear, rumor, social_media_hearsay_without_source, collusion_assumption, must_try_harder_because_human];",
+      "    if_not_verified: ZERO_BACKGROUND_ADJUSTMENT;",
+      "    key_rule: \"モチベーションが高い=能力が上がる、ではない。能力×位置×展開に対して、何着を拾いに行く合理性があるかだけ補正する\";",
       "  }",
       "",
       "  LINE_STRUCTURE {",
@@ -855,9 +871,10 @@ body.ios-build .site-header { position: relative; }
       "  }",
       "",
       "  WIN_VS_TOP3_SURVIVAL {",
-      "    estimate_separately: [win_strength, top3_survival_strength];",
-      "    promote_for_trio_if: [low_win_but_high_top3, favorable_second_wheel, favorable_third_wheel, energy_saving_position, strong_front_creates_follower_survival, repeated_recent_2nd_or_3rd];",
-      "    key_rule: \"勝つ選手と3着まで残る選手は別評価\";",
+      "    estimate_separately: [win_strength, second_place_strength, third_place_survival_strength, top3_survival_strength];",
+      "    promote_for_trio_if: [low_win_but_high_top3, favorable_second_wheel, favorable_third_wheel, energy_saving_position, strong_front_creates_follower_survival, repeated_recent_2nd_or_3rd, verified_background_stakes_support_specific_finish];",
+      "    background_application_rule: \"背景事情は1着・2着・3着へ同じ方向に加点しない。点数確保型なら3着残存、昇班条件なら必要着順など、公開条件に対応する着順だけを補正する\";",
+      "    key_rule: \"勝つ選手、2着まで上がる選手、3着だけ残る選手を別評価\";",
       "  }",
       "",
       "  RIDER_BUCKET_CLASSIFICATION {",
@@ -892,6 +909,7 @@ body.ios-build .site-header { position: relative; }
       "    minimum: 9;",
       "    required: [",
       "      BASE = \"最頻展開\",",
+      "      HUMAN_STAKES = \"公開背景により着拾い優先度が変わる展開\",",
       "      SECOND_WHEEL = \"番手差し展開\",",
       "      MAKURI = \"別線捲り展開\",",
       "      DUEL_COLLAPSE = \"踏み合い・崩れ展開\",",
@@ -917,7 +935,7 @@ body.ios-build .site-header { position: relative; }
       "",
       "  FAILURE_PATH {",
       "    question: \"本命予想が外れるなら、最も現実的な原因は何か\";",
-      "    inspect: [favorite_line_loses_lead, second_wheel_passes, front_second_pair_survives, underrated_follower_survives, two_second_wheels_survive, favorite_makuri_fails, rival_front_holds, passed_front_holds_third, third_wheel_survives, solo_gets_position, pace_duel_beneficiary, race_stage_changes_order_incentive];",
+      "    inspect: [favorite_line_loses_lead, second_wheel_passes, front_second_pair_survives, underrated_follower_survives, two_second_wheels_survive, favorite_makuri_fails, rival_front_holds, passed_front_holds_third, third_wheel_survives, solo_gets_position, pace_duel_beneficiary, race_stage_changes_order_incentive, verified_background_makes_lowrated_rider_prioritize_place_finish];",
       "    use_to_lower_overconfidence: true;",
       "  }",
       "",
@@ -1013,7 +1031,7 @@ body.ios-build .site-header { position: relative; }
       "",
       "  LINE_AND_FORM {",
       "    title: \"■ ライン・状態\";",
-      "    include: [lineup, race_stage, advancement_rule, field_style_count_and_ratio, key_WINTICKET_comments, likely_controller, all_riders_recent_5_10_form_summary, same_day_bank_summary, weather_summary, odds_snapshot_time];",
+      "    include: [lineup, race_stage, advancement_rule, rider_background_and_stakes_summary, field_style_count_and_ratio, key_WINTICKET_comments, likely_controller, all_riders_recent_5_10_form_summary, same_day_bank_summary, weather_summary, odds_snapshot_time];",
       "    rider_detail_limit: ALL_RIDERS_COMPACT_TABLE;",
       "    do_not_list_all_raw_recent_results: true;",
       "  }",
@@ -1021,7 +1039,7 @@ body.ios-build .site-header { position: relative; }
       "  COMPOSITION_FIT {",
       "    title: \"■ 脚質構成・相性\";",
       "    show_field_summary: [逃げ系人数, 捲り可能人数, 差し追込系人数, 両自在人数, ライン本数, 2車ライン数, 3車以上ライン数, 単騎数, pace_label];",
-      "    all_rider_table_columns: [車番, 選手名, 公式脚質, 今日の役割, 直近5_10状態, 似た構成での傾向, 得意不得意, 能力発揮度, 一言理由];",
+      "    all_rider_table_columns: [車番, 選手名, 公式脚質, 今日の役割, 直近5_10状態, 背景シグナル, 何着を拾う意味が大きいか, 似た構成での傾向, 得意不得意, 能力発揮度, 一言理由];",
       "    ability_utilization: ROUGH_PERCENT_RANGE_OR_LABEL_WITH_REASON;",
       "    explicitly_compare: [raw_ability_rank, today_realized_ability_rank];",
       "    mark_low_sample: true;",
@@ -1132,7 +1150,7 @@ body.ios-build .site-header { position: relative; }
       "}",
       "",
       "FINAL_PRE_RACE_AUDIT {",
-      "  confirm_before_output: [race_identity_date_venue_round_locked, no_cross_race_evidence_mixed, WINTICKET_card_checked_or_unavailable_marked, rider_comments_checked_or_unavailable_marked, recent_3_5_10_checked, field_style_composition_counted, similar_composition_history_checked_or_low_sample_marked, role_fit_and_ability_utilization_assessed, all_riders_bucketed, every_line_survival_audited, strong_second_wheel_front_hold_checked, viable_followers_top3_path_checked, lowrated_line_tail_top3_path_checked, cross_line_residual_path_checked, head_and_top3_set_scored_separately, negative_comments_not_overweighted, every_live_trio_set_order_expansion_checked, third_place_candidates_second_place_promotion_checked, front_second_wheel_reverse_checked, scenario_backed_longshots_checked, blind_box_avoided, main_trio_weighted_heaviest, predicted_finish_order_has_vehicle_numbers, odds_snapshot_checked_or_unavailable_marked, odds_capture_time_recorded_if_available];",
+      "  confirm_before_output: [race_identity_date_venue_round_locked, no_cross_race_evidence_mixed, WINTICKET_card_checked_or_unavailable_marked, rider_comments_checked_or_unavailable_marked, recent_3_5_10_checked, public_background_stakes_checked_or_unavailable_marked, unverified_personal_story_not_used, background_adjustment_bounded, background_applied_to_specific_finish_not_all_finishes, field_style_composition_counted, similar_composition_history_checked_or_low_sample_marked, role_fit_and_ability_utilization_assessed, all_riders_bucketed, every_line_survival_audited, strong_second_wheel_front_hold_checked, viable_followers_top3_path_checked, lowrated_line_tail_top3_path_checked, cross_line_residual_path_checked, head_second_third_and_top3_set_scored_separately, negative_comments_not_overweighted, every_live_trio_set_order_expansion_checked, third_place_candidates_second_place_promotion_checked, front_second_wheel_reverse_checked, scenario_backed_longshots_checked, blind_box_avoided, main_trio_weighted_heaviest, predicted_finish_order_has_vehicle_numbers, odds_snapshot_checked_or_unavailable_marked, odds_capture_time_recorded_if_available];",
       "  if_major_market_dissent_remains_unexplained: LOWER_CONFIDENCE_AND_AVOID_STRONG_RECOMMENDATION;",
       "}",
       "",
@@ -1626,7 +1644,7 @@ body.ios-build .site-header { position: relative; }
       var title = document.createElement("strong");
       title.textContent = entry.config.venue + "競輪 " + entry.config.round + "R";
       var meta = document.createElement("small");
-      meta.textContent = formatDateDisplay(entry.config.date) + " · 実戦予想 v4.7.1";
+      meta.textContent = formatDateDisplay(entry.config.date) + " · 実戦予想 v4.8.0";
       openButton.appendChild(title);
       openButton.appendChild(meta);
       openButton.addEventListener("click", function () {

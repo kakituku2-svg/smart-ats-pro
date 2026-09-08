@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- KEIRIN AI RACE GATE v4.4.0 iPhone PWA -->
+<!-- KEIRIN AI RACE GATE v4.5.0 iPhone PWA -->
 <html lang="ja">
   <head>
     <meta charset="UTF-8" />
@@ -453,13 +453,13 @@ body.ios-build .site-header { position: relative; }
         <button class="app-tab" id="tab-generator" type="button" role="tab" aria-selected="true" aria-controls="generator-view" data-view="generator"><small>CREATE</small><span>プロンプト生成</span></button>
         <button class="app-tab" id="tab-guide" type="button" role="tab" aria-selected="false" aria-controls="guide-view" data-view="guide" tabindex="-1"><small>HOW TO</small><span>使い方</span></button>
       </nav>
-      <span class="paper-badge"><i></i>v4.4.0 iOS</span>
+      <span class="paper-badge"><i></i>v4.5.0 iOS</span>
     </header>
 
     <main id="main">
       <div class="app-view" id="generator-view" role="tabpanel" aria-labelledby="tab-generator">
       <section class="hero" id="top">
-        <h1 class="brand-title">KEIRIN <em>RACE GATE</em></h1><p class="hero-lead strict-lead">開催日・開催場・レース番号を選ぶだけで、WINTICKET出走表・選手コメント・直近戦績・その時点のオッズまで照合する実戦予想プロンプトを作成します。</p>
+        <h1 class="brand-title">KEIRIN <em>RACE GATE</em></h1><p class="hero-lead strict-lead">開催日・開催場・レース番号を選ぶだけで、WINTICKET出走表・選手コメント・直近戦績・脚質人数構成・構成相性・その時点のオッズまで照合する実戦予想プロンプトを作成します。</p>
         <div class="pwa-install-card" id="pwa-install-card" hidden>
           <div class="pwa-install-copy"><strong>ホーム画面に追加して使えます</strong><span>Safariの共有ボタン →「ホーム画面に追加」。次回からアイコンをタップして起動できます。</span></div>
           <button class="pwa-install-close" id="pwa-install-close" type="button" aria-label="案内を閉じる">×</button>
@@ -470,7 +470,7 @@ body.ios-build .site-header { position: relative; }
             <strong>Androidアプリ版をインストール</strong>
             <span>KEIRIN RACE GATE Android Standalone。UIと予測ロジックをAPK内に内蔵した独立アプリ版です。</span>
           </div>
-          <a class="android-download-button" href="./downloads/KEIRIN-RACE-GATE-Android-Standalone-v4.4.0.apk" download>Androidアプリをダウンロード</a>
+          <a class="android-download-button" href="./downloads/KEIRIN-RACE-GATE-Android-Standalone-v4.5.0.apk" download>Androidアプリをダウンロード</a>
         </div>
 
         <form class="composer-card" id="race-form" novalidate>
@@ -546,7 +546,7 @@ body.ios-build .site-header { position: relative; }
           <div class="prompt-meta"><div class="race-stamp"><span id="result-date">—</span><strong id="result-race">—</strong></div><div class="prompt-stats"><span><b id="char-count">0</b>文字</span><span>履歴へ自動保存</span></div></div>
           
           <div class="prompt-shell">
-            <div class="prompt-toolbar"><span><i></i>AI分析プロンプト · v4.4.0</span><button id="select-all-button" type="button">全文を選択</button></div>
+            <div class="prompt-toolbar"><span><i></i>AI分析プロンプト · v4.5.0</span><button id="select-all-button" type="button">全文を選択</button></div>
             <textarea id="prompt-output" readonly spellcheck="false" aria-label="生成したAI用プロンプト"></textarea>
           </div>
           <div class="action-grid">
@@ -593,7 +593,7 @@ body.ios-build .site-header { position: relative; }
 
         <aside class="guide-note">
           <div><span>i</span><strong>レース開始前に使用してください</strong></div>
-          <p>レース開始前のWINTICKET出走表・選手コメント・直近戦績・最新オッズを確認できる状態で使うと、予測へ反映できます。</p>
+          <p>レース開始前のWINTICKET出走表・選手コメント・直近戦績・脚質構成・最新オッズを確認できる状態で使うと、構成相性まで予測へ反映できます。</p>
         </aside>
         <aside class="guide-note">
           <div><span>⌂</span><strong>iPhoneホーム画面対応</strong></div>
@@ -603,7 +603,7 @@ body.ios-build .site-header { position: relative; }
       </section>
     </main>
 
-    <footer><div class="footer-brand"><span>AI</span><strong>KEIRIN RACE GATE</strong></div><p>予測結果は参考情報です。レース結果や的中を保証するものではありません。</p><small>v4.4.0 · iPhone PWA</small></footer>
+    <footer><div class="footer-brand"><span>AI</span><strong>KEIRIN RACE GATE</strong></div><p>予測結果は参考情報です。レース結果や的中を保証するものではありません。</p><small>v4.5.0 · iPhone PWA</small></footer>
     <div id="toast-region" class="toast-region" aria-live="assertive" aria-atomic="true"></div>
     <script>
 (function (root, factory) {
@@ -613,7 +613,7 @@ body.ios-build .site-header { position: relative; }
 })(typeof globalThis !== "undefined" ? globalThis : this, function () {
   "use strict";
 
-  var SPEC_VERSION = "4.3.0";
+  var SPEC_VERSION = "4.5.0";
 
   function cleanText(value) {
     return String(value == null ? "" : value).replace(/\s+/g, " ").trim();
@@ -676,7 +676,7 @@ body.ios-build .site-header { position: relative; }
       "# KEIRIN_RACE_ANALYSIS_SPEC",
       "",
       "SPEC {",
-      "  version: \"4.3.0\";",
+      "  version: \"4.5.0\";",
       "  task: LIVE_RACE_FORECAST;",
       "  response_language: ja-JP;",
       "  prompt_style: STRUCTURED_CODE_SPEC;",
@@ -695,8 +695,8 @@ body.ios-build .site-header { position: relative; }
       "",
       "ROLE {",
       "  act_as: [keirin_analyst, line_tactics_forecaster, rider_form_analyst, odds_interpreter];",
-      "  objective: \"今日この並び・相手・バンク・状態なら誰が最も勝ちやすく、誰が3着以内に残りやすいかを予想する\";",
-      "  priority: [winticket_race_card, line_position, recent_form, rider_comment, riding_style, role_fit, bank_fit, same_day_tendency, weather, odds_context];",
+      "  objective: \"今日この並び・相手・脚質人数構成・バンク・状態なら誰が最も勝ちやすく、誰が3着以内に残りやすいかを予想する\";",
+      "  priority: [winticket_race_card, line_position, field_style_composition, recent_form, rider_comment, riding_style, similar_composition_history, role_fit, ability_utilization, bank_fit, same_day_tendency, weather, odds_context];",
       "  do_not_turn_this_into: [backtest, historical_test, post_race_review, validation_task];",
       "}",
       "",
@@ -705,7 +705,7 @@ body.ios-build .site-header { position: relative; }
       "  mandatory_market_source: WINTICKET;",
       "  mandatory_pre_race_inputs_if_accessible: [WINTICKET_RACE_CARD, WINTICKET_RIDER_COMMENTS, WINTICKET_CURRENT_ODDS];",
       "  primary_crosscheck_sources: [KEIRIN_JP, official_velodrome, official_rider_profile, official_comments];",
-      "  verify: [race_identity, field, scratches, lineup, rider_stats, recent_results, rider_comments, bank_characteristics, weather, current_odds];",
+      "  verify: [race_identity, field, scratches, lineup, rider_stats, recent_results, rider_comments, official_style, deciding_moves, similar_composition_results_if_accessible, bank_characteristics, weather, current_odds];",
       "  if_WINTICKET_is_not_accessible: [USE_OFFICIAL_AND_VERIFIED_FALLBACKS, MARK_WINTICKET_UNAVAILABLE, DO_NOT_INVENT_WINTICKET_DATA];",
       "  freeze_rule: USE_ONLY_INFORMATION_AVAILABLE_BEFORE_TARGET_RACE_RESULT;",
       "  odds_snapshot_rule: RECORD_SOURCE_AND_CAPTURE_TIME;",
@@ -721,8 +721,11 @@ body.ios-build .site-header { position: relative; }
       "  WINTICKET_CARD_AND_COMMENTS,",
       "  RACE_STAGE_AND_ADVANCEMENT,",
       "  LINE_STRUCTURE,",
+      "  FIELD_STYLE_COMPOSITION,",
       "  RIDER_STYLE_AND_ABILITY,",
       "  RECENT_3_5_10,",
+      "  SIMILAR_COMPOSITION_HISTORY,",
+      "  ROLE_FIT_AND_ABILITY_UTILIZATION,",
       "  WIN_VS_TOP3_SURVIVAL,",
       "  BANK_CHARACTERISTICS,",
       "  SAME_DAY_BANK_TENDENCY,",
@@ -772,8 +775,20 @@ body.ios-build .site-header { position: relative; }
       "    key_rule: \"強い先頭を1着固定にせず、早駆けなら番手差しまで評価する\";",
       "  }",
       "",
+      "  FIELD_STYLE_COMPOSITION {",
+      "    distinguish: [official_style_label, actual_recent_winning_moves, expected_race_role];",
+      "    official_style_labels: [逃, 両, 追];",
+      "    actual_move_buckets: [逃げ主体, 捲り主体, 差し主体, マーク主体, 自在_両対応];",
+      "    count_field: [self_power_riders, pure_escape_riders, makuri_capable_riders, sashi_chasers, all_rounders, pure_markers, solo_riders, number_of_lines, two_rider_lines, three_plus_rider_lines];",
+      "    ratios: [self_power_ratio, chase_ratio, makuri_pressure_ratio, line_fragmentation];",
+      "    pace_read: [single_controller, dual_controller, multi_self_power_duel, makuri_heavy, chase_heavy, fragmented_two_rider_lines, long_line_dominant];",
+      "    key_questions: [\"逃げ型が何人いるか\", \"捲りを打てる別線が何人いるか\", \"差し型・追込型が何人いて前を使えるか\", \"2車ラインが多いか3車以上の長いラインがあるか\"];",
+      "    key_rule: \"脚質の人数比とライン長を先に把握し、その構成が各選手の得意形か不得意形かを評価する\";",
+      "    do_not_confuse_official_style_with_single_finishing_move: true;",
+      "  }",
+      "",
       "  RIDER_STYLE_AND_ABILITY {",
-      "    per_rider: [rating_score, win_rate, top2_rate, top3_rate, nige, makuri, sashi, mark, B_count, H_count, main_finishing_move, self_power_or_chaser, lead_power, makuri_power, late_speed, second_wheel_skill, stamina];",
+      "    per_rider: [vehicle_number, official_style_label, rating_score, win_rate, top2_rate, top3_rate, nige, makuri, sashi, mark, B_count, H_count, main_finishing_move, secondary_move, self_power_or_chaser, expected_role_today, lead_power, makuri_power, late_speed, second_wheel_skill, stamina];",
       "    forbidden_shortcut: \"競走得点だけで順位を作る\";",
       "  }",
       "",
@@ -781,12 +796,33 @@ body.ios-build .site-header { position: relative; }
       "    last_3: CURRENT_MOTION;",
       "    last_5: FORM_AND_STABILITY;",
       "    last_10: BASE_ABILITY_AND_REPEATABILITY;",
+      "    extend_to_last_20_if_needed_for_composition_match: true;",
       "    source_priority: [WINTICKET_RECENT_RESULTS, KEIRIN_JP_OR_OFFICIAL_CROSSCHECK];",
-      "    inspect_content: [lead_and_hold, late_fade, makuri_success, makuri_failure, second_wheel_sashi, acceleration, trigger_timing, positioning, final_straight, line_coordination, self_created_result, gifted_result, recent_second_third_finishes, current_meet_content, opponent_strength, class_level, days_since_last_race];",
+      "    inspect_content: [lead_and_hold, late_fade, makuri_success, makuri_failure, second_wheel_sashi, acceleration, trigger_timing, positioning, final_straight, line_coordination, self_created_result, gifted_result, recent_second_third_finishes, current_meet_content, opponent_strength, class_level, days_since_last_race, prior_line_role, prior_field_style_mix_if_accessible];",
       "    compare_finish_with_content: true;",
       "    detect_change: [improving, stable, declining, one_race_noise];",
       "    form_labels: [好調, 上向き, 平行線, やや下降, 不調];",
       "    key_rule: \"着順だけで好不調を決めず、直近の走り方と相手関係まで見る\";",
+      "  }",
+      "",
+      "  SIMILAR_COMPOSITION_HISTORY {",
+      "    purpose: \"この選手が、今日に近い脚質人数比・ライン構成で強いか弱いかを見る\";",
+      "    search_recent: [last_5, last_10, up_to_last_20_if_needed];",
+      "    similarity_dimensions: [self_power_count, makuri_capable_count, chase_count, line_count, line_length_pattern, rider_role_front_second_third_solo, opponent_strength, class_level, bank_length_when_material];",
+      "    per_rider_extract_if_accessible: [sample_count, finishes, win_rate_in_sample, top3_rate_in_sample, successful_move, failed_move, recurring_advantage, recurring_disadvantage];",
+      "    sample_rule: \"少数サンプルは傾向として扱い、断定しない\";",
+      "    if_exact_history_unavailable: infer_only_from_verified_recent_race_content_and_mark_as_LOW_SAMPLE_OR_INFERRED;",
+      "    never_invent_matching_sample: true;",
+      "  }",
+      "",
+      "  ROLE_FIT_AND_ABILITY_UTILIZATION {",
+      "    per_rider: [vehicle_number, name, today_role, favorable_or_unfavorable, composition_fit, expected_ability_utilization_band, reason];",
+      "    utilization_scale: [VERY_HIGH_85_100, HIGH_75_90, NEUTRAL_60_80, LOW_45_65, VERY_LOW_BELOW_55];",
+      "    treat_percent_as_rough_band_not_official_stat: true;",
+      "    raise_if: [preferred_role_today, controllable_pace, strong_front_for_chaser, few_rival_self_power_riders, favorable_line_length, repeated_success_in_similar_composition, bank_fit];",
+      "    lower_if: [forced_role_change, too_many_rival_self_power_riders, makuri_congestion, weak_front_for_chaser, short_line_isolation, repeated_failure_in_similar_composition, likely_early_overwork];",
+      "    special_cases: [\"先行型は同型多数で消耗リスク上昇\", \"捲り型は主導権争い激化で展開向く場合と捲り渋滞で不利な場合を分ける\", \"差し型は前の自力選手の強さと先行確率で評価を大きく変える\", \"追込型・マーク型は位置取りとライン長で3着残存率を補正する\", \"両・自在型は構成に応じて役割変更できる分を加点する\"];",
+      "    compare_raw_ability_vs_today_realized_ability: true;",
       "  }",
       "",
       "  WIN_VS_TOP3_SURVIVAL {",
@@ -855,7 +891,7 @@ body.ios-build .site-header { position: relative; }
       "",
       "  FINISH_ORDER {",
       "    after_top3_set: true;",
-      "    output: [first_place_candidates, second_place_candidates, third_place_candidates, likely_orders_5_to_10];",
+      "    output: [predicted_order_top3_vehicle_numbers, first_place_candidates, second_place_candidates, third_place_candidates, likely_orders_5_to_10];",
       "    score_separately: [top3_set_confidence, head_confidence, exact_order_confidence];",
       "    if_two_strong_second_wheels_create_multiple_live_orders: lower_exact_order_confidence;",
       "    if_all_advance_and_head_lock_depends_on_must_win_assumption: lower_head_confidence;",
@@ -888,13 +924,14 @@ body.ios-build .site-header { position: relative; }
       "OUTPUT_CONTRACT {",
       "  language: JAPANESE;",
       "  style: COMPACT_DECISION_BRIEF;",
-      "  target_length: APPROX_1200_TO_1800_JA_CHARS;",
+      "  target_length: APPROX_1800_TO_2800_JA_CHARS;",
       "  avoid_repeating_same_reason: true;",
       "  tables_preferred_over_long_prose: true;",
       "",
       "  sections: [",
       "    RESULT,",
       "    LINE_AND_FORM,",
+      "    COMPOSITION_FIT,",
       "    SCENARIOS,",
       "    TOP_RANKINGS,",
       "    TICKETS,",
@@ -903,14 +940,23 @@ body.ios-build .site-header { position: relative; }
       "",
       "  RESULT {",
       "    title: \"■ 結論\";",
-      "    include: [confidence_grade, key_rider, best_ticket_type, one_sentence_race_read, market_alignment_or_dissent];",
+      "    include: [confidence_grade, predicted_finish_order_with_vehicle_numbers, key_rider, best_ticket_type, one_sentence_race_read, market_alignment_or_dissent];",
       "  }",
       "",
       "  LINE_AND_FORM {",
       "    title: \"■ ライン・状態\";",
-      "    include: [lineup, race_stage, advancement_rule, key_WINTICKET_comments, likely_controller, key_riders_recent_3_5_10_summary, same_day_bank_summary, weather_summary, odds_snapshot_time];",
-      "    rider_detail_limit: TOP_4_MATERIAL_RIDERS_ONLY;",
+      "    include: [lineup, race_stage, advancement_rule, field_style_count_and_ratio, key_WINTICKET_comments, likely_controller, all_riders_recent_5_10_form_summary, same_day_bank_summary, weather_summary, odds_snapshot_time];",
+      "    rider_detail_limit: ALL_RIDERS_COMPACT_TABLE;",
       "    do_not_list_all_raw_recent_results: true;",
+      "  }",
+      "",
+      "  COMPOSITION_FIT {",
+      "    title: \"■ 脚質構成・相性\";",
+      "    show_field_summary: [逃げ系人数, 捲り可能人数, 差し追込系人数, 両自在人数, ライン本数, 2車ライン数, 3車以上ライン数, 単騎数, pace_label];",
+      "    all_rider_table_columns: [車番, 選手名, 公式脚質, 今日の役割, 直近5_10状態, 似た構成での傾向, 得意不得意, 能力発揮度, 一言理由];",
+      "    ability_utilization: ROUGH_PERCENT_RANGE_OR_LABEL_WITH_REASON;",
+      "    explicitly_compare: [raw_ability_rank, today_realized_ability_rank];",
+      "    mark_low_sample: true;",
       "  }",
       "",
       "  SCENARIOS {",
@@ -954,7 +1000,7 @@ body.ios-build .site-header { position: relative; }
       "  DETAIL_POLICY {",
       "    full_internal_analysis: REQUIRED;",
       "    visible_reasoning: ONLY_MATERIAL_FACTORS;",
-      "    rider_table: ONLY_IF_FIELD_COMPARISON_ADDS_VALUE;",
+      "    rider_table: REQUIRED_FOR_ALL_RIDERS_IN_COMPACT_FORM;",
       "    show_raw_stats: ONLY_WHEN_DECISION_RELEVANT;",
       "    show_all_recent_results: false;",
       "    show_all_scenarios: false;",
@@ -981,24 +1027,31 @@ body.ios-build .site-header { position: relative; }
       "  ignore_published_rider_comments,",
       "  use_stale_odds_when_newer_user_screenshot_exists,",
       "  use_odds_before_building_the_baseline_scenario,",
-      "  copy_WINTICKET_popularity_without_causal_analysis",
+      "  copy_WINTICKET_popularity_without_causal_analysis,",
+      "  confuse_official_style_with_finishing_move,",
+      "  ignore_field_style_count_and_ratio,",
+      "  invent_similar_composition_history,",
+      "  present_ability_utilization_as_official_stat,",
+      "  omit_vehicle_numbers_from_predicted_finish_order"
       "];",
       "",
       "PRIORITY_RULE {",
       "  1: WINTICKET_RACE_CARD_AND_LINE;",
-      "  2: LAST_3_TO_5_CONTENT;",
-      "  3: RIDER_ABILITY_AND_STYLE;",
-      "  4: WINTICKET_RIDER_COMMENTS;",
-      "  5: LAST_10_STABILITY;",
-      "  6: RACE_STAGE_AND_ADVANCEMENT;",
-      "  7: SAME_DAY_BANK;",
-      "  8: WEATHER_AND_WIND;",
-      "  9: SCENARIO_MATCH;",
-      "  10: WINTICKET_CURRENT_ODDS_AS_POST_MODEL_CHECK;",
+      "  2: FIELD_STYLE_COMPOSITION_AND_LINE_ROLE;",
+      "  3: LAST_3_TO_5_CONTENT;",
+      "  4: RIDER_ABILITY_AND_STYLE;",
+      "  5: SIMILAR_COMPOSITION_HISTORY_AND_ROLE_FIT;",
+      "  6: WINTICKET_RIDER_COMMENTS;",
+      "  7: LAST_10_STABILITY;",
+      "  8: RACE_STAGE_AND_ADVANCEMENT;",
+      "  9: SAME_DAY_BANK;",
+      "  10: WEATHER_AND_WIND;",
+      "  11: SCENARIO_MATCH;",
+      "  12: WINTICKET_CURRENT_ODDS_AS_POST_MODEL_CHECK;",
       "}",
       "",
       "FINAL_PRE_RACE_AUDIT {",
-      "  confirm_before_output: [WINTICKET_card_checked_or_unavailable_marked, rider_comments_checked_or_unavailable_marked, recent_3_5_10_checked, odds_snapshot_checked_or_unavailable_marked, odds_capture_time_recorded_if_available];",
+      "  confirm_before_output: [WINTICKET_card_checked_or_unavailable_marked, rider_comments_checked_or_unavailable_marked, recent_3_5_10_checked, field_style_composition_counted, similar_composition_history_checked_or_low_sample_marked, role_fit_and_ability_utilization_assessed, predicted_finish_order_has_vehicle_numbers, odds_snapshot_checked_or_unavailable_marked, odds_capture_time_recorded_if_available];",
       "  if_major_market_dissent_remains_unexplained: LOWER_CONFIDENCE_AND_AVOID_STRONG_RECOMMENDATION;",
       "}",
       "",
@@ -1038,8 +1091,8 @@ body.ios-build .site-header { position: relative; }
     "向日町", "和歌山", "岸和田", "玉野", "広島", "防府", "高松", "小松島", "高知",
     "松山", "小倉", "久留米", "武雄", "佐世保", "別府", "熊本"
   ];
-  var HISTORY_KEY = "keirin-prompt-history-v42";
-  var PREFS_KEY = "keirin-prompt-prefs-v42";
+  var HISTORY_KEY = "keirin-prompt-history-v45";
+  var PREFS_KEY = "keirin-prompt-prefs-v45";
   var VIEW_IDS = { generator: "generator-view", guide: "guide-view" };
   var currentPrompt = "";
   var currentConfig = null;
@@ -1492,7 +1545,7 @@ body.ios-build .site-header { position: relative; }
       var title = document.createElement("strong");
       title.textContent = entry.config.venue + "競輪 " + entry.config.round + "R";
       var meta = document.createElement("small");
-      meta.textContent = formatDateDisplay(entry.config.date) + " · 実戦予想 v4.4.0";
+      meta.textContent = formatDateDisplay(entry.config.date) + " · 実戦予想 v4.5.0";
       openButton.appendChild(title);
       openButton.appendChild(meta);
       openButton.addEventListener("click", function () {

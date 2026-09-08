@@ -17,3 +17,12 @@ These cases are regression fixtures for logic QA only. They must never be used a
 
 ## Race identity invariant
 Every race datum must be keyed by **date + venue + race number** before being used. User corrections apply only to the exact keyed race. Cross-race result transfer is forbidden.
+
+
+## 2026-09-08 西武園 2R
+- Confirmed result: **4-7-6**
+- Regression lesson: do not treat an extreme longshot third-place finisher as automatically unpredictable when a verified human-context signal can justify re-opening a place-finish path.
+- Required audit: separate raw ability from the practical value of finishing 1st, 2nd, or 3rd for each rider.
+- Required audit: check publicly verifiable background such as class/grade status, term points, promotion/demotion or registration-review context, supplemental entry, final-day context, home/same-prefecture context, announced retirement/last run, and public training-partner information.
+- Guardrail: background is a bounded adjustment only. Never invent private motivation, financial need, family circumstances, collusion, or a "must try harder" narrative.
+- Guardrail: supplemental entry, local status, or same-prefecture relationships never create automatic ability upgrades.

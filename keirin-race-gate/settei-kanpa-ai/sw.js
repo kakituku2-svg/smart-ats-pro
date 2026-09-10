@@ -1,4 +1,4 @@
-const CACHE='settei-kanpa-v4-3-0-onebar';
+const CACHE='settei-kanpa-v4-4-0-compact';
 const ASSETS=['./','./index.html','./app-v4.2.part1.txt','./app-v4.2.part2.txt','./app-v4.2.part3.txt','./app-v4.2.part4.txt','./app-v4.2.part5.txt','./app-v4.2.part6a.txt','./app-v4.2.part6b.txt','./app-v4.2.part6c.txt','./app-v4.2.part6d.txt','./manifest.webmanifest','./icon.svg'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));

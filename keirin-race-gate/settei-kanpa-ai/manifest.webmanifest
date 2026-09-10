@@ -1,12 +1,13 @@
 {
-  "name": "設定看破AI v4.4 COMPACT TOP",
-  "short_name": "設定看破AI",
+  "name": "HALL SCOPE v4.5",
+  "short_name": "HALL SCOPE",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f4f8fc",
   "theme_color": "#f4f8fc",
   "lang": "ja",
+  "description": "店・イベント・台を読むホール分析ツール",
   "icons": [
     {"src":"./icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
   ]

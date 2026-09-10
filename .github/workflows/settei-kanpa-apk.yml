@@ -1,4 +1,4 @@
-name: SETTEI KANPA AI Android APK
+name: HALL SCOPE Android APK
 
 on:
   workflow_dispatch:
@@ -33,15 +33,15 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.10.2'
-      - name: Build SETTEI KANPA AI
+      - name: Build HALL SCOPE
         working-directory: settei-kanpa-ai-android
         run: gradle :app:assembleDebug --stacktrace
       - name: Stage APK
-        run: cp settei-kanpa-ai-android/app/build/outputs/apk/debug/app-debug.apk SETTEI-KANPA-AI-v4.1.0-debug.apk
+        run: cp settei-kanpa-ai-android/app/build/outputs/apk/debug/app-debug.apk HALL-SCOPE-v4.5.0-debug.apk
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: SETTEI-KANPA-AI-v4.1.0-APK
-          path: SETTEI-KANPA-AI-v4.1.0-debug.apk
+          name: HALL-SCOPE-v4.5.0-APK
+          path: HALL-SCOPE-v4.5.0-debug.apk
           if-no-files-found: error
           retention-days: 30

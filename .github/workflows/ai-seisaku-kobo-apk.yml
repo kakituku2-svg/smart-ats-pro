@@ -24,8 +24,13 @@ jobs:
         run: |
           mkdir -p ai-seisaku-kobo-android/app/src/main/assets
           cp keirin-race-gate/ai-seisaku-kobo/index.html ai-seisaku-kobo-android/app/src/main/assets/index.html
-          grep -q 'NativeVoice' ai-seisaku-kobo-android/app/src/main/assets/index.html
-          grep -q 'v1.1.0' ai-seisaku-kobo-android/app/src/main/assets/index.html
+          grep -q 'AISeisakuNativeVoice' ai-seisaku-kobo-android/app/src/main/assets/index.html
+          grep -q 'v1.2.0' ai-seisaku-kobo-android/app/src/main/assets/index.html
+          grep -q 'DEEP PROMPT COMPILER' ai-seisaku-kobo-android/app/src/main/assets/index.html
+          grep -q 'REQUIREMENT PRECEDENCE' ai-seisaku-kobo-android/app/src/main/assets/index.html
+          grep -q 'ANSWER LEDGER' ai-seisaku-kobo-android/app/src/main/assets/index.html
+          grep -q 'LETTERING MAP' ai-seisaku-kobo-android/app/src/main/assets/index.html
+          grep -q 'migration/normalize' ai-seisaku-kobo-android/app/src/main/assets/index.html
 
       - name: Set up Java 17
         uses: actions/setup-java@v4
@@ -58,29 +63,29 @@ jobs:
 
       - name: Stage APK
         run: |
-          cp ai-seisaku-kobo-android/app/build/outputs/apk/debug/app-debug.apk AI-Seisaku-Kobo-v1.1.0-debug.apk
-          sha256sum AI-Seisaku-Kobo-v1.1.0-debug.apk > AI-Seisaku-Kobo-v1.1.0-debug.apk.sha256
-          test -s AI-Seisaku-Kobo-v1.1.0-debug.apk
+          cp ai-seisaku-kobo-android/app/build/outputs/apk/debug/app-debug.apk AI-Seisaku-Kobo-v1.2.0-debug.apk
+          sha256sum AI-Seisaku-Kobo-v1.2.0-debug.apk > AI-Seisaku-Kobo-v1.2.0-debug.apk.sha256
+          test -s AI-Seisaku-Kobo-v1.2.0-debug.apk
 
       - name: Upload workflow artifact
         uses: actions/upload-artifact@v4
         with:
-          name: AI-Seisaku-Kobo-v1.1.0-APK
+          name: AI-Seisaku-Kobo-v1.2.0-APK
           path: |
-            AI-Seisaku-Kobo-v1.1.0-debug.apk
-            AI-Seisaku-Kobo-v1.1.0-debug.apk.sha256
+            AI-Seisaku-Kobo-v1.2.0-debug.apk
+            AI-Seisaku-Kobo-v1.2.0-debug.apk.sha256
           retention-days: 30
 
       - name: Publish APK release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          TAG='ai-seisaku-kobo-v1.1.0'
+          TAG='ai-seisaku-kobo-v1.2.0'
           if gh release view "$TAG" >/dev/null 2>&1; then
-            gh release upload "$TAG" AI-Seisaku-Kobo-v1.1.0-debug.apk AI-Seisaku-Kobo-v1.1.0-debug.apk.sha256 --clobber
+            gh release upload "$TAG" AI-Seisaku-Kobo-v1.2.0-debug.apk AI-Seisaku-Kobo-v1.2.0-debug.apk.sha256 --clobber
           else
-            gh release create "$TAG" AI-Seisaku-Kobo-v1.1.0-debug.apk AI-Seisaku-Kobo-v1.1.0-debug.apk.sha256 \
+            gh release create "$TAG" AI-Seisaku-Kobo-v1.2.0-debug.apk AI-Seisaku-Kobo-v1.2.0-debug.apk.sha256 \
               --target "$GITHUB_SHA" \
-              --title 'AI制作工房 v1.1.0 Android APK' \
-              --notes 'Androidネイティブ音声認識（SpeechRecognizer）を優先するAI制作工房です。初回の音声入力時にマイク権限を許可してください。'
+              --title 'AI制作工房 v1.2.0 Deep Prompt Compiler Android APK' \
+              --notes 'OUTPUT ROUTERに旧ミニアプリ工房のKnowledge/QA/失敗防止を再統合したDeep Prompt Compiler版。品質MAX/標準/軽量、12成果物専用ENGINE、Androidネイティブ音声認識を搭載。'
           fi

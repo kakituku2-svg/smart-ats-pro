@@ -1,0 +1,13 @@
+{
+  "name": "設定看破AI v4.1 STORE INTELLIGENCE",
+  "short_name": "設定看破AI",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#090d14",
+  "theme_color": "#07111d",
+  "lang": "ja",
+  "icons": [
+    {"src":"./icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
+  ]
+}

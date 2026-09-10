@@ -6,6 +6,6 @@
   "display": "standalone",
   "background_color": "#0c1226",
   "theme_color": "#0c1226",
-  "description": "目的から必要な成果物を設計するAI制作OS",
+  "description": "目的から成果物を設計し、成果物専用のDeep Promptを生成するAI制作OS",
   "icons": [{"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
 }

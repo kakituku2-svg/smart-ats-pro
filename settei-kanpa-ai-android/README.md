@@ -3,7 +3,8 @@
 HALL SCOPE のAndroid版です。
 
 - 店選び / 店舗深掘り / イベント癖 / 台番予測 / LIVE再判定 / 収支 / 小役
-- Web版と同じHALL SCOPEロジックをAPK内に内蔵
+- 通常はGitHub Pages上の最新 HALL SCOPE をアプリ内WebViewで表示
+- 通信エラー時はAPK内のフォールバック画面へ切替
 - APKはGitHub Actionsの `HALL-SCOPE-v4.5.0-APK` artifactから取得
 - 既存ユーザーの更新互換性を守るため、内部package IDは従来値を維持
 

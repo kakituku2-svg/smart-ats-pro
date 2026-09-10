@@ -25,7 +25,7 @@
   <script>
   (async()=>{try{
     if(!('DecompressionStream' in window)) throw new Error('このSafariでは展開機能が利用できません。iOS / Safariを最新版に更新して再度開いてください。');
-    const files=[1,2,3,4,5,6].map(n=>`./app-v4.2.part${n}.txt?v=4.2.0`);
+    const files=['./app-v4.2.part1.txt','./app-v4.2.part2.txt','./app-v4.2.part3.txt','./app-v4.2.part4.txt','./app-v4.2.part5.txt','./app-v4.2.part6a.txt','./app-v4.2.part6b.txt','./app-v4.2.part6c.txt','./app-v4.2.part6d.txt'].map(u=>u+'?v=4.2.0');
     const parts=await Promise.all(files.map(async u=>{
       const res=await fetch(u,{cache:'no-cache'});
       if(!res.ok) throw new Error('アプリ本体を取得できませんでした。');

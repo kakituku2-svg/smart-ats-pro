@@ -1,10 +1,10 @@
 {
-  "name": "設定看破AI v4.2 HALL VISIBILITY",
+  "name": "設定看破AI v4.3 ONE BAR",
   "short_name": "設定看破AI",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#f2f6fa",
+  "background_color": "#f4f8fc",
   "theme_color": "#f4f8fc",
   "lang": "ja",
   "icons": [

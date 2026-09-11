@@ -1,8 +1,52 @@
 (() => {
   'use strict';
 
-  const VERSION = '5.6.0';
+  const VERSION = '5.7.0';
   const FORECAST_BLOCK = `
+
+DATA_FRESHNESS_GATE_V57 {
+  purpose: "古いページや結果確定後の情報を混入させず、発走前の最新公開情報で予想する";
+  immutable_target: [race_date, venue, race_no];
+  capture_before_analysis: [current_JST_time, scheduled_start_time_if_available, source_name, source_updated_time_if_available];
+  source_priority: [WINTICKET_CURRENT_CARD_AND_ODDS, KEIRIN_JP_OFFICIAL, official_velodrome, other_verifiable_pre_race_sources];
+  required_current_checks: [scratches, lineup, rider_comments, current_meeting_results, weather_and_wind, current_odds];
+  recency_windows: { micro_form: LAST_1_TO_2_RACES_HIGHEST_WEIGHT; supporting_form: LAST_3_TO_6; stable_base: ABOUT_LAST_20; };
+  if_source_is_stale_or_timestamp_unknown: MARK_UNCERTAINTY_AND_REDUCE_CONFIDENCE;
+  if_target_has_started_or_finished: "予想を捏造せず、事前予想対象外と明記する";
+  never_use: [result, payout, post_race_article, post_result_update, knowledge_of_finish_order];
+}
+
+RACE_VALUE_SELECTION_V57 {
+  purpose: "買い目作成前に、そのレース自体を買う価値があるか採点する";
+  score_0_to_100_from: [first_place_clarity, first_second_relation_clarity, top3_pool_clarity, lineup_clarity, scenario_branch_count, recent_form_readability, current_odds_value, data_freshness];
+  grade: { S: "80-100"; A: "70-79"; B: "60-69"; C: "50-59"; SKIP: "0-49"; };
+  buying_policy: "A以上を中心。Bは明確な価格優位がある時だけ。C以下は原則見送り";
+  do_not_force_bet: true;
+  output: [score, grade, one_sentence_reason];
+}
+
+HEAD_PLACE_SEPARATION_V57 {
+  purpose: "勝てる選手と、2・3着に残る選手を完全に分けて評価する";
+  HEAD_SCORE_inputs: [rating_score, win_rate, self_power, B_count, H_count, nige, makuri, sashi, current_form, line_advantage, likely_control];
+  PLACE_SCORE_inputs: [top3_rate, top2_rate, recent_second_third_finishes, second_or_third_wheel_position, front_strength, energy_saving, inside_path, tracking_stability, scenario_fit];
+  required_per_rider: [HEAD_SCORE_band, PLACE_SCORE_band, win_probability_band, top3_probability_band];
+  low_win_high_top3_rule: "勝率が低くても3連対率が高く、直近2・3着、強い先行の番手・3番手、脚温存経路がある選手は3連複候補へ昇格";
+  strong_rival_rule: "別線自力は頭だけでなく、本線の後ろで3着に残る経路も評価";
+  third_wheel_rule: "3車ライン3番手を自動3着にも自動消しにもせず、別線自力・単騎・残存型とPLACE_SCOREで比較";
+}
+
+PROBABILITY_PRICE_EV_V57 {
+  purpose: "最頻結果と最も買う価値が高い買い目を分離する";
+  strict_order: [scenario_probability_model, top3_set_probability, exact_order_probability, current_odds_check, fair_odds, minimum_acceptable_odds, EV, BUY_OR_SKIP];
+  fair_odds_formula: "1 / model_probability";
+  minimum_acceptable_odds: { confidence_A: "fair_odds * 1.10_to_1.15"; confidence_B: "fair_odds * 1.20_to_1.30"; confidence_C: "fair_odds * 1.35_or_more"; };
+  ev_formula: "model_probability * current_decimal_odds";
+  ev_guide: { skip: "below_1.10"; candidate: "1.10-1.19"; strong: "1.20-1.39"; high: "1.40_plus"; };
+  probability_precision: "不確実なら単一点でなく範囲を使い、見かけの精密さを作らない";
+  if_current_odds_unavailable_or_market_thin: "PREVIEW扱い。BUYを確定せず、信頼度とEVを割り引く";
+  do_not_promote_to_main_only_for_high_odds: true;
+  output_for_each_final_ticket: [model_probability_or_range, fair_odds_or_range, minimum_acceptable_odds, current_odds, market_implied_probability, EV_or_range, BUY_OR_SKIP];
+}
 
 APP_MODE_FORECAST_ONLY {
   purpose: "このアプリは指定された1レースについて、その場でWeb調査して予想・買い目を返すためのもの";
@@ -91,7 +135,7 @@ PORTFOLIO_DECISION_V56 {
   if_value_is_poor: "本命でも見送り・薄めを許可";
 }
 
-DIRECT_OUTPUT_CONTRACT_V56 {
+DIRECT_OUTPUT_CONTRACT_V57 {
   language: JAPANESE;
   start_immediately_with_analysis: true;
   no_process_preamble: true;
@@ -101,31 +145,38 @@ DIRECT_OUTPUT_CONTRACT_V56 {
   no_result_reconciliation_statement: true;
   concise_but_evidence_rich: true;
   output_order: [
-    "1. 結論：本命軸・相手・狙い度",
-    "2. 選手別の直近3〜5場所＋当開催内容（何が良い/悪いかまで）",
-    "3. ライン・脚質人数構成と、この構成で各選手の脚質がどう働くか",
-    "4. 直近コメントと展開への影響。確認できれば似たコメント時の過去挙動も補助表示",
-    "5. 想定展開：本線・逆転・軸飛びの3系統",
-    "6. TRIO-FIRSTで残す3人集合と3連複",
-    "7. 順序根拠が強い3連単",
-    "8. MARKET GAP SCORE付きの買う価値が高い目",
-    "9. AXIS FAILURE SCORE",
-    "10. 高配当保険100円：3連複優先、必要時のみ3連単"
+    "1. データ時点・対象レース照合・主要ソース",
+    "2. 勝負度：0〜100点とS/A/B/C/SKIP",
+    "3. 結論：最も起こりやすい結果と最も買う価値が高い目を分離",
+    "4. 選手別の直近3〜5場所＋当開催内容（着順ではなく何が良い/悪いかまで）",
+    "5. ライン・脚質人数構成、HEAD順位、PLACE順位",
+    "6. 直近コメントと展開への影響。確認できれば似たコメント時の過去挙動も補助表示",
+    "7. 想定展開：最頻・逆転・妙味・踏み合い崩れ・軸飛び",
+    "8. TRIO-FIRSTで残す3人集合と3連複",
+    "9. 順序根拠が強い2車単・3連単",
+    "10. 確率・フェア・最低許容・現在オッズ・EV・MARKET GAP付き最終推奨3〜6点",
+    "11. AXIS FAILURE SCORE",
+    "12. 高配当保険100円：3連複優先、必要時のみ3連単"
   ];
-  final_ticket_table_columns: [区分, 券種, 買い目, 現在オッズ, 想定確率帯, MARKET_GAP, 狙う展開, 強弱];
+  final_ticket_table_columns: [区分, 券種, 買い目, 想定確率帯, フェアオッズ, 最低許容, 現在オッズ, EV, MARKET_GAP, BUY_SKIP, 狙う展開, 金額];
+  stake_rule: "100円単位。予算不明なら相対配分。本線を含めても価格不適正なら見送り。無理に予算を使い切らない";
   do_not_output: ["検証します", "フリーズします", "結果後に照合します", "後ほど確認します", "データセットへ保存します", "チェックポイントまで蓄積します"];
   closing_rule: "予想と買い目を提示したら終了。ユーザーが求めていない検証計画や運用説明を追加しない";
 }
 
-EXECUTE_FORECAST_NOW_V56: "TARGETの事前公開情報を調査し、DIRECT_OUTPUT_CONTRACT_V56の順で直ちに予想と買い目を返す。";`;
+EXECUTE_FORECAST_NOW_V57: "TARGETの最新事前公開情報を調査し、DIRECT_OUTPUT_CONTRACT_V57の順で直ちに予想と買い目を返す。";`;
 
   function patchVersionUI() {
     const badge = document.querySelector('.paper-badge');
-    if (badge) badge.innerHTML = '<i></i>v5.6.0 · TRIO / MARKET GAP';
+    if (badge) badge.innerHTML = '<i></i>v5.7.0 · LIVE DATA / EV';
     const toolbar = document.querySelector('.prompt-toolbar span');
-    if (toolbar) toolbar.innerHTML = '<i></i>AI予想プロンプト · v5.6.0';
+    if (toolbar) toolbar.innerHTML = '<i></i>AI予想プロンプト · v5.7.0';
     const lead = document.querySelector('.strict-lead');
-    if (lead) lead.textContent = 'その場のレース予想専用。3人集合→順序→市場ギャップ→軸飛び高配当の順で、直近成績・脚質構成・コメントまで調べて買い目を生成します。';
+    if (lead) lead.textContent = '開催日・開催場・Rを選ぶだけ。最新の事前データを確認し、3人集合→着順→価格→EV→軸飛び高配当の順で分析するAI用プロンプトを生成します。';
+    const footer = document.querySelector('footer small');
+    if (footer) footer.textContent = 'v5.7.0 · 20歳以上 / 予想支援ツール';
+    const androidLink = document.querySelector('.android-download-button');
+    if (androidLink) androidLink.setAttribute('href', './downloads/KEIRIN-RACE-GATE-Android-Standalone-v5.7.0.apk');
   }
 
   function stripLegacyInjected(value) {
@@ -150,7 +201,7 @@ EXECUTE_FORECAST_NOW_V56: "TARGETの事前公開情報を調査し、DIRECT_OUTP
   function sanitizeBasePrompt(value) {
     value = value
       .replace(/v4\.9\.0/g, `v${VERSION}`)
-      .replace(/v5\.[0-5]\.0/g, `v${VERSION}`)
+      .replace(/v5\.[0-6]\.0/g, `v${VERSION}`)
       .replace(/freeze_rule:\s*USE_ONLY_INFORMATION_AVAILABLE_BEFORE_TARGET_RACE_RESULT;/g, 'pre_race_only_rule: USE_ONLY_INFORMATION_AVAILABLE_BEFORE_TARGET_RACE_RESULT;')
       .replace(/FINAL_PRE_RACE_AUDIT \{/g, 'PRE_OUTPUT_QUALITY_AUDIT {')
       .replace(/EXECUTE_NOW:\s*Research TARGET and return the forecast using OUTPUT_CONTRACT\.;?/g, '');
@@ -189,7 +240,7 @@ EXECUTE_FORECAST_NOW_V56: "TARGETの事前公開情報を調査し、DIRECT_OUTP
         const out = document.getElementById('prompt-output');
         if (out) {
           const bad = selfTest(out.value);
-          if (bad.length) console.error('v5.6 prompt guard failed:', bad);
+          if (bad.length) console.error('v5.7 prompt guard failed:', bad);
         }
       }, 0);
       setTimeout(patchPrompt, 80);

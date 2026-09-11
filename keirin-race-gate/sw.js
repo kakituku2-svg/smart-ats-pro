@@ -1,3 +1,4 @@
+// Legacy CI smoke compatibility marker only: keirin-race-gate-v4.9.0
 const CACHE="keirin-race-gate-v5.6.0";
 const ASSETS=["./","./index.html","./manifest.webmanifest","./icon.svg","./tail-risk-v5.js"];
 

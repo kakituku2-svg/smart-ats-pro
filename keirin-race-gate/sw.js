@@ -1,6 +1,6 @@
 // KEIRIN AI RACE GATE v5.7.0
-const CACHE="keirin-race-gate-v5.7.0";
-const ASSETS=["./","./index.html","./manifest.webmanifest","./icon.svg","./tail-risk-v5.js"];
+const CACHE="keirin-race-gate-v5.7.0-r2";
+const ASSETS=["./","./index.html","./manifest.webmanifest","./icon.svg","./tail-risk-v5.js?rev=5.7.0-r2"];
 
 self.addEventListener("install",e=>{
   e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting()));
@@ -15,7 +15,7 @@ async function injectTailRisk(response){
   if(!type.includes("text/html")) return response;
   let html=await response.text();
   if(!html.includes("tail-risk-v5.js")){
-    html=html.replace("</body>",'<script src="./tail-risk-v5.js"></script></body>');
+    html=html.replace("</body>",'<script src="./tail-risk-v5.js?rev=5.7.0-r2"></script></body>');
   }
   const headers=new Headers(response.headers);
   headers.delete("content-length");

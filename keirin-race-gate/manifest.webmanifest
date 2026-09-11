@@ -1,7 +1,7 @@
 {
   "name": "KEIRIN AI RACE GATE",
   "short_name": "RACE GATE",
-  "description": "レースID照合、ライン・脚質・直近状態・公開された選手背景に加え、軸候補・上位3連対候補・別線のライン丸ごと残存を監査し、3連複の組み合わせ漏れと着順変換ミスを減らす競輪AI予想プロンプトを生成",
+  "description": "開催日・開催場・Rから、最新事前データ、HEAD/PLACE、TRIO-FIRST、市場ギャップ、フェアオッズ、最低許容オッズ、EVを分析する競輪AI予想プロンプトを生成",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

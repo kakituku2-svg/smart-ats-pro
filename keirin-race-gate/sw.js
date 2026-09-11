@@ -1,4 +1,4 @@
-const CACHE="keirin-race-gate-v5.5.0";
+const CACHE="keirin-race-gate-v5.6.0";
 const ASSETS=["./","./index.html","./manifest.webmanifest","./icon.svg","./tail-risk-v5.js"];
 
 self.addEventListener("install",e=>{
@@ -24,7 +24,7 @@ async function injectTailRisk(response){
 self.addEventListener("fetch",e=>{
   if(e.request.method!=="GET") return;
   const url=new URL(e.request.url);
-  const isNavigation=e.request.mode==="navigate" || url.pathname.endsWith("/keirin-race-gate/") || url.pathname.endsWith("/keirin-race-gate/index.html");
+  const isNavigation=e.request.mode==="navigate" || url.pathname.endsWith("/smart-ats-pro/") || url.pathname.endsWith("/index.html");
 
   if(isNavigation){
     e.respondWith(

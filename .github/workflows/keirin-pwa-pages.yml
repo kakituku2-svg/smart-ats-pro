@@ -37,7 +37,7 @@ jobs:
           test -f keirin-race-gate/sw.js
           test -f keirin-race-gate/icon.svg
           grep -q "v5.7.0" keirin-race-gate/index.html
-          grep -q 'src="./tail-risk-v5.js"' keirin-race-gate/index.html
+          grep -q 'src="./tail-risk-v5.js?rev=5.7.0-r2"' keirin-race-gate/index.html
           grep -q "DATA_FRESHNESS_GATE_V57" keirin-race-gate/tail-risk-v5.js
           grep -q "RACE_VALUE_SELECTION_V57" keirin-race-gate/tail-risk-v5.js
           grep -q "HEAD_PLACE_SEPARATION_V57" keirin-race-gate/tail-risk-v5.js
@@ -219,7 +219,7 @@ jobs:
           grep -q "AXIS_PAIR_COVERAGE_AUDIT" /tmp/index.html
           grep -q "KEIRIN-RACE-GATE-Android-Standalone-v5.7.0.apk" /tmp/index.html
           curl -fsSL "${PAGE_URL}manifest.webmanifest" | grep -q "RACE GATE"
-          curl -fsSL "${PAGE_URL}sw.js" | grep -q "keirin-race-gate-v5.7.0"
-          curl -fsSL "${PAGE_URL}tail-risk-v5.js" | grep -q "PROBABILITY_PRICE_EV_V57"
+          curl -fsSL "${PAGE_URL}sw.js" | grep -q "keirin-race-gate-v5.7.0-r2"
+          curl -fsSL "${PAGE_URL}tail-risk-v5.js?rev=5.7.0-r2" | grep -q "PROBABILITY_PRICE_EV_V57"
           curl -fsSL "${PAGE_URL}downloads/KEIRIN-RACE-GATE-Android-Standalone-v5.7.0.apk" -o /tmp/keirin-standalone.apk
           test -s /tmp/keirin-standalone.apk

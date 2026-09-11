@@ -1,4 +1,4 @@
-const CACHE="keirin-race-gate-v5.0.0";
+const CACHE="keirin-race-gate-v5.1.0";
 const ASSETS=["./","./index.html","./manifest.webmanifest","./icon.svg","./tail-risk-v5.js"];
 
 self.addEventListener("install",e=>{

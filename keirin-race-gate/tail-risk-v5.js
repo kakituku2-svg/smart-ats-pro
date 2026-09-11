@@ -181,6 +181,7 @@ EXECUTE_FORECAST_NOW_V57: "TARGETの最新事前公開情報を調査し、DIREC
 
   function stripLegacyInjected(value) {
     const startMarkers = [
+      'DATA_FRESHNESS_GATE_V57 {',
       'TAIL_RISK_100 {',
       'AXIS_FAILURE_TAIL_RISK {',
       'ORDER_3_FORECAST {',

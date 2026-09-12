@@ -1,8 +1,8 @@
 {
   "name": "KEIRIN AI RACE GATE",
   "short_name": "RACE GATE",
-  "description": "開催日・開催場・Rから、最新事前データ、HEAD/PLACE、TRIO-FIRST、市場ギャップ、フェアオッズ、最低許容オッズ、EVを分析する競輪AI予想プロンプトを生成",
-  "start_url": "./",
+  "description": "開催日・開催場・Rから、最新事前データ、HEAD/PLACE、TRIO-FIRST、市場ギャップ、フェアオッズ、EVに加え、公開根拠のある人的背景・過去連携・役割事情まで分析する競輪AI予想プロンプトを生成",
+  "start_url": "./?v=581",
   "scope": "./",
   "display": "standalone",
   "background_color": "#061019",

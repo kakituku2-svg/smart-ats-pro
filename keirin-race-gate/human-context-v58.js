@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '5.8.0';
+  const VERSION = '5.8.1';
   const MARKER = 'HUMAN_CONTEXT_STAKES_V58 {';
   const HUMAN_BLOCK = `
 
@@ -99,15 +99,26 @@ HUMAN_CONTEXT_OUTPUT_V58 {
   final_ticket_rule: "人的背景だけを根拠にBUYへ昇格させず、能力・状態・展開・価格と整合した時だけ最終券へ反映する";
 }`;
 
+  function patchVisibleVersionText() {
+    const selectors = ['.paper-badge', '.prompt-toolbar span', '.strict-lead', 'footer small'];
+    document.querySelectorAll(selectors.join(',')).forEach(el => {
+      if (!el) return;
+      el.innerHTML = el.innerHTML
+        .replace(/v5\.7\.0/g, 'v5.8.1')
+        .replace(/v5\.8\.0/g, 'v5.8.1');
+    });
+  }
+
   function patchUI() {
     const badge = document.querySelector('.paper-badge');
-    if (badge) badge.innerHTML = '<i></i>v5.8.0 · HUMAN CONTEXT / EV';
+    if (badge) badge.innerHTML = '<i></i>v5.8.1 · HUMAN CONTEXT / EV';
     const toolbar = document.querySelector('.prompt-toolbar span');
-    if (toolbar) toolbar.innerHTML = '<i></i>AI予想プロンプト · v5.8.0';
+    if (toolbar) toolbar.innerHTML = '<i></i>AI予想プロンプト · v5.8.1';
     const lead = document.querySelector('.strict-lead');
     if (lead) lead.textContent = '開催日・開催場・Rを選ぶだけ。最新の事前データに加え、公開根拠のある人的背景・過去連携・役割事情まで検査して予想します。';
     const footer = document.querySelector('footer small');
-    if (footer) footer.textContent = 'v5.8.0 · HUMAN CONTEXT · 20歳以上 / 予想支援ツール';
+    if (footer) footer.textContent = 'v5.8.1 · HUMAN CONTEXT · 20歳以上 / 予想支援ツール';
+    patchVisibleVersionText();
   }
 
   function patchPrompt() {
@@ -116,7 +127,7 @@ HUMAN_CONTEXT_OUTPUT_V58 {
     let value = output.value;
     const idx = value.indexOf(MARKER);
     if (idx >= 0) value = value.slice(0, idx).trimEnd();
-    value = value.replace(/v5\.7\.0/g, 'v5.8.0');
+    value = value.replace(/v5\.7\.0/g, 'v5.8.1').replace(/v5\.8\.0/g, 'v5.8.1');
     value += HUMAN_BLOCK;
     output.value = value;
     const count = document.getElementById('char-count');
@@ -130,14 +141,22 @@ HUMAN_CONTEXT_OUTPUT_V58 {
 
   document.addEventListener('DOMContentLoaded', () => {
     runPatch();
+    setTimeout(runPatch, 50);
+    setTimeout(runPatch, 300);
+    setTimeout(runPatch, 1200);
     const form = document.getElementById('race-form');
     if (form) form.addEventListener('submit', () => {
       setTimeout(runPatch, 20);
       setTimeout(runPatch, 140);
+      setTimeout(runPatch, 500);
     });
     ['copy-button','share-button','download-button'].forEach(id => {
       const btn = document.getElementById(id);
       if (btn) btn.addEventListener('click', runPatch, true);
     });
   });
+
+  window.addEventListener('load', runPatch);
+  const observer = new MutationObserver(() => runPatch());
+  observer.observe(document.documentElement, { childList: true, subtree: true });
 })();

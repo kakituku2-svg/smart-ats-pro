@@ -1,12 +1,12 @@
-// KEIRIN AI RACE GATE v5.8.0
-const CACHE="keirin-race-gate-v5.8.0-r1";
+// KEIRIN AI RACE GATE v5.8.1
+const CACHE="keirin-race-gate-v5.8.1-r1";
 const ASSETS=[
   "./",
   "./index.html",
   "./manifest.webmanifest",
   "./icon.svg",
   "./tail-risk-v5.js?rev=5.7.0-r2",
-  "./human-context-v58.js?rev=5.8.0-r1"
+  "./human-context-v58.js?rev=5.8.1-r1"
 ];
 
 self.addEventListener("install",e=>{
@@ -23,7 +23,7 @@ async function injectForecastLayers(response){
   let html=await response.text();
   const scripts=[];
   if(!html.includes("tail-risk-v5.js")) scripts.push('<script src="./tail-risk-v5.js?rev=5.7.0-r2"></script>');
-  if(!html.includes("human-context-v58.js")) scripts.push('<script src="./human-context-v58.js?rev=5.8.0-r1"></script>');
+  if(!html.includes("human-context-v58.js")) scripts.push('<script src="./human-context-v58.js?rev=5.8.1-r1"></script>');
   if(scripts.length) html=html.replace("</body>",scripts.join("")+"</body>");
   const headers=new Headers(response.headers);
   headers.delete("content-length");
@@ -37,7 +37,7 @@ self.addEventListener("fetch",e=>{
 
   if(isNavigation){
     e.respondWith(
-      fetch(e.request)
+      fetch(e.request,{cache:"no-store"})
         .then(r=>injectForecastLayers(r))
         .then(async r=>{const copy=r.clone();const c=await caches.open(CACHE);await c.put(e.request,copy);return r;})
         .catch(async()=>{
@@ -48,5 +48,5 @@ self.addEventListener("fetch",e=>{
     return;
   }
 
-  e.respondWith(fetch(e.request).then(r=>{const copy=r.clone();caches.open(CACHE).then(c=>c.put(e.request,copy));return r;}).catch(()=>caches.match(e.request)));
+  e.respondWith(fetch(e.request,{cache:"no-store"}).then(r=>{const copy=r.clone();caches.open(CACHE).then(c=>c.put(e.request,copy));return r;}).catch(()=>caches.match(e.request)));
 });

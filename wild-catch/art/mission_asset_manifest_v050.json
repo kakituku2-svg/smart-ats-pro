@@ -1,0 +1,24 @@
+{
+  "checkpoint": "0.5.0",
+  "purpose": "Production-art queue for multi-stage WILD CATCH mission milestone",
+  "assets": [
+    {"id":"aero","type":"mimo","path":"res://art/mimo/aero/aero.glb","status":"runtime_preview","required_animations":["Idle","Alert","Run","Tired","Recover","Capture"]},
+    {"id":"kuru","type":"mimo","path":"res://art/mimo/kuru/kuru.glb","status":"runtime_preview","required_animations":["Idle","Alert","Run","Tired","Recover","Capture"]},
+    {"id":"vivi","type":"mimo","path":"res://art/mimo/vivi/vivi.glb","status":"runtime_preview","required_animations":["Idle","Alert","Run","Tired","Recover","Capture"]},
+    {"id":"toto","type":"mimo","path":"res://art/mimo/toto/toto.glb","status":"runtime_preview","required_animations":["Idle","Alert","Run","Tired","Recover","Capture"]},
+    {"id":"nagi","type":"mimo","path":"res://art/mimo/nagi/nagi.glb","status":"runtime_preview","required_animations":["Idle","Alert","Run","Tired","Recover","Capture"]},
+    {"id":"pico","type":"mimo","path":"res://art/mimo/pico/pico.glb","status":"runtime_preview","required_animations":["Idle","Alert","Run","Tired","Recover","Capture"]},
+    {"id":"luna","type":"mimo","path":"res://art/mimo/luna/luna.glb","status":"runtime_preview","required_animations":["Idle","Alert","Run","Tired","Recover","Capture"]},
+    {"id":"doro","type":"mimo","path":"res://art/mimo/doro/doro.glb","status":"runtime_preview","required_animations":["Idle","Alert","Run","Tired","Recover","Capture"]},
+    {"id":"nix","type":"mimo","path":"res://art/mimo/nix/nix.glb","status":"runtime_preview","required_animations":["Idle","Alert","Run","Tired","Recover","Capture"]},
+    {"id":"fufu","type":"mimo","path":"res://art/mimo/fufu/fufu.glb","status":"runtime_preview","required_animations":["Idle","Alert","Run","Tired","Recover","Capture"]},
+    {"id":"zari","type":"mimo","path":"res://art/mimo/zari/zari.glb","status":"runtime_preview","required_animations":["Idle","Alert","Run","Tired","Recover","Capture"]},
+    {"id":"ema","type":"mimo","path":"res://art/mimo/ema/ema.glb","status":"runtime_preview","required_animations":["Idle","Alert","Run","Tired","Recover","Capture"]},
+    {"id":"stage2_skywind","type":"environment","path":"res://art/environment/stage2/stage2_skywind.glb","status":"procedural_preview","visual_only":true},
+    {"id":"stage3_neon_swamp","type":"environment","path":"res://art/environment/stage3/stage3_neon_swamp.glb","status":"procedural_preview","visual_only":true},
+    {"id":"field_base","type":"environment","path":"res://art/environment/hub/field_base_set.glb","status":"procedural_preview","visual_only":true},
+    {"id":"guard_bug","type":"enemy","path":"res://art/enemies/guard_bug/guard_bug.glb","status":"procedural_preview","required_animations":["Idle","Move","Hit","Defeat"]},
+    {"id":"wind_stinger","type":"enemy","path":"res://art/enemies/wind_stinger/wind_stinger.glb","status":"procedural_preview","required_animations":["Idle","Move","Hit","Attack","Defeat"]},
+    {"id":"glow_leech","type":"enemy","path":"res://art/enemies/glow_leech/glow_leech.glb","status":"procedural_preview","required_animations":["Idle","Move","Drain","Hit","Defeat"]}
+  ]
+}

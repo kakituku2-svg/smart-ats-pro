@@ -1,0 +1,218 @@
+[gd_scene load_steps=11 format=3]
+
+[ext_resource type="PackedScene" path="res://art/characters/ren/ren_preview_v2.tscn" id="1_base"]
+
+[sub_resource type="SphereMesh" id="SmallSphere"]
+radius = 0.10
+height = 0.20
+radial_segments = 12
+rings = 6
+
+[sub_resource type="BoxMesh" id="SmallBox"]
+size = Vector3(0.16, 0.055, 0.04)
+
+[sub_resource type="CapsuleMesh" id="HairTuft"]
+height = 0.22
+radius = 0.035
+radial_segments = 8
+rings = 4
+
+[sub_resource type="PrismMesh" id="PanelPrism"]
+size = Vector3(0.18, 0.24, 0.06)
+
+[sub_resource type="CylinderMesh" id="TinyCylinder"]
+top_radius = 0.055
+bottom_radius = 0.055
+height = 0.035
+radial_segments = 10
+
+[sub_resource type="StandardMaterial3D" id="HairWarm"]
+albedo_color = Color(0.47, 0.12, 0.035, 1)
+roughness = 0.72
+
+[sub_resource type="StandardMaterial3D" id="SkinWarm"]
+albedo_color = Color(0.96, 0.69, 0.52, 1)
+roughness = 0.76
+
+[sub_resource type="StandardMaterial3D" id="DarkInk"]
+albedo_color = Color(0.022, 0.034, 0.045, 1)
+roughness = 0.52
+
+[sub_resource type="StandardMaterial3D" id="TealPanel"]
+albedo_color = Color(0.025, 0.48, 0.48, 1)
+roughness = 0.60
+
+[sub_resource type="StandardMaterial3D" id="CyanDetail"]
+albedo_color = Color(0.22, 0.96, 1, 1)
+emission_enabled = true
+emission = Color(0.08, 0.72, 1, 1)
+emission_energy_multiplier = 2.4
+roughness = 0.24
+
+[node name="RenPreviewV3" instance=ExtResource("1_base")]
+
+[node name="Nose" type="MeshInstance3D" parent="Rig"]
+position = Vector3(0, 0.625, -0.382)
+scale = Vector3(0.48, 0.58, 0.38)
+mesh = SubResource("SmallSphere")
+material_override = SubResource("SkinWarm")
+
+[node name="CheekL" type="MeshInstance3D" parent="Rig"]
+position = Vector3(-0.205, 0.565, -0.354)
+scale = Vector3(0.72, 0.36, 0.24)
+mesh = SubResource("SmallSphere")
+material_override = SubResource("SkinWarm")
+
+[node name="CheekR" type="MeshInstance3D" parent="Rig"]
+position = Vector3(0.205, 0.565, -0.354)
+scale = Vector3(0.72, 0.36, 0.24)
+mesh = SubResource("SmallSphere")
+material_override = SubResource("SkinWarm")
+
+[node name="EyeLineL" type="MeshInstance3D" parent="Rig"]
+position = Vector3(-0.125, 0.675, -0.387)
+rotation_degrees = Vector3(0, 0, -5)
+scale = Vector3(0.92, 0.70, 0.72)
+mesh = SubResource("SmallBox")
+material_override = SubResource("DarkInk")
+
+[node name="EyeLineR" type="MeshInstance3D" parent="Rig"]
+position = Vector3(0.125, 0.675, -0.387)
+rotation_degrees = Vector3(0, 0, 5)
+scale = Vector3(0.92, 0.70, 0.72)
+mesh = SubResource("SmallBox")
+material_override = SubResource("DarkInk")
+
+[node name="HairTopA" type="MeshInstance3D" parent="Rig"]
+position = Vector3(-0.08, 0.98, -0.01)
+rotation_degrees = Vector3(8, 0, -22)
+scale = Vector3(1.0, 1.42, 1.0)
+mesh = SubResource("HairTuft")
+material_override = SubResource("HairWarm")
+
+[node name="HairTopB" type="MeshInstance3D" parent="Rig"]
+position = Vector3(0.04, 1.02, 0.00)
+rotation_degrees = Vector3(4, 0, 4)
+scale = Vector3(1.04, 1.55, 1.02)
+mesh = SubResource("HairTuft")
+material_override = SubResource("HairWarm")
+
+[node name="HairTopC" type="MeshInstance3D" parent="Rig"]
+position = Vector3(0.16, 0.97, 0.02)
+rotation_degrees = Vector3(5, 0, 25)
+scale = Vector3(0.96, 1.32, 0.96)
+mesh = SubResource("HairTuft")
+material_override = SubResource("HairWarm")
+
+[node name="HairFrontL" type="MeshInstance3D" parent="Rig"]
+position = Vector3(-0.16, 0.86, -0.27)
+rotation_degrees = Vector3(26, 0, -25)
+scale = Vector3(0.94, 1.18, 0.94)
+mesh = SubResource("HairTuft")
+material_override = SubResource("HairWarm")
+
+[node name="HairFrontM" type="MeshInstance3D" parent="Rig"]
+position = Vector3(0.00, 0.89, -0.30)
+rotation_degrees = Vector3(28, 0, 4)
+scale = Vector3(0.95, 1.30, 0.95)
+mesh = SubResource("HairTuft")
+material_override = SubResource("HairWarm")
+
+[node name="HairFrontR" type="MeshInstance3D" parent="Rig"]
+position = Vector3(0.15, 0.86, -0.27)
+rotation_degrees = Vector3(25, 0, 24)
+scale = Vector3(0.92, 1.16, 0.92)
+mesh = SubResource("HairTuft")
+material_override = SubResource("HairWarm")
+
+[node name="VestPanelL" type="MeshInstance3D" parent="Rig"]
+position = Vector3(-0.20, 0.08, -0.315)
+rotation_degrees = Vector3(0, 0, 4)
+scale = Vector3(1.0, 1.20, 1.0)
+mesh = SubResource("PanelPrism")
+material_override = SubResource("TealPanel")
+
+[node name="VestPanelR" type="MeshInstance3D" parent="Rig"]
+position = Vector3(0.20, 0.08, -0.315)
+rotation_degrees = Vector3(0, 0, -4)
+scale = Vector3(1.0, 1.20, 1.0)
+mesh = SubResource("PanelPrism")
+material_override = SubResource("TealPanel")
+
+[node name="ChestBadge" type="MeshInstance3D" parent="Rig"]
+position = Vector3(0, 0.18, -0.365)
+rotation_degrees = Vector3(90, 0, 0)
+scale = Vector3(0.78, 0.78, 0.55)
+mesh = SubResource("TinyCylinder")
+material_override = SubResource("CyanDetail")
+
+[node name="ShoulderPatchL" type="MeshInstance3D" parent="Rig"]
+position = Vector3(-0.30, 0.17, -0.08)
+rotation_degrees = Vector3(0, 0, 20)
+scale = Vector3(1.05, 0.88, 1.0)
+mesh = SubResource("SmallBox")
+material_override = SubResource("TealPanel")
+
+[node name="ShoulderPatchR" type="MeshInstance3D" parent="Rig"]
+position = Vector3(0.30, 0.17, -0.08)
+rotation_degrees = Vector3(0, 0, -20)
+scale = Vector3(1.05, 0.88, 1.0)
+mesh = SubResource("SmallBox")
+material_override = SubResource("TealPanel")
+
+[node name="PackStrapL" type="MeshInstance3D" parent="Rig"]
+position = Vector3(-0.18, 0.07, -0.02)
+rotation_degrees = Vector3(0, 0, 7)
+scale = Vector3(0.46, 4.8, 0.82)
+mesh = SubResource("SmallBox")
+material_override = SubResource("DarkInk")
+
+[node name="PackStrapR" type="MeshInstance3D" parent="Rig"]
+position = Vector3(0.18, 0.07, -0.02)
+rotation_degrees = Vector3(0, 0, -7)
+scale = Vector3(0.46, 4.8, 0.82)
+mesh = SubResource("SmallBox")
+material_override = SubResource("DarkInk")
+
+[node name="BeltPouchL" type="MeshInstance3D" parent="Rig"]
+position = Vector3(-0.27, -0.24, 0.00)
+scale = Vector3(0.84, 1.28, 1.26)
+mesh = SubResource("SmallBox")
+material_override = SubResource("TealPanel")
+
+[node name="BeltPouchR" type="MeshInstance3D" parent="Rig"]
+position = Vector3(0.27, -0.24, 0.00)
+scale = Vector3(0.84, 1.28, 1.26)
+mesh = SubResource("SmallBox")
+material_override = SubResource("TealPanel")
+
+[node name="WristButton" type="MeshInstance3D" parent="Rig"]
+position = Vector3(0.415, -0.045, -0.12)
+rotation_degrees = Vector3(0, 0, 84)
+scale = Vector3(0.52, 0.52, 0.42)
+mesh = SubResource("TinyCylinder")
+material_override = SubResource("CyanDetail")
+
+[node name="ShoeToeL" type="MeshInstance3D" parent="Rig"]
+position = Vector3(-0.15, -0.83, -0.18)
+scale = Vector3(1.10, 0.75, 1.35)
+mesh = SubResource("SmallSphere")
+material_override = SubResource("DarkInk")
+
+[node name="ShoeToeR" type="MeshInstance3D" parent="Rig"]
+position = Vector3(0.15, -0.83, -0.18)
+scale = Vector3(1.10, 0.75, 1.35)
+mesh = SubResource("SmallSphere")
+material_override = SubResource("DarkInk")
+
+[node name="ShoeAccentL" type="MeshInstance3D" parent="Rig"]
+position = Vector3(-0.15, -0.79, -0.285)
+scale = Vector3(0.72, 0.48, 0.42)
+mesh = SubResource("SmallBox")
+material_override = SubResource("CyanDetail")
+
+[node name="ShoeAccentR" type="MeshInstance3D" parent="Rig"]
+position = Vector3(0.15, -0.79, -0.285)
+scale = Vector3(0.72, 0.48, 0.42)
+mesh = SubResource("SmallBox")
+material_override = SubResource("CyanDetail")

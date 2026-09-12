@@ -1,0 +1,224 @@
+[gd_scene load_steps=18 format=3]
+
+[sub_resource type="BoxMesh" id="GroundMesh"]
+size = Vector3(56, 0.35, 56)
+
+[sub_resource type="BoxMesh" id="PathMesh"]
+size = Vector3(9, 0.12, 42)
+
+[sub_resource type="BoxMesh" id="WaterMesh"]
+size = Vector3(20, 0.10, 7.5)
+
+[sub_resource type="BoxMesh" id="RuinBlock"]
+size = Vector3(1.1, 3.6, 1.1)
+
+[sub_resource type="BoxMesh" id="RuinLintel"]
+size = Vector3(6.6, 1.0, 1.15)
+
+[sub_resource type="CylinderMesh" id="TrunkMesh"]
+top_radius = 0.20
+bottom_radius = 0.31
+height = 3.8
+radial_segments = 8
+
+[sub_resource type="SphereMesh" id="CanopyMesh"]
+radius = 1.35
+height = 2.7
+radial_segments = 10
+rings = 5
+
+[sub_resource type="SphereMesh" id="BushMesh"]
+radius = 0.72
+height = 1.44
+radial_segments = 8
+rings = 4
+
+[sub_resource type="CylinderMesh" id="TotemMesh"]
+top_radius = 0.25
+bottom_radius = 0.36
+height = 2.1
+radial_segments = 8
+
+[sub_resource type="StandardMaterial3D" id="GrassMat"]
+albedo_color = Color(0.15, 0.42, 0.20, 1)
+roughness = 0.97
+
+[sub_resource type="StandardMaterial3D" id="PathMat"]
+albedo_color = Color(0.58, 0.48, 0.28, 1)
+roughness = 0.94
+
+[sub_resource type="StandardMaterial3D" id="WaterMat"]
+albedo_color = Color(0.045, 0.40, 0.66, 0.78)
+transparency = 1
+roughness = 0.24
+metallic = 0.06
+emission_enabled = true
+emission = Color(0.02, 0.13, 0.20, 1)
+emission_energy_multiplier = 0.55
+
+[sub_resource type="StandardMaterial3D" id="StoneMat"]
+albedo_color = Color(0.37, 0.43, 0.39, 1)
+roughness = 0.98
+
+[sub_resource type="StandardMaterial3D" id="StoneMossMat"]
+albedo_color = Color(0.29, 0.41, 0.29, 1)
+roughness = 0.99
+
+[sub_resource type="StandardMaterial3D" id="TrunkMat"]
+albedo_color = Color(0.32, 0.19, 0.08, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="LeafMat"]
+albedo_color = Color(0.06, 0.34, 0.12, 1)
+roughness = 0.94
+
+[sub_resource type="StandardMaterial3D" id="GlowMat"]
+albedo_color = Color(0.25, 0.90, 1, 1)
+emission_enabled = true
+emission = Color(0.10, 0.66, 1, 1)
+emission_energy_multiplier = 2.1
+roughness = 0.32
+
+[node name="Stage1Preview" type="Node3D"]
+
+[node name="Ground" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.17, 0)
+mesh = SubResource("GroundMesh")
+material_override = SubResource("GrassMat")
+
+[node name="MainPath" type="MeshInstance3D" parent="."]
+position = Vector3(-2.5, 0.38, 0)
+rotation_degrees = Vector3(0, -7, 0)
+mesh = SubResource("PathMesh")
+material_override = SubResource("PathMat")
+
+[node name="Waterway" type="MeshInstance3D" parent="."]
+position = Vector3(11.5, 0.43, 16.5)
+mesh = SubResource("WaterMesh")
+material_override = SubResource("WaterMat")
+
+[node name="AncientGateL" type="MeshInstance3D" parent="."]
+position = Vector3(-12.0, 2.0, -8.5)
+mesh = SubResource("RuinBlock")
+material_override = SubResource("StoneMossMat")
+
+[node name="AncientGateR" type="MeshInstance3D" parent="."]
+position = Vector3(-6.0, 2.0, -8.5)
+mesh = SubResource("RuinBlock")
+material_override = SubResource("StoneMossMat")
+
+[node name="AncientGateTop" type="MeshInstance3D" parent="."]
+position = Vector3(-9.0, 4.0, -8.5)
+mesh = SubResource("RuinLintel")
+material_override = SubResource("StoneMat")
+
+[node name="ObservationColumn1" type="MeshInstance3D" parent="."]
+position = Vector3(8.0, 2.0, -12.5)
+scale = Vector3(0.85, 1.15, 0.85)
+mesh = SubResource("RuinBlock")
+material_override = SubResource("StoneMat")
+
+[node name="ObservationColumn2" type="MeshInstance3D" parent="."]
+position = Vector3(12.3, 1.45, -13.2)
+scale = Vector3(0.78, 0.80, 0.78)
+rotation_degrees = Vector3(0, 0, 8)
+mesh = SubResource("RuinBlock")
+material_override = SubResource("StoneMossMat")
+
+[node name="ObservationLintel" type="MeshInstance3D" parent="."]
+position = Vector3(10.0, 3.7, -12.7)
+scale = Vector3(0.75, 0.80, 0.82)
+rotation_degrees = Vector3(0, 6, -5)
+mesh = SubResource("RuinLintel")
+material_override = SubResource("StoneMat")
+
+[node name="TotemNorth" type="MeshInstance3D" parent="."]
+position = Vector3(2.0, 1.35, -20.0)
+mesh = SubResource("TotemMesh")
+material_override = SubResource("GlowMat")
+
+[node name="TotemWest" type="MeshInstance3D" parent="."]
+position = Vector3(-19.0, 1.35, 4.0)
+mesh = SubResource("TotemMesh")
+material_override = SubResource("GlowMat")
+
+[node name="TotemWater" type="MeshInstance3D" parent="."]
+position = Vector3(20.0, 1.35, 14.0)
+mesh = SubResource("TotemMesh")
+material_override = SubResource("GlowMat")
+
+[node name="Tree1Trunk" type="MeshInstance3D" parent="."]
+position = Vector3(-22, 2.1, -18)
+mesh = SubResource("TrunkMesh")
+material_override = SubResource("TrunkMat")
+[node name="Tree1Canopy" type="MeshInstance3D" parent="."]
+position = Vector3(-22, 4.4, -18)
+scale = Vector3(1.15, 0.82, 1.05)
+mesh = SubResource("CanopyMesh")
+material_override = SubResource("LeafMat")
+
+[node name="Tree2Trunk" type="MeshInstance3D" parent="."]
+position = Vector3(-19, 2.1, 13)
+mesh = SubResource("TrunkMesh")
+material_override = SubResource("TrunkMat")
+[node name="Tree2Canopy" type="MeshInstance3D" parent="."]
+position = Vector3(-19, 4.45, 13)
+scale = Vector3(1.30, 0.90, 1.12)
+mesh = SubResource("CanopyMesh")
+material_override = SubResource("LeafMat")
+
+[node name="Tree3Trunk" type="MeshInstance3D" parent="."]
+position = Vector3(22, 2.1, -18)
+mesh = SubResource("TrunkMesh")
+material_override = SubResource("TrunkMat")
+[node name="Tree3Canopy" type="MeshInstance3D" parent="."]
+position = Vector3(22, 4.3, -18)
+scale = Vector3(1.05, 0.78, 1.18)
+mesh = SubResource("CanopyMesh")
+material_override = SubResource("LeafMat")
+
+[node name="Tree4Trunk" type="MeshInstance3D" parent="."]
+position = Vector3(24, 2.1, 7)
+mesh = SubResource("TrunkMesh")
+material_override = SubResource("TrunkMat")
+[node name="Tree4Canopy" type="MeshInstance3D" parent="."]
+position = Vector3(24, 4.5, 7)
+scale = Vector3(1.25, 0.88, 1.00)
+mesh = SubResource("CanopyMesh")
+material_override = SubResource("LeafMat")
+
+[node name="Tree5Trunk" type="MeshInstance3D" parent="."]
+position = Vector3(-25, 2.1, 0)
+mesh = SubResource("TrunkMesh")
+material_override = SubResource("TrunkMat")
+[node name="Tree5Canopy" type="MeshInstance3D" parent="."]
+position = Vector3(-25, 4.3, 0)
+scale = Vector3(1.00, 0.76, 1.20)
+mesh = SubResource("CanopyMesh")
+material_override = SubResource("LeafMat")
+
+[node name="Bush1" type="MeshInstance3D" parent="."]
+position = Vector3(-15, 1.05, -1)
+scale = Vector3(1.4, 0.8, 1.0)
+mesh = SubResource("BushMesh")
+material_override = SubResource("LeafMat")
+[node name="Bush2" type="MeshInstance3D" parent="."]
+position = Vector3(-13, 1.0, 8)
+scale = Vector3(1.2, 0.72, 1.3)
+mesh = SubResource("BushMesh")
+material_override = SubResource("LeafMat")
+[node name="Bush3" type="MeshInstance3D" parent="."]
+position = Vector3(15, 1.0, -4)
+scale = Vector3(1.3, 0.78, 1.0)
+mesh = SubResource("BushMesh")
+material_override = SubResource("LeafMat")
+[node name="Bush4" type="MeshInstance3D" parent="."]
+position = Vector3(6, 1.0, 21)
+scale = Vector3(1.15, 0.72, 1.25)
+mesh = SubResource("BushMesh")
+material_override = SubResource("LeafMat")
+[node name="Bush5" type="MeshInstance3D" parent="."]
+position = Vector3(-7, 1.0, -22)
+scale = Vector3(1.32, 0.76, 1.08)
+mesh = SubResource("BushMesh")
+material_override = SubResource("LeafMat")

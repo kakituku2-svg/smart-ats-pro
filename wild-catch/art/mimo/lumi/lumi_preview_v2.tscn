@@ -1,0 +1,119 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="PackedScene" path="res://art/mimo/lumi/lumi_preview.tscn" id="1_base"]
+
+[sub_resource type="SphereMesh" id="DetailSphere"]
+radius = 0.12
+height = 0.24
+radial_segments = 12
+rings = 6
+
+[sub_resource type="CapsuleMesh" id="DetailCapsule"]
+height = 0.26
+radius = 0.055
+radial_segments = 8
+rings = 4
+
+[sub_resource type="BoxMesh" id="LeafMesh"]
+size = Vector3(0.11, 0.34, 0.055)
+
+[sub_resource type="StandardMaterial3D" id="LeafDeep"]
+albedo_color = Color(0.055, 0.37, 0.18, 1)
+roughness = 0.82
+
+[sub_resource type="StandardMaterial3D" id="LeafLight"]
+albedo_color = Color(0.28, 0.82, 0.38, 1)
+roughness = 0.76
+
+[sub_resource type="StandardMaterial3D" id="FaceDark"]
+albedo_color = Color(0.045, 0.030, 0.025, 1)
+roughness = 0.58
+
+[sub_resource type="StandardMaterial3D" id="CheekMat"]
+albedo_color = Color(1, 0.48, 0.44, 0.72)
+transparency = 1
+roughness = 0.72
+
+[sub_resource type="StandardMaterial3D" id="CreamSoft"]
+albedo_color = Color(1, 0.90, 0.70, 1)
+roughness = 0.86
+
+[node name="LumiPreviewV2" instance=ExtResource("1_base")]
+
+[node name="Muzzle" type="MeshInstance3D" parent="Rig"]
+position = Vector3(0, 0.92, -0.43)
+scale = Vector3(1.35, 0.74, 0.48)
+mesh = SubResource("DetailSphere")
+material_override = SubResource("CreamSoft")
+
+[node name="Nose" type="MeshInstance3D" parent="Rig"]
+position = Vector3(0, 1.00, -0.505)
+scale = Vector3(0.50, 0.38, 0.32)
+mesh = SubResource("DetailSphere")
+material_override = SubResource("FaceDark")
+
+[node name="Mouth" type="MeshInstance3D" parent="Rig"]
+position = Vector3(0, 0.90, -0.505)
+rotation_degrees = Vector3(90, 0, 0)
+scale = Vector3(0.72, 0.62, 0.52)
+mesh = SubResource("DetailCapsule")
+material_override = SubResource("FaceDark")
+
+[node name="CheekL" type="MeshInstance3D" parent="Rig"]
+position = Vector3(-0.24, 0.93, -0.435)
+scale = Vector3(0.72, 0.46, 0.30)
+mesh = SubResource("DetailSphere")
+material_override = SubResource("CheekMat")
+
+[node name="CheekR" type="MeshInstance3D" parent="Rig"]
+position = Vector3(0.24, 0.93, -0.435)
+scale = Vector3(0.72, 0.46, 0.30)
+mesh = SubResource("DetailSphere")
+material_override = SubResource("CheekMat")
+
+[node name="EarInnerL" type="MeshInstance3D" parent="Rig"]
+position = Vector3(-0.37, 1.12, -0.035)
+rotation_degrees = Vector3(0, 0, -9)
+scale = Vector3(0.62, 1.08, 0.36)
+mesh = SubResource("DetailSphere")
+material_override = SubResource("LeafLight")
+
+[node name="EarInnerR" type="MeshInstance3D" parent="Rig"]
+position = Vector3(0.37, 1.12, -0.035)
+rotation_degrees = Vector3(0, 0, 9)
+scale = Vector3(0.62, 1.08, 0.36)
+mesh = SubResource("DetailSphere")
+material_override = SubResource("LeafLight")
+
+[node name="LeafCrownL" type="MeshInstance3D" parent="Rig"]
+position = Vector3(-0.10, 1.49, -0.01)
+rotation_degrees = Vector3(0, 0, -24)
+mesh = SubResource("LeafMesh")
+material_override = SubResource("LeafDeep")
+
+[node name="LeafCrownR" type="MeshInstance3D" parent="Rig"]
+position = Vector3(0.10, 1.49, 0.00)
+rotation_degrees = Vector3(0, 0, 24)
+mesh = SubResource("LeafMesh")
+material_override = SubResource("LeafLight")
+
+[node name="LeafTail" type="MeshInstance3D" parent="Rig"]
+position = Vector3(0, 0.49, 0.39)
+rotation_degrees = Vector3(66, 0, 0)
+scale = Vector3(1.20, 1.00, 1.10)
+mesh = SubResource("LeafMesh")
+material_override = SubResource("LeafDeep")
+
+[node name="BrowL" type="MeshInstance3D" parent="Rig"]
+position = Vector3(-0.15, 1.15, -0.44)
+rotation_degrees = Vector3(0, 0, -8)
+scale = Vector3(0.80, 0.50, 0.45)
+mesh = SubResource("LeafMesh")
+material_override = SubResource("FaceDark")
+
+[node name="BrowR" type="MeshInstance3D" parent="Rig"]
+position = Vector3(0.15, 1.15, -0.44)
+rotation_degrees = Vector3(0, 0, 8)
+scale = Vector3(0.80, 0.50, 0.45)
+mesh = SubResource("LeafMesh")
+material_override = SubResource("FaceDark")

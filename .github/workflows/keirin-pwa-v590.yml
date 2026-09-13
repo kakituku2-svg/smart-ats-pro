@@ -31,7 +31,28 @@ jobs:
           cp -R keirin-race-gate _site
           python3 - <<'PY'
           from pathlib import Path
-          p=Path('_site/index.html')
+          def upgrade(path):
+              p=Path(path)
+              s=p.read_text(encoding='utf-8')
+              s=s.replace('v5.7.0','v5.9.0')
+              s=s.replace('version: \\"5.7.0\\";','version: \\"5.9.0\\";')
+              s=s.replace('var SPEC_VERSION = "5.7.0";','var SPEC_VERSION = "5.9.0";')
+              if 'human-context-v58.js' not in s:
+                  s=s.replace('</body>','  <script src="./human-context-v58.js?rev=5.9.0-r1"></script>\n</body>')
+              p.write_text(s,encoding='utf-8')
+          upgrade('_site/index.html')
+          PY
+
+          # Keep the original public root URL working:
+          # https://kakituku2-svg.github.io/smart-ats-pro/?utm_source=chatgpt.com
+          test -f _site/index.html
+
+          # Also support the previously shared nested URL.
+          mkdir -p _site/keirin-race-gate
+          cp -R keirin-race-gate/. _site/keirin-race-gate/
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('_site/keirin-race-gate/index.html')
           s=p.read_text(encoding='utf-8')
           s=s.replace('v5.7.0','v5.9.0')
           s=s.replace('version: \\"5.7.0\\";','version: \\"5.9.0\\";')
@@ -40,8 +61,14 @@ jobs:
               s=s.replace('</body>','  <script src="./human-context-v58.js?rev=5.9.0-r1"></script>\n</body>')
           p.write_text(s,encoding='utf-8')
           PY
+
+          cat > _site/404.html <<'EOF'
+          <!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>KEIRIN RACE GATE</title><script>location.replace('/smart-ats-pro/'+location.search+location.hash);</script></head><body></body></html>
+          EOF
+
           grep -q "v5.9.0" _site/index.html
           grep -q "human-context-v58.js?rev=5.9.0-r1" _site/index.html
+          grep -q "v5.9.0" _site/keirin-race-gate/index.html
           grep -q "SELF_AUDIT_LOGIC_V590" _site/human-context-v58.js
           grep -q "THIRD_PLACE_INTRUSION_AUDIT_V590" _site/human-context-v58.js
           grep -q "OUTPUT_SELF_CHECK_V590" _site/human-context-v58.js

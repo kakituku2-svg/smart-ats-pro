@@ -1,0 +1,19 @@
+plugins { id 'com.android.application' }
+
+android {
+    namespace 'io.github.kakituku2svg.keirinracegate'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId 'io.github.kakituku2svg.keirinracegate'
+        minSdk 24
+        targetSdk 35
+        versionCode 580
+        versionName '5.8.0'
+    }
+
+    buildTypes {
+        release { minifyEnabled false }
+        debug { minifyEnabled false }
+    }
+}

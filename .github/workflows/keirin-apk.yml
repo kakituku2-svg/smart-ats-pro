@@ -30,7 +30,10 @@ jobs:
           cp keirin-race-gate/icon.svg keirin-race-gate/android-shell/app/src/main/assets/
           python3 - <<'PY'
           from pathlib import Path
-          p=Path('keirin-race-gate/android-shell/app/src/main/assets/index.html')
+
+          assets=Path('keirin-race-gate/android-shell/app/src/main/assets')
+
+          p=assets/'index.html'
           s=p.read_text(encoding='utf-8')
           s=s.replace('<link rel="manifest" href="./manifest.webmanifest" />','')
           if 'premium-ui-v580.css' not in s:
@@ -42,7 +45,22 @@ jobs:
           if scripts: s=s.replace('</body>','\n'.join(scripts)+'\n</body>')
           s=s.replace("navigator.serviceWorker.register('./sw.js')","Promise.resolve()")
           p.write_text(s,encoding='utf-8')
+
+          # Keep all v5.10 forecast logic intact. Only align the Android-visible release badge/toolbar.
+          h=assets/'human-context-v58.js'
+          hs=h.read_text(encoding='utf-8')
+          hs=hs.replace("if (badge) badge.innerHTML = '<i></i>v5.10.0 · HUMAN CONTEXT / COLLAPSE AUDIT';",
+                        "if (badge) badge.innerHTML = '<i></i>v5.8.0 · LIVE DATA / EV';")
+          hs=hs.replace("if (toolbar) toolbar.innerHTML = '<i></i>AI予想プロンプト · v5.10.0';",
+                        "if (toolbar) toolbar.innerHTML = '<i></i>AI予想プロンプト · UI v5.8.0 / LOGIC v5.10.0';")
+          h.write_text(hs,encoding='utf-8')
           PY
+
+          grep -q "v5.8.0 · LIVE DATA / EV" keirin-race-gate/android-shell/app/src/main/assets/human-context-v58.js
+          grep -q "SELF_AUDIT_LOGIC_V510" keirin-race-gate/android-shell/app/src/main/assets/human-context-v58.js
+          grep -q "COLLAPSE_THIRD_SURVIVOR_AUDIT_V510" keirin-race-gate/android-shell/app/src/main/assets/human-context-v58.js
+          grep -q "TAIL_RISK_THIRD_SURVIVOR_V510" keirin-race-gate/android-shell/app/src/main/assets/human-context-v58.js
+          grep -q "premium-ui-v580.js" keirin-race-gate/android-shell/app/src/main/assets/index.html
 
       - uses: actions/setup-java@v4
         with:

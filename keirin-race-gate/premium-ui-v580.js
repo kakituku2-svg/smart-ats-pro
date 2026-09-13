@@ -2,7 +2,7 @@
   'use strict';
 
   const UI_VERSION = '5.8.0';
-  const LOGIC_VERSION = '5.9.0';
+  const LOGIC_VERSION = '5.10.0';
 
   function q(sel, root=document){ return root.querySelector(sel); }
   function qa(sel, root=document){ return [...root.querySelectorAll(sel)]; }
@@ -59,15 +59,18 @@
     gen.insertAdjacentElement('afterend',section);
   }
 
-  // No fictitious values are rendered. Cards appear only when actual generated text contains
-  // explicit BUY/SKIP and usable odds/EV tokens from the existing prediction output.
+  // The prompt generator itself does not fabricate prediction results.
+  // Decision cards render only when a future/connected result engine explicitly marks
+  // #prompt-output with data-result-mode="live" and outputs [LIVE_RESULT] rows.
   function syncDecisionCards(){
     const out=q('#prompt-output');
     const result=q('.result-card');
     if(!out || !result) return;
     let holder=q('.premium-decision-list',result);
+    const isLive=out.dataset && out.dataset.resultMode==='live';
+    if(!isLive){ if(holder) holder.remove(); return; }
     const text=(out.value||out.textContent||'').trim();
-    const lines=text.split(/\n+/).map(s=>s.trim()).filter(Boolean);
+    const lines=text.split(/\n+/).map(s=>s.trim()).filter(s=>/^\[LIVE_RESULT\]/.test(s));
     const matches=[];
     for(const line of lines){
       if(!/\b(BUY|SKIP)\b/i.test(line)) continue;
@@ -75,7 +78,7 @@
       const status=/\bBUY\b/i.test(line)?'BUY':'SKIP';
       const ev=(line.match(/EV\s*[:=]?\s*([+\-]?\d+(?:\.\d+)?%?)/i)||[])[1]||'';
       const odds=(line.match(/(?:オッズ|odds)\s*[:=]?\s*(\d+(?:\.\d+)?)/i)||[])[1]||'';
-      const combo=(line.match(/(?:3連単|3連複|2車単)[^\n]{0,40}/)||[])[0]||line.slice(0,60);
+      const combo=(line.match(/(?:3連単|3連複|2車単)[^\n]{0,40}/)||[])[0]||line.replace(/^\[LIVE_RESULT\]\s*/,'').slice(0,60);
       matches.push({status,ev,odds,combo});
       if(matches.length>=4) break;
     }
@@ -107,7 +110,6 @@
       const item=labels[Number(btn.dataset.pnav)];
       if(item?.tab){ item.tab.click(); window.scrollTo({top:0,behavior:'smooth'}); }
     }));
-    tabs.forEach(()=>{});
     const sync=()=>qa('button',nav).forEach((btn,i)=>btn.classList.toggle('active',labels[i].tab.getAttribute('aria-selected')==='true'));
     tabs.forEach(t=>t.addEventListener('click',()=>setTimeout(sync,0)));
   }

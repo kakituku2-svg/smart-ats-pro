@@ -1,0 +1,68 @@
+name: KEIRIN RACE GATE Android APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "keirin-race-gate/**"
+      - ".github/workflows/keirin-apk.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Prepare shared web assets
+        run: |
+          rm -rf keirin-race-gate/android-shell/app/src/main/assets
+          mkdir -p keirin-race-gate/android-shell/app/src/main/assets
+          cp keirin-race-gate/index.html keirin-race-gate/android-shell/app/src/main/assets/index.html
+          cp keirin-race-gate/premium-ui-v580.css keirin-race-gate/android-shell/app/src/main/assets/
+          cp keirin-race-gate/premium-ui-v580.js keirin-race-gate/android-shell/app/src/main/assets/
+          cp keirin-race-gate/tail-risk-v5.js keirin-race-gate/android-shell/app/src/main/assets/
+          cp keirin-race-gate/human-context-v58.js keirin-race-gate/android-shell/app/src/main/assets/
+          cp keirin-race-gate/icon.svg keirin-race-gate/android-shell/app/src/main/assets/
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('keirin-race-gate/android-shell/app/src/main/assets/index.html')
+          s=p.read_text(encoding='utf-8')
+          s=s.replace('<link rel="manifest" href="./manifest.webmanifest" />','')
+          if 'premium-ui-v580.css' not in s:
+              s=s.replace('</head>','<link rel="stylesheet" href="./premium-ui-v580.css">\n</head>')
+          scripts=[]
+          if 'tail-risk-v5.js' not in s: scripts.append('<script src="./tail-risk-v5.js"></script>')
+          if 'human-context-v58.js' not in s: scripts.append('<script src="./human-context-v58.js"></script>')
+          if 'premium-ui-v580.js' not in s: scripts.append('<script src="./premium-ui-v580.js"></script>')
+          if scripts: s=s.replace('</body>','\n'.join(scripts)+'\n</body>')
+          s=s.replace("navigator.serviceWorker.register('./sw.js')","Promise.resolve()")
+          p.write_text(s,encoding='utf-8')
+          PY
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - name: Install SDK
+        run: |
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.10.2'
+      - name: Build APK
+        working-directory: keirin-race-gate/android-shell
+        run: gradle :app:assembleDebug --stacktrace
+      - name: Prepare artifact
+        run: cp keirin-race-gate/android-shell/app/build/outputs/apk/debug/app-debug.apk KEIRIN-RACE-GATE-v5.8.0-debug.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: KEIRIN-RACE-GATE-v5.8.0-APK
+          path: KEIRIN-RACE-GATE-v5.8.0-debug.apk
+          retention-days: 30

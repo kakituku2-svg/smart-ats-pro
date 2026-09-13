@@ -1,0 +1,52 @@
+name: Deploy KEIRIN RACE GATE v5.9.0
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "keirin-race-gate/**"
+      - ".github/workflows/keirin-pwa-v590.yml"
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "keirin-pages"
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build public v5.9.0 bundle
+        run: |
+          rm -rf _site
+          cp -R keirin-race-gate _site
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('_site/index.html')
+          s=p.read_text(encoding='utf-8')
+          s=s.replace('v5.7.0','v5.9.0')
+          s=s.replace('version: \\"5.7.0\\";','version: \\"5.9.0\\";')
+          s=s.replace('var SPEC_VERSION = "5.7.0";','var SPEC_VERSION = "5.9.0";')
+          if 'human-context-v58.js' not in s:
+              s=s.replace('</body>','  <script src="./human-context-v58.js?rev=5.9.0-r1"></script>\n</body>')
+          p.write_text(s,encoding='utf-8')
+          PY
+          grep -q "v5.9.0" _site/index.html
+          grep -q "human-context-v58.js?rev=5.9.0-r1" _site/index.html
+          grep -q "SELF_AUDIT_V59" _site/human-context-v58.js
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: ./_site
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

@@ -42,7 +42,9 @@ jobs:
           PY
           grep -q "v5.9.0" _site/index.html
           grep -q "human-context-v58.js?rev=5.9.0-r1" _site/index.html
-          grep -q "SELF_AUDIT_V59" _site/human-context-v58.js
+          grep -q "SELF_AUDIT_LOGIC_V590" _site/human-context-v58.js
+          grep -q "THIRD_PLACE_INTRUSION_AUDIT_V590" _site/human-context-v58.js
+          grep -q "OUTPUT_SELF_CHECK_V590" _site/human-context-v58.js
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v4
         with:

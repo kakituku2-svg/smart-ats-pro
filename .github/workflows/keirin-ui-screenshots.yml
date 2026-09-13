@@ -32,63 +32,97 @@ jobs:
           p=Path('_shot_site/index.html')
           s=p.read_text(encoding='utf-8')
           if 'premium-ui-v580.css' not in s:
-              s=s.replace('</head>','<link rel="stylesheet" href="./premium-ui-v580.css?rev=5.8.0-r1">\n</head>')
+              s=s.replace('</head>','<link rel="stylesheet" href="./premium-ui-v580.css?rev=5.8.0-r2">\n</head>')
           scripts=[]
           if 'tail-risk-v5.js' not in s: scripts.append('<script src="./tail-risk-v5.js?rev=5.8.0-r1"></script>')
           if 'human-context-v58.js' not in s: scripts.append('<script src="./human-context-v58.js?rev=5.10.0-r1"></script>')
-          if 'premium-ui-v580.js' not in s: scripts.append('<script src="./premium-ui-v580.js?rev=5.8.0-r1"></script>')
+          if 'premium-ui-v580.js' not in s: scripts.append('<script src="./premium-ui-v580.js?rev=5.8.0-r2"></script>')
           if scripts: s=s.replace('</body>','\n'.join(scripts)+'\n</body>')
           p.write_text(s,encoding='utf-8')
+
+          # Screenshot copy keeps all forecast logic but disables the DOM observer loop,
+          # which is unnecessary for a static capture and can keep Chromium repainting forever.
+          h=Path('_shot_site/human-context-v58.js')
+          hs=h.read_text(encoding='utf-8')
+          hs=hs.replace("if (badge) badge.innerHTML = '<i></i>v5.10.0 · HUMAN CONTEXT / COLLAPSE AUDIT';",
+                        "if (badge) badge.innerHTML = '<i></i>v5.8.0 · LIVE DATA / EV';")
+          hs=hs.replace("observer.observe(document.documentElement, { childList: true, subtree: true });",
+                        "/* observer disabled in screenshot harness only */")
+          h.write_text(hs,encoding='utf-8')
           PY
       - name: Install Playwright Chromium
         run: |
           npm init -y >/dev/null 2>&1
           npm install playwright@1.55.0 >/dev/null 2>&1
           npx playwright install --with-deps chromium
-      - name: Capture actual app screens
+      - name: Capture actual app screens and run UI QA
         run: |
           mkdir -p keirin-race-gate/media
           python3 -m http.server 4173 --directory _shot_site >/tmp/keirin-http.log 2>&1 &
           sleep 2
-          cat > /tmp/capture.cjs <<'JS'
+          cat > capture-keirin.cjs <<'JS'
           const { chromium } = require('playwright');
+          const assert = (v,m)=>{ if(!v) throw new Error(`QA: ${m}`); };
           (async()=>{
             const browser=await chromium.launch({headless:true});
             const page=await browser.newPage({viewport:{width:390,height:844},deviceScaleFactor:2,isMobile:true,hasTouch:true});
-            await page.goto('http://127.0.0.1:4173/?capture=1',{waitUntil:'networkidle'});
-            await page.screenshot({path:'keirin-race-gate/media/01-top-race-select.png',fullPage:false});
-            await page.screenshot({path:'keirin-race-gate/media/05-mobile-full.png',fullPage:true});
+            page.setDefaultTimeout(8000);
+            await page.goto('http://127.0.0.1:4173/?capture=1',{waitUntil:'domcontentloaded'});
+            await page.addStyleTag({content:'*,*::before,*::after{animation:none!important;transition:none!important;caret-color:transparent!important}'});
+            await page.waitForTimeout(500);
+
+            const badge=(await page.locator('.paper-badge').first().textContent())||'';
+            assert(badge.includes('v5.8.0'),'visible UI version is not v5.8.0');
+            assert(await page.locator('input[type="date"]').count(),'date input missing');
+            assert(await page.locator('select').count(),'venue select missing');
+            assert(await page.locator('.round-button').count(),'round buttons missing');
+            assert(await page.locator('button[type="submit"],#generate-button,.generate-button').count(),'generate CTA missing');
+            const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
+            assert(overflow<=1,`horizontal overflow detected: ${overflow}px`);
+
+            await page.screenshot({path:'keirin-race-gate/media/01-top-race-select.png',fullPage:false,animations:'disabled',timeout:10000});
+
             const date=page.locator('input[type="date"]').first();
-            if(await date.count()) await date.fill('2026-09-13');
+            await date.fill('2026-09-13');
             const select=page.locator('select').first();
-            if(await select.count()){
-              const opts=await select.locator('option').evaluateAll(os=>os.map(o=>o.value).filter(Boolean));
-              if(opts.length) await select.selectOption(opts[0]);
-            }
+            const opts=await select.locator('option').evaluateAll(os=>os.map(o=>o.value).filter(Boolean));
+            assert(opts.length>0,'venue options missing');
+            await select.selectOption(opts[0]);
             const round=page.locator('.round-button').first();
-            if(await round.count()) await round.click();
+            await round.click();
             const submit=page.locator('button[type="submit"],#generate-button,.generate-button').first();
-            if(await submit.count()) await submit.click();
-            await page.waitForTimeout(700);
+            await submit.click();
+            await page.waitForTimeout(500);
+
+            const out=page.locator('#prompt-output').first();
+            assert(await out.count(),'prompt output missing after generate');
+            const promptValue=await out.inputValue().catch(async()=>await out.textContent());
+            assert((promptValue||'').length>300,'generated prompt is unexpectedly short');
+            assert(/HUMAN_CONTEXT|SELF_AUDIT|COLLAPSE|TRIO/i.test(promptValue||''),'latest prediction logic markers not found in generated prompt');
+
             const result=page.locator('.result-card').first();
             if(await result.count()){
               await result.scrollIntoViewIfNeeded();
-              await page.screenshot({path:'keirin-race-gate/media/02-prompt-generated.png',fullPage:false});
+              await page.screenshot({path:'keirin-race-gate/media/02-prompt-generated.png',fullPage:false,animations:'disabled',timeout:10000});
             }
             const features=page.locator('.premium-feature-grid').first();
             if(await features.count()){
               await features.scrollIntoViewIfNeeded();
-              await page.screenshot({path:'keirin-race-gate/media/03-analysis-features.png',fullPage:false});
+              await page.screenshot({path:'keirin-race-gate/media/03-analysis-features.png',fullPage:false,animations:'disabled',timeout:10000});
             }
-            const out=page.locator('#prompt-output').first();
-            if(await out.count()){
-              await out.scrollIntoViewIfNeeded();
-              await page.screenshot({path:'keirin-race-gate/media/04-ev-buy-skip-prompt.png',fullPage:false});
-            }
+            await out.scrollIntoViewIfNeeded();
+            await page.screenshot({path:'keirin-race-gate/media/04-ev-buy-skip-logic.png',fullPage:false,animations:'disabled',timeout:10000});
+
+            await page.evaluate(()=>window.scrollTo(0,0));
+            await page.screenshot({path:'keirin-race-gate/media/05-mobile-full.png',fullPage:true,animations:'disabled',timeout:15000});
+
+            const copy=page.locator('#copy-button,.copy-button').first();
+            assert(await copy.count(),'copy button missing');
+            console.log('UI_QA_OK', JSON.stringify({badge,overflow,promptLength:(promptValue||'').length,venueOptions:opts.length}));
             await browser.close();
           })().catch(e=>{console.error(e);process.exit(1)});
           JS
-          NODE_PATH="$PWD/node_modules" node /tmp/capture.cjs
+          node capture-keirin.cjs
       - name: Commit real screenshots
         run: |
           git config user.name "github-actions[bot]"

@@ -1,10 +1,10 @@
 (() => {
   'use strict';
 
-  const VERSION = '5.7.0';
+  const VERSION = '5.8.0';
   const FORECAST_BLOCK = `
 
-DATA_FRESHNESS_GATE_V57 {
+DATA_FRESHNESS_GATE_V58 {
   purpose: "古いページや結果確定後の情報を混入させず、発走前の最新公開情報で予想する";
   immutable_target: [race_date, venue, race_no];
   capture_before_analysis: [current_JST_time, scheduled_start_time_if_available, source_name, source_updated_time_if_available];
@@ -16,7 +16,7 @@ DATA_FRESHNESS_GATE_V57 {
   never_use: [result, payout, post_race_article, post_result_update, knowledge_of_finish_order];
 }
 
-RACE_VALUE_SELECTION_V57 {
+RACE_VALUE_SELECTION_V58 {
   purpose: "買い目作成前に、そのレース自体を買う価値があるか採点する";
   score_0_to_100_from: [first_place_clarity, first_second_relation_clarity, top3_pool_clarity, lineup_clarity, scenario_branch_count, recent_form_readability, current_odds_value, data_freshness];
   grade: { S: "80-100"; A: "70-79"; B: "60-69"; C: "50-59"; SKIP: "0-49"; };
@@ -25,7 +25,7 @@ RACE_VALUE_SELECTION_V57 {
   output: [score, grade, one_sentence_reason];
 }
 
-HEAD_PLACE_SEPARATION_V57 {
+HEAD_PLACE_SEPARATION_V58 {
   purpose: "勝てる選手と、2・3着に残る選手を完全に分けて評価する";
   HEAD_SCORE_inputs: [rating_score, win_rate, self_power, B_count, H_count, nige, makuri, sashi, current_form, line_advantage, likely_control];
   PLACE_SCORE_inputs: [top3_rate, top2_rate, recent_second_third_finishes, second_or_third_wheel_position, front_strength, energy_saving, inside_path, tracking_stability, scenario_fit];
@@ -35,7 +35,7 @@ HEAD_PLACE_SEPARATION_V57 {
   third_wheel_rule: "3車ライン3番手を自動3着にも自動消しにもせず、別線自力・単騎・残存型とPLACE_SCOREで比較";
 }
 
-PROBABILITY_PRICE_EV_V57 {
+PROBABILITY_PRICE_EV_V58 {
   purpose: "最頻結果と最も買う価値が高い買い目を分離する";
   strict_order: [scenario_probability_model, top3_set_probability, exact_order_probability, current_odds_check, fair_odds, minimum_acceptable_odds, EV, BUY_OR_SKIP];
   fair_odds_formula: "1 / model_probability";
@@ -63,15 +63,49 @@ APP_MODE_FORECAST_ONLY {
   first_response_rule: "前置きや工程説明から始めず、取得できた事前情報に基づくレース分析と予想をすぐ提示する";
 }
 
-TRIO_FIRST_ENGINE {
+TRIO_FIRST_ENGINE_V58 {
   purpose: "1着固定から組み立てる前に、3着以内に残る3人集合を独立評価し、3連複の再現性を高める";
   order_of_reasoning: [top3_survival_probability_by_rider, viable_three_rider_sets, exact_order_expansion];
   score_each_rider_for: [win, second, third, top3];
   build_3_to_6_live_trios_before_exact_order: true;
   retain_only_scenario_backed_trios: true;
   inspect: [main_line_survival, front_plus_second_wheel, second_plus_third_wheel, rival_whole_line, cross_line_residual, solo_intrusion, current_meeting_form_pair, low_win_high_top3_profile];
+  rival_front_to_bante_substitution_rule: "別線自力を3着候補以上に残した場合、その自力が脚を使って失速し番手だけが残る置換を必ず1回検査する";
+  secondary_trio_head_promotion_rule: "本線だけでなく次点TRIOに含めた別線自力・捲り型・好調選手について1着昇格シナリオを最低1本作る";
   reject: [blind_box, popularity_copy, score_rank_only, mutually_exclusive_survival];
   output: "最終的には推奨3連複だけに絞り、候補生成過程を冗長に列挙しない";
+}
+
+COLLAPSE_THIRD_SURVIVOR_ENGINE_V58 {
+  purpose: "崩壊シナリオの骨格を読めても3人目を固定し過ぎて取りこぼす問題を防ぐ";
+  trigger_if: [axis_failure_scenario, front_collapse_scenario, pace_duel, multi_self_power_aggression, two_survivors_have_clear_causal_path];
+  step_1_lock_only_two_survivors: "崩壊時に因果が強い2人だけ先に仮固定し、3人目はまだ決めない";
+  step_2_rebuild_third_pool_from_four_families: [
+    NORMAL_AXIS_SOLO_SURVIVAL,
+    RIVAL_LINE_SECOND_OR_THIRD_WHEEL,
+    ORIGINAL_LINE_SECOND_OR_THIRD_WHEEL_AFTER_FRONT_COLLAPSE,
+    SOLO_OR_CLOSER_INTRUSION
+  ];
+  third_candidate_score_inputs: [PLACE_SCORE, current_meeting_content, recent_3_5_meets, energy_saving, expected_position, line_role, pace_benefit, comment_to_tactics, bank_fit, market_gap_after_model];
+  do_not_anchor_third_to_original_scenario: true;
+  compare_at_least_three_third_candidates_if_available: true;
+  allow_multiple_tail_risk_trios_with_same_two_survivors: true;
+  max_variants_same_two_survivors: 3;
+  cross_line_back_only_pattern: "複数自力が勝負意欲から動き合う場合、各ラインの前が消耗し番手・3番手だけが横断的に残る集合を独立検査";
+  keep_normal_axis_as_third_rule: "軸飛び以外の前崩れでは、通常軸だけが3着に単独残存する形を必ず候補に残す";
+  no_random_rotation: true;
+  reject: [blind_third_rotation, odds_only_third_selection, popularity_only_third_selection, full_box];
+}
+
+HUMAN_FACTOR_TO_BENEFICIARY_V58 {
+  purpose: "地元・初優勝・未勝利・決勝・ライン責任・悔しさ等の人的要因を本人評価だけで終わらせない";
+  transform_chain: [human_context, likely_behavior_change, energy_use_or_position_change, who_benefits, who_is_harmed, trio_impact];
+  examples: [
+    "勝ちたい自力→早仕掛け→本人消耗→番手差し/3番手残存",
+    "地元で責任感→主導権争い→別線番手・単騎に展開利",
+    "前走何もできず悔しい→積極策→本人ではなく後位へ利益移転"
+  ];
+  rule: "人的要因を理由に本人を機械的に上方評価しない。必ず恩恵を受ける選手まで評価する";
 }
 
 AXIS_FAILURE_SCORE {
@@ -108,23 +142,26 @@ COMMENT_TO_TACTICS {
   never: [invent_old_comments, claim_deterministic_behavior_from_one_comment, overrule_strong_form_with_one_negative_comment];
 }
 
-TAIL_RISK_100_V56 {
-  purpose: "本線とは別に、軸飛び世界で説明可能な高配当を100円参考枠で残す";
+TAIL_RISK_100_V58 {
+  purpose: "本線とは別に、軸飛び・前崩れ世界で説明可能な高配当を100円参考枠で残す";
   mandatory_axis_out_scenario_check: true;
   rebuild_without_main_axis: true;
   trio_first: true;
+  apply_collapse_third_survivor_engine: true;
   max_trio_candidates: 3;
   max_trifecta_candidates: 3;
   reference_stake_each: 100_JPY;
   trio_priority: [100_plus_odds, 50_to_100_with_strong_causal_path];
   trifecta_priority: [100_plus_odds, 200_plus_odds];
-  candidate_sources: [current_meeting_top2_low_score, underrated_whole_line_survival, front_collapse_second_third_survive, pace_duel_solo_closer_rise, third_candidate_to_first_or_second, cross_line_residual];
+  candidate_sources: [current_meeting_top2_low_score, underrated_whole_line_survival, front_collapse_second_third_survive, pace_duel_solo_closer_rise, third_candidate_to_first_or_second, cross_line_residual, cross_line_back_only_survival, normal_axis_solo_plus_other_back_positions];
+  third_survivor_policy: "2人まで因果が強く決まったら3人目を固定せず、通常軸単独残存・別線番手/3番手・元ライン後位・単騎/追込から再比較する";
+  same_two_survivor_variants: "同じ2人を核に、3人目だけ違う高配当3連複を最大3点まで許可。ただし各点に独立した事前根拠が必要";
   trifecta_only_if_exact_order_has_causal_edge: true;
-  reject: [odds_only, popularity_only, blind_box, total_spread, random_permutation];
+  reject: [odds_only, popularity_only, blind_box, total_spread, random_permutation, rigid_third_survivor_lock];
   if_none: "高配当保険なし";
 }
 
-PORTFOLIO_DECISION_V56 {
+PORTFOLIO_DECISION_V58 {
   purpose: "的中率最大化ではなく、長期の総合収支を改善するため券種と強弱を選ぶ";
   separate: [MOST_LIKELY_OUTCOME, BEST_VALUE_TICKET];
   main_trio_first: true;
@@ -135,7 +172,7 @@ PORTFOLIO_DECISION_V56 {
   if_value_is_poor: "本命でも見送り・薄めを許可";
 }
 
-DIRECT_OUTPUT_CONTRACT_V57 {
+DIRECT_OUTPUT_CONTRACT_V58 {
   language: JAPANESE;
   start_immediately_with_analysis: true;
   no_process_preamble: true;
@@ -150,13 +187,14 @@ DIRECT_OUTPUT_CONTRACT_V57 {
     "3. 結論：最も起こりやすい結果と最も買う価値が高い目を分離",
     "4. 選手別の直近3〜5場所＋当開催内容（着順ではなく何が良い/悪いかまで）",
     "5. ライン・脚質人数構成、HEAD順位、PLACE順位",
-    "6. 直近コメントと展開への影響。確認できれば似たコメント時の過去挙動も補助表示",
+    "6. 直近コメント・人的要因→行動→恩恵を受ける選手まで展開変換",
     "7. 想定展開：最頻・逆転・妙味・踏み合い崩れ・軸飛び",
-    "8. TRIO-FIRSTで残す3人集合と3連複",
-    "9. 順序根拠が強い2車単・3連単",
-    "10. 確率・フェア・最低許容・現在オッズ・EV・MARKET GAP付き最終推奨3〜6点",
-    "11. AXIS FAILURE SCORE",
-    "12. 高配当保険100円：3連複優先、必要時のみ3連単"
+    "8. TRIO-FIRSTで残す3人集合と3連複。次点TRIOの頭昇格も検査",
+    "9. 崩壊時は2人を核に3人目を4系統から再選抜した候補",
+    "10. 順序根拠が強い2車単・3連単",
+    "11. 確率・フェア・最低許容・現在オッズ・EV・MARKET GAP付き最終推奨3〜6点",
+    "12. AXIS FAILURE SCORE",
+    "13. 高配当保険100円：3連複優先、必要時のみ3連単"
   ];
   final_ticket_table_columns: [区分, 券種, 買い目, 想定確率帯, フェアオッズ, 最低許容, 現在オッズ, EV, MARKET_GAP, BUY_SKIP, 狙う展開, 金額];
   stake_rule: "100円単位。予算不明なら相対配分。本線を含めても価格不適正なら見送り。無理に予算を使い切らない";
@@ -164,23 +202,24 @@ DIRECT_OUTPUT_CONTRACT_V57 {
   closing_rule: "予想と買い目を提示したら終了。ユーザーが求めていない検証計画や運用説明を追加しない";
 }
 
-EXECUTE_FORECAST_NOW_V57: "TARGETの最新事前公開情報を調査し、DIRECT_OUTPUT_CONTRACT_V57の順で直ちに予想と買い目を返す。";`;
+EXECUTE_FORECAST_NOW_V58: "TARGETの最新事前公開情報を調査し、DIRECT_OUTPUT_CONTRACT_V58の順で直ちに予想と買い目を返す。";`;
 
   function patchVersionUI() {
     const badge = document.querySelector('.paper-badge');
-    if (badge) badge.innerHTML = '<i></i>v5.7.0 · LIVE DATA / EV';
+    if (badge) badge.innerHTML = '<i></i>v5.8.0 · LIVE DATA / EV';
     const toolbar = document.querySelector('.prompt-toolbar span');
-    if (toolbar) toolbar.innerHTML = '<i></i>AI予想プロンプト · v5.7.0';
+    if (toolbar) toolbar.innerHTML = '<i></i>AI予想プロンプト · v5.8.0';
     const lead = document.querySelector('.strict-lead');
-    if (lead) lead.textContent = '開催日・開催場・Rを選ぶだけ。最新の事前データを確認し、3人集合→着順→価格→EV→軸飛び高配当の順で分析するAI用プロンプトを生成します。';
+    if (lead) lead.textContent = '開催日・開催場・Rを選ぶだけ。最新事前データから3人集合→着順→価格→EV→崩壊時の第三残存者再選抜まで行うAI用プロンプトを生成します。';
     const footer = document.querySelector('footer small');
-    if (footer) footer.textContent = 'v5.7.0 · 20歳以上 / 予想支援ツール';
+    if (footer) footer.textContent = 'v5.8.0 · 20歳以上 / 予想支援ツール';
     const androidLink = document.querySelector('.android-download-button');
-    if (androidLink) androidLink.setAttribute('href', './downloads/KEIRIN-RACE-GATE-Android-Standalone-v5.7.0.apk');
+    if (androidLink) androidLink.setAttribute('href', './downloads/KEIRIN-RACE-GATE-Android-Standalone-v5.8.0.apk');
   }
 
   function stripLegacyInjected(value) {
     const startMarkers = [
+      'DATA_FRESHNESS_GATE_V58 {',
       'DATA_FRESHNESS_GATE_V57 {',
       'TAIL_RISK_100 {',
       'AXIS_FAILURE_TAIL_RISK {',
@@ -202,7 +241,7 @@ EXECUTE_FORECAST_NOW_V57: "TARGETの最新事前公開情報を調査し、DIREC
   function sanitizeBasePrompt(value) {
     value = value
       .replace(/v4\.9\.0/g, `v${VERSION}`)
-      .replace(/v5\.[0-6]\.0/g, `v${VERSION}`)
+      .replace(/v5\.[0-7]\.0/g, `v${VERSION}`)
       .replace(/freeze_rule:\s*USE_ONLY_INFORMATION_AVAILABLE_BEFORE_TARGET_RACE_RESULT;/g, 'pre_race_only_rule: USE_ONLY_INFORMATION_AVAILABLE_BEFORE_TARGET_RACE_RESULT;')
       .replace(/FINAL_PRE_RACE_AUDIT \{/g, 'PRE_OUTPUT_QUALITY_AUDIT {')
       .replace(/EXECUTE_NOW:\s*Research TARGET and return the forecast using OUTPUT_CONTRACT\.;?/g, '');
@@ -241,7 +280,7 @@ EXECUTE_FORECAST_NOW_V57: "TARGETの最新事前公開情報を調査し、DIREC
         const out = document.getElementById('prompt-output');
         if (out) {
           const bad = selfTest(out.value);
-          if (bad.length) console.error('v5.7 prompt guard failed:', bad);
+          if (bad.length) console.error('v5.8 prompt guard failed:', bad);
         }
       }, 0);
       setTimeout(patchPrompt, 80);

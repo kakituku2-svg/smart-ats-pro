@@ -39,7 +39,6 @@ jobs:
           def inject_index(path, prefix='./'):
               p=Path(path)
               s=p.read_text(encoding='utf-8')
-              # Presentation release is UI v5.8.0. Do not rewrite prediction-engine prompt versions.
               s=s.replace('<!-- KEIRIN AI RACE GATE v5.7.0 iPhone PWA -->','<!-- KEIRIN RACE GATE Premium UI v5.8.0 / prediction logic preserved -->')
               css=f'<link rel="stylesheet" href="{prefix}premium-ui-v580.css?rev=5.8.0-r1" />'
               if 'premium-ui-v580.css' not in s:
@@ -58,7 +57,6 @@ jobs:
           def patch_human_ui(path):
               p=Path(path)
               s=p.read_text(encoding='utf-8')
-              # Keep v5.10.0 logic and generated-prompt markers intact; only the visible app release badge is UI v5.8.0.
               s=s.replace("if (badge) badge.innerHTML = '<i></i>v5.10.0 · HUMAN CONTEXT / COLLAPSE AUDIT';",
                           "if (badge) badge.innerHTML = '<i></i>v5.8.0 · LIVE DATA / EV';")
               s=s.replace("if (toolbar) toolbar.innerHTML = '<i></i>AI予想プロンプト · v5.10.0';",
@@ -68,7 +66,6 @@ jobs:
           inject_index('_site/index.html','./')
           patch_human_ui('_site/human-context-v58.js')
 
-          # Keep the long-standing public root URL and also the nested compatibility URL.
           nested=Path('_site/keirin-race-gate')
           nested.mkdir(parents=True,exist_ok=True)
           for name in ['index.html','manifest.webmanifest','icon.svg','sw.js','tail-risk-v5.js','human-context-v58.js','premium-ui-v580.css','premium-ui-v580.js']:
@@ -77,16 +74,15 @@ jobs:
                   (nested/name).write_bytes(src.read_bytes())
           inject_index(nested/'index.html','./')
 
-          # Build a real standalone single-HTML edition from the same working app and same logic.
           base=Path('_site/index.html').read_text(encoding='utf-8')
           css=Path('_site/premium-ui-v580.css').read_text(encoding='utf-8')
           tail=Path('_site/tail-risk-v5.js').read_text(encoding='utf-8')
           human=Path('_site/human-context-v58.js').read_text(encoding='utf-8')
           premium=Path('_site/premium-ui-v580.js').read_text(encoding='utf-8')
-          base=re.sub(r'<link rel="stylesheet" href="\./premium-ui-v580\.css[^>]*>', '<style>'+css+'</style>', base)
-          base=re.sub(r'<script src="\./tail-risk-v5\.js[^>]*></script>', '<script>'+tail+'</script>', base)
-          base=re.sub(r'<script src="\./human-context-v58\.js[^>]*></script>', '<script>'+human+'</script>', base)
-          base=re.sub(r'<script src="\./premium-ui-v580\.js[^>]*></script>', '<script>'+premium+'</script>', base)
+          base=re.sub(r'<link rel="stylesheet" href="\./premium-ui-v580\.css[^>]*>', lambda m:'<style>'+css+'</style>', base)
+          base=re.sub(r'<script src="\./tail-risk-v5\.js[^>]*></script>', lambda m:'<script>'+tail+'</script>', base)
+          base=re.sub(r'<script src="\./human-context-v58\.js[^>]*></script>', lambda m:'<script>'+human+'</script>', base)
+          base=re.sub(r'<script src="\./premium-ui-v580\.js[^>]*></script>', lambda m:'<script>'+premium+'</script>', base)
           base=base.replace('<link rel="manifest" href="./manifest.webmanifest" />','')
           base=base.replace("navigator.serviceWorker.register('./sw.js')","Promise.resolve()")
           Path('_site/downloads/KEIRIN-RACE-GATE-v5.8.0-Standalone.html').write_text(base,encoding='utf-8')
@@ -96,7 +92,6 @@ jobs:
           <!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>KEIRIN RACE GATE</title><script>location.replace('/smart-ats-pro/'+location.search+location.hash);</script></head><body></body></html>
           EOF
 
-          # Regression gates: UI assets, latest logic, legacy URL package, standalone package.
           grep -q "premium-ui-v580.css" _site/index.html
           grep -q "premium-ui-v580.js" _site/index.html
           grep -q "v5.8.0 · LIVE DATA / EV" _site/human-context-v58.js

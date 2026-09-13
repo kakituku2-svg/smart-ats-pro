@@ -88,7 +88,7 @@ jobs:
             await browser.close();
           })().catch(e=>{console.error(e);process.exit(1)});
           JS
-          node /tmp/capture.cjs
+          NODE_PATH="$PWD/node_modules" node /tmp/capture.cjs
       - name: Commit real screenshots
         run: |
           git config user.name "github-actions[bot]"

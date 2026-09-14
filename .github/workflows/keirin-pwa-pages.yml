@@ -1,13 +1,9 @@
 name: Deploy KEIRIN RACE GATE PWA + Android Standalone
 
+# Legacy v5.7 build retained for manual historical use.
+# Automatic Pages deployment is handled by keirin-pwa-v590.yml.
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - "keirin-race-gate/**"
-      - "keirin-android-standalone/**"
-      - ".github/workflows/keirin-pwa-pages.yml"
 
 permissions:
   contents: read

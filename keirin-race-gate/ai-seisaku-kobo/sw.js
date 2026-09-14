@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ai-seisaku-kobo-lite-v2.5.0-lite.1-pwa1';
+const CACHE_NAME = 'ai-seisaku-kobo-lite-v2.5.0-lite.1-pwa2';
 const APP_SHELL = [
   './',
   './index.html',

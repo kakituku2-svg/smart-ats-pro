@@ -1027,7 +1027,7 @@ renderQuick();renderTemplates();initTour();renderPack();
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js', {scope: './'}).catch(() => {});
+    navigator.serviceWorker.register('./sw.js?v=2.5.0-lite.1-pwa2', {scope: './'}).catch(() => {});
   });
 }
 </script>

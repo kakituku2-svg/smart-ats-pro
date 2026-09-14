@@ -100,6 +100,15 @@ jobs:
           grep -q "TAIL_RISK_THIRD_SURVIVOR_V511" _site/human-context-v58.js
           test -f _site/keirin-race-gate/index.html
           test -s _site/downloads/KEIRIN-RACE-GATE-v5.11.0-Standalone.html
+          test -f _site/ai-seisaku-kobo/index.html
+          test -f _site/ai-seisaku-kobo/manifest.webmanifest
+          test -f _site/ai-seisaku-kobo/sw.js
+          test -f _site/ai-seisaku-kobo/icon-192.png
+          test -f _site/ai-seisaku-kobo/icon-512.png
+          grep -q "2.5.0-Lite.1" _site/ai-seisaku-kobo/index.html
+          grep -q "LITE_MAX_UNITS=5" _site/ai-seisaku-kobo/index.html
+          python3 -m json.tool _site/ai-seisaku-kobo/manifest.webmanifest >/dev/null
+          node --check _site/ai-seisaku-kobo/sw.js
 
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v4

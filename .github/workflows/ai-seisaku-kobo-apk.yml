@@ -24,13 +24,16 @@ jobs:
         run: |
           mkdir -p ai-seisaku-kobo-android/app/src/main/assets
           cp keirin-race-gate/ai-seisaku-kobo/index.html ai-seisaku-kobo-android/app/src/main/assets/index.html
-          grep -q 'AISeisakuNativeVoice' ai-seisaku-kobo-android/app/src/main/assets/index.html
-          grep -q 'v1.2.0' ai-seisaku-kobo-android/app/src/main/assets/index.html
+          cp keirin-race-gate/ai-seisaku-kobo/app.js ai-seisaku-kobo-android/app/src/main/assets/app.js
+          grep -q 'app.js?v=2.5.0-lite.3' ai-seisaku-kobo-android/app/src/main/assets/index.html
           grep -q 'DEEP PROMPT COMPILER' ai-seisaku-kobo-android/app/src/main/assets/index.html
-          grep -q 'REQUIREMENT PRECEDENCE' ai-seisaku-kobo-android/app/src/main/assets/index.html
-          grep -q 'ANSWER LEDGER' ai-seisaku-kobo-android/app/src/main/assets/index.html
-          grep -q 'LETTERING MAP' ai-seisaku-kobo-android/app/src/main/assets/index.html
-          grep -q 'migration/normalize' ai-seisaku-kobo-android/app/src/main/assets/index.html
+          grep -q 'AISeisakuNativeVoice' ai-seisaku-kobo-android/app/src/main/assets/app.js
+          grep -q '2.5.0-Lite.3' ai-seisaku-kobo-android/app/src/main/assets/app.js
+          grep -q 'PROMPT_IR_SCHEMA' ai-seisaku-kobo-android/app/src/main/assets/app.js
+          grep -q 'ANSWER_LEDGER' ai-seisaku-kobo-android/app/src/main/assets/app.js
+          grep -q 'normalizeImportedProject' ai-seisaku-kobo-android/app/src/main/assets/app.js
+          grep -q 'rec.continuous=false' ai-seisaku-kobo-android/app/src/main/assets/app.js
+          node --check ai-seisaku-kobo-android/app/src/main/assets/app.js
 
       - name: Set up Java 17
         uses: actions/setup-java@v4
@@ -56,6 +59,8 @@ jobs:
           grep -q 'SpeechRecognizer' ai-seisaku-kobo-android/app/src/main/java/jp/kakituku/aiseisakukobo/MainActivity.java
           grep -q 'RECORD_AUDIO' ai-seisaku-kobo-android/app/src/main/AndroidManifest.xml
           grep -q 'file:///android_asset/index.html' ai-seisaku-kobo-android/app/src/main/java/jp/kakituku/aiseisakukobo/MainActivity.java
+          grep -q 'finalText = list.get(0).trim()' ai-seisaku-kobo-android/app/src/main/java/jp/kakituku/aiseisakukobo/MainActivity.java
+          ! grep -q 'scheduleRestart' ai-seisaku-kobo-android/app/src/main/java/jp/kakituku/aiseisakukobo/MainActivity.java
 
       - name: Build APK
         working-directory: ai-seisaku-kobo-android

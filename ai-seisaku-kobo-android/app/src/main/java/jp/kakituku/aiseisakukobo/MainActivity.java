@@ -17,9 +17,6 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import org.json.JSONObject;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.Locale;
-import java.util.Set;
 
 public class MainActivity extends Activity {
     private static final int AUDIO_PERMISSION = 7001;
@@ -27,8 +24,8 @@ public class MainActivity extends Activity {
     private SpeechRecognizer recognizer;
     private Intent recognizerIntent;
     private final Handler handler = new Handler(Looper.getMainLooper());
-    private final ArrayList<String> segments = new ArrayList<>();
-    private final Set<String> normalizedSeen = new LinkedHashSet<>();
+    private String finalText = "";
+    private String latestPartial = "";
     private boolean keepListening = false;
     private boolean stopRequested = false;
     private boolean finalized = false;
@@ -73,8 +70,8 @@ public class MainActivity extends Activity {
             return;
         }
         destroyRecognizer();
-        segments.clear();
-        normalizedSeen.clear();
+        finalText = "";
+        latestPartial = "";
         finalized = false;
         keepListening = true;
         stopRequested = false;
@@ -92,26 +89,29 @@ public class MainActivity extends Activity {
             @Override public void onBufferReceived(byte[] buffer) { }
             @Override public void onEndOfSpeech() { }
             @Override public void onError(int error) {
-                if (stopRequested) { finalizeNativeVoice(); return; }
-                if (error == SpeechRecognizer.ERROR_NO_MATCH || error == SpeechRecognizer.ERROR_SPEECH_TIMEOUT || error == SpeechRecognizer.ERROR_CLIENT) {
-                    scheduleRestart();
+                if (stopRequested || error == SpeechRecognizer.ERROR_NO_MATCH || error == SpeechRecognizer.ERROR_SPEECH_TIMEOUT || error == SpeechRecognizer.ERROR_CLIENT) {
+                    finalizeNativeVoice();
                 } else if (error == SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS) {
                     keepListening = false;
                     js("onError", "マイク権限を許可してください。");
-                } else if (keepListening) {
-                    scheduleRestart();
                 } else {
+                    keepListening = false;
                     js("onError", "音声認識でエラーが発生しました。もう一度お試しください。");
                 }
             }
             @Override public void onResults(Bundle results) {
                 ArrayList<String> list = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
-                if (list != null && !list.isEmpty()) addSegment(list.get(0));
-                if (stopRequested) finalizeNativeVoice(); else scheduleRestart();
+                if (list != null && !list.isEmpty()) finalText = list.get(0).trim();
+                keepListening = false;
+                stopRequested = true;
+                finalizeNativeVoice();
             }
             @Override public void onPartialResults(Bundle partialResults) {
                 ArrayList<String> list = partialResults.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
-                if (list != null && !list.isEmpty()) js("onPartial", list.get(0));
+                if (list != null && !list.isEmpty()) {
+                    latestPartial = list.get(0).trim();
+                    js("onPartial", latestPartial);
+                }
             }
             @Override public void onEvent(int eventType, Bundle params) { }
         });
@@ -121,27 +121,10 @@ public class MainActivity extends Activity {
     private void startListeningNow() {
         if (!keepListening || recognizer == null || recognizerIntent == null) return;
         try { recognizer.startListening(recognizerIntent); }
-        catch (Exception e) { handler.postDelayed(this::startListeningNow, 450); }
-    }
-
-    private void scheduleRestart() {
-        if (!keepListening || stopRequested) return;
-        handler.postDelayed(this::startListeningNow, 350);
-    }
-
-    private String normalize(String value) {
-        if (value == null) return "";
-        return value.toLowerCase(Locale.JAPAN).replaceAll("[\\s、。,.!?！？]", "");
-    }
-
-    private void addSegment(String text) {
-        if (text == null) return;
-        String clean = text.trim();
-        String n = normalize(clean);
-        if (n.isEmpty() || normalizedSeen.contains(n)) return;
-        normalizedSeen.add(n);
-        segments.add(clean);
-        js("onCommitted", String.join(" ", segments));
+        catch (Exception e) {
+            keepListening = false;
+            js("onError", "音声認識を開始できませんでした。もう一度お試しください。");
+        }
     }
 
     private void stopNativeVoice() {
@@ -158,7 +141,7 @@ public class MainActivity extends Activity {
         finalized = true;
         keepListening = false;
         stopRequested = true;
-        String text = String.join(" ", segments).trim();
+        String text = finalText.isEmpty() ? latestPartial : finalText;
         destroyRecognizer();
         js("onFinalText", text);
     }

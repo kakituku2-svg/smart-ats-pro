@@ -1,11 +1,36 @@
 {
-  "name": "AI制作工房",
+  "id": "./",
+  "name": "AI制作工房 Lite",
   "short_name": "AI制作工房",
+  "description": "やりたいことからAI制作向けのProduction Packを設計する無料Lite版。",
+  "lang": "ja",
+  "dir": "ltr",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#0c1226",
-  "theme_color": "#0c1226",
-  "description": "目的から成果物を設計し、成果物専用のDeep Promptを生成するAI制作OS",
-  "icons": [{"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
+  "display_override": ["standalone", "minimal-ui", "browser"],
+  "orientation": "any",
+  "background_color": "#f8fbff",
+  "theme_color": "#f8fbff",
+  "categories": ["productivity", "business", "utilities"],
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
 }

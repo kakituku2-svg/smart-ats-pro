@@ -2,73 +2,80 @@
   'use strict';
 
   // Preserve and execute the previous live engine first.
-  // This keeps every v5.8 forecast rule intact, then adds the v5.11 audit layer below.
   document.write('<script src="./tail-risk-v5-base.js?rev=5.8.0-base"><\\/script>');
 
-  const VERSION = '5.11.0';
-  const MARKER = 'DUAL_WHEEL_REVERSAL_AUDIT_V511 {';
-  const DUAL_BLOCK = `
+  const VERSION = '5.12.0';
+  const AUDIT_BLOCK = `
 
-DUAL_WHEEL_REVERSAL_AUDIT_V511 {
-  purpose: "既存の高配当シナリオ生成能力を残しつつ、本線番手＋別線番手＋前残りの同一3人集合で、番手同士の1・2着順を一方向に固定して取りこぼす弱点を修正する";
-  trigger_if: [
-    two_second_wheels_in_same_live_trio,
-    main_second_wheel_plus_rival_second_wheel_plus_front_survivor,
-    pace_duel_or_front_overcommitment,
-    cross_line_back_only_survival,
-    tail_risk_exact_order,
-    trifecta_odds_100_plus
-  ];
-  preserve_existing_longshot_logic: true;
-  mandatory_order_tests: [main_second_over_rival_second, rival_second_over_main_second];
-  compare_on: [
-    front_strength,
-    front_expected_workload,
-    second_wheel_saved_energy,
-    second_wheel_self_power_capacity,
-    second_wheel_sashi_extension,
-    launch_timing,
-    expected_position,
-    line_length,
-    current_meeting_form,
-    recent_3_5_meets,
-    bank_fit,
-    straight_length,
-    comment_role,
-    market_price_after_model
-  ];
-  strong_front_rule: "より強い自力選手の番手は位置と脚温存の恩恵を受けやすい。別線番手を頭にした穴を作った場合でも、本線番手がその番手を逆転する順序を必ず独立検査する";
-  rival_second_rule: "別線番手に自力含み・差脚・当開催上昇がある場合は、逆側の頭も独立シナリオとして残す";
-  exact_order_rule: "4-3-7のような番手×番手＋前残りを因果付きで生成した時、3-4-7のような番手同士逆転を必ず監査する。単なる数字の裏返しは禁止";
-  causal_path_required_each_direction: true;
+DUAL_WHEEL_REVERSAL_AUDIT_V512 {
+  preserve_existing_logic: true;
+  rule: "番手×番手＋前残りの同一3人集合では番手同士の1・2着逆転を独立した因果で両方向監査する";
   no_blind_reverse: true;
-  no_full_permutation: true;
-  high_odds_force_check: "100倍以上の3連単候補では省略禁止";
-  trio_fallback: "3人集合への確信が順序確信より高い場合、その集合の3連複を最低1候補残す";
-  price_rule: "両順序の事前確率が近く市場価格も近い場合、一方向だけを過度に優先しない。EV基準を満たす側だけBUYとし、もう一方は着順候補として保持可能";
-  feature_flag: DUAL_WHEEL_REVERSAL_AUDIT;
+  trio_fallback: true;
 }
 
-DUAL_WHEEL_OUTPUT_AUDIT_V511 {
-  required_questions_before_final_ticket: [
-    "番手×番手＋前残りの3人集合が生きているか",
-    "その場合、番手A→番手Bと番手B→番手Aを両方検査したか",
-    "両方向それぞれに独立した展開根拠があるか",
-    "強い前を持つ番手の脚温存優位を比較したか",
-    "順序より集合の確信度が高いなら3連複へ退避したか",
-    "100倍以上の穴順序でDUAL_WHEEL監査を省略していないか"
+HEAD_RISE_REBUILD_V512 {
+  trigger: "本線または次点TRIOの選手に現実的な1着経路がある";
+  mandatory: true;
+  rule: "HEADへ昇格した選手が出た時、元TRIOの残り2人を自動継承しない。残り2席を全リセットしてゼロベース再構築する";
+  rebuild_from: [front_plus_second, second_plus_third, front_only, second_only, cross_line_rear, solo_or_closer];
+}
+
+HEAD_RISE_SOLO_AXIS_SURVIVAL_AUDIT_V512 {
+  archetype: "2026-09-14 Omiya12R 7-5-3 type";
+  purpose: "頭昇格は読めたが、単騎/追込浮上と元軸の2・3着残存を同一3人集合へ接続できず外す弱点を修正する";
+  mandatory_tests: [
+    head_rise_plus_original_axis_plus_third_candidate,
+    head_rise_plus_solo_or_closer_plus_original_axis,
+    head_rise_plus_rival_second_wheel_plus_original_axis
   ];
-  if_fail: "3連単の確信度を下げ、3連複またはPREVIEWへ寄せる";
+  original_axis_rule: "元軸を勝つ/飛ぶの二値で扱わず、1着を失っても2・3着に残るPARTIAL SURVIVALを別評価する";
+  solo_rule: "単騎/追込が当開催好走、高3連対率、末脚良好、展開待ち可能のいずれかを満たす時は候補名だけで終わらせず3人集合へ接続する";
+  promote_if: "HEAD候補の成立根拠、単騎/追込の浮上根拠、元軸PLACE残存根拠のうち2つ以上が強く、同時成立に因果矛盾がない";
 }
 
-FEATURE_FLAGS_V511 {
-  add: [DUAL_WHEEL_REVERSAL_AUDIT];
+CANDIDATE_TO_COMBINATION_COMPLETENESS_V512 {
+  rule: "個別に正しい選手名を挙げただけでは捕捉成功としない。候補同士が同時成立できる3人集合まで生成・比較する";
+  require_combination_link: true;
+  minimum_audits: [HEAD_x_AXIS_x_THIRD, HEAD_x_SOLO_x_AXIS, HEAD_x_RIVAL_SECOND_x_AXIS];
+  no_credit_for_name_only: true;
+}
+
+AXIS_PARTIAL_SURVIVAL_V512 {
+  trigger_if: [axis_failure_score_15_plus, strong_head_rise_candidate];
+  rule: "完全軸飛びTAIL-RISKと、元軸がHEADを譲って2・3着だけ残る崩壊シナリオを分離する";
+  mandatory_trio_recheck: true;
+}
+
+COLLAPSE_THIRD_SURVIVOR_V512 {
+  rule: "崩壊骨格で2人が因果的に残るなら3人目を早期固定しない";
+  compare_third_from: [original_axis_survival, rival_second_or_third, original_line_rear, solo_or_closer];
+  allow_max_three_trios_if_independent_causal_support: true;
+  no_box: true;
+  no_full_flow: true;
+}
+
+OUTPUT_AUDIT_V512 {
+  required_before_final_ticket: [
+    "HEAD-RISE後に残り2席を全リセットしたか",
+    "単騎/追込候補を実際のTRIOへ接続したか",
+    "元軸の2・3着PARTIAL SURVIVALを検査したか",
+    "HEAD×SOLO/追込×元軸を検査したか",
+    "崩壊時の3人目を複数系統から比較したか",
+    "候補名だけ当たって買い目集合に無い状態を成功扱いしていないか",
+    "集合確信度が順序確信度より高い場合3連複へ退避したか"
+  ];
+}
+
+FEATURE_FLAGS_V512 {
+  add: [DUAL_WHEEL_REVERSAL_AUDIT, HEAD_RISE_FULL_REBUILD, HEAD_RISE_SOLO_AXIS_SURVIVAL, CANDIDATE_TO_COMBINATION_COMPLETENESS, AXIS_PARTIAL_SURVIVAL, COLLAPSE_THIRD_SURVIVOR];
 }`;
 
-  function stripOldDual(value) {
+  function stripAudit(value) {
     const markers = [
       'DUAL_WHEEL_REVERSAL_AUDIT_V511 {',
-      'DUAL_WHEEL_OUTPUT_AUDIT_V511 {'
+      'DUAL_WHEEL_REVERSAL_AUDIT_V512 {',
+      'HEAD_RISE_REBUILD_V512 {'
     ];
     let cut = value.length;
     markers.forEach(marker => {
@@ -78,55 +85,45 @@ FEATURE_FLAGS_V511 {
     return cut < value.length ? value.slice(0, cut).trimEnd() : value;
   }
 
-  function patchPromptV511() {
+  function patchPrompt() {
     const output = document.getElementById('prompt-output');
     if (!output || !output.value) return;
-    let value = stripOldDual(output.value);
-    value = value
-      .replace(/v5\.8\.0/g, VERSION)
-      .replace(/v5\.10\.0/g, VERSION);
-    if (!value.includes(MARKER)) value += DUAL_BLOCK;
+    let value = stripAudit(output.value);
+    value = value.replace(/v5\.(?:8|9|10|11)\.0/g, VERSION);
+    value += AUDIT_BLOCK;
     output.value = value;
     const count = document.getElementById('char-count');
     if (count) count.textContent = String(value.length);
   }
 
-  function patchUIV511() {
+  function patchUI() {
     const badge = document.querySelector('.paper-badge');
-    if (badge) badge.innerHTML = '<i></i>v5.11.0 · DUAL WHEEL / EV';
+    if (badge) badge.innerHTML = '<i></i>v5.12.0 · HEAD-RISE REBUILD / EV';
     const toolbar = document.querySelector('.prompt-toolbar span');
-    if (toolbar) toolbar.innerHTML = '<i></i>AI予想プロンプト · v5.11.0';
+    if (toolbar) toolbar.innerHTML = '<i></i>AI予想プロンプト · v5.12.0';
     const lead = document.querySelector('.strict-lead');
-    if (lead) lead.textContent = '最新事前データから3人集合→番手同士逆転監査→着順→価格→EV→崩壊時残存まで評価します。';
+    if (lead) lead.textContent = '3人集合→頭昇格→残り2席全再構築→単騎/元軸残存→価格・EVまで監査します。';
     const footer = document.querySelector('footer small');
-    if (footer) footer.textContent = 'v5.11.0 · DUAL WHEEL REVERSAL AUDIT · 20歳以上 / 予想支援ツール';
+    if (footer) footer.textContent = 'v5.12.0 · HEAD-RISE / SOLO / AXIS SURVIVAL AUDIT · 20歳以上 / 予想支援ツール';
   }
 
   function install() {
-    patchUIV511();
-    patchPromptV511();
-
+    patchUI();
+    patchPrompt();
     const form = document.getElementById('race-form');
-    if (form) {
-      form.addEventListener('submit', () => {
-        setTimeout(patchPromptV511, 20);
-        setTimeout(patchPromptV511, 120);
-        setTimeout(patchPromptV511, 500);
-      });
-    }
-
+    if (form) form.addEventListener('submit', () => {
+      setTimeout(patchPrompt, 20);
+      setTimeout(patchPrompt, 120);
+      setTimeout(patchPrompt, 500);
+    });
     ['copy-button', 'share-button', 'download-button', 'select-all-button'].forEach(id => {
       const btn = document.getElementById(id);
-      if (btn) btn.addEventListener('click', patchPromptV511, true);
+      if (btn) btn.addEventListener('click', patchPrompt, true);
     });
-
-    setTimeout(patchUIV511, 250);
-    setTimeout(patchPromptV511, 800);
+    setTimeout(patchUI, 250);
+    setTimeout(patchPrompt, 800);
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', install);
-  } else {
-    install();
-  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install);
+  else install();
 })();

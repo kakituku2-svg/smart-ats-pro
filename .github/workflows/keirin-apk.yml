@@ -8,6 +8,7 @@ on:
     paths:
       - ".github/workflows/keirin-apk.yml"
       - ".github/scripts/build_keirin_v511.py"
+      - "keirin-race-gate/**"
 
 permissions:
   contents: write

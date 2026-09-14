@@ -3,83 +3,97 @@ name: KEIRIN RACE GATE Android APK v5.11.0
 on:
   workflow_dispatch:
   push:
-    branches: [main]
+    branches:
+      - main
     paths:
-      - "keirin-race-gate/**"
       - ".github/workflows/keirin-apk.yml"
+      - ".github/scripts/build_keirin_v511.py"
 
 permissions:
-  contents: read
+  contents: write
+
+concurrency:
+  group: keirin-apk-v511
+  cancel-in-progress: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Prepare shared web assets
+      - name: Build shared v5.11 web bundle
+        run: python3 .github/scripts/build_keirin_v511.py
+
+      - name: Prepare Android standalone assets
         run: |
+          set -euo pipefail
           rm -rf keirin-race-gate/android-shell/app/src/main/assets
           mkdir -p keirin-race-gate/android-shell/app/src/main/assets
-          cp keirin-race-gate/index.html keirin-race-gate/android-shell/app/src/main/assets/index.html
-          cp keirin-race-gate/premium-ui-v580.css keirin-race-gate/android-shell/app/src/main/assets/
-          cp keirin-race-gate/premium-ui-v580.js keirin-race-gate/android-shell/app/src/main/assets/
-          cp keirin-race-gate/tail-risk-v5.js keirin-race-gate/android-shell/app/src/main/assets/
-          cp keirin-race-gate/human-context-v58.js keirin-race-gate/android-shell/app/src/main/assets/
-          cp keirin-race-gate/icon.svg keirin-race-gate/android-shell/app/src/main/assets/
+          cp _site/downloads/KEIRIN-RACE-GATE-v5.11.0-Standalone.html keirin-race-gate/android-shell/app/src/main/assets/index.html
+          cp keirin-race-gate/icon.svg keirin-race-gate/android-shell/app/src/main/assets/icon.svg
           python3 - <<'PY'
           from pathlib import Path
-
-          assets=Path('keirin-race-gate/android-shell/app/src/main/assets')
-
-          p=assets/'index.html'
+          import re
+          p=Path('keirin-race-gate/android-shell/app/src/main/assets/index.html')
           s=p.read_text(encoding='utf-8')
-          s=s.replace('<link rel="manifest" href="./manifest.webmanifest" />','')
-          if 'premium-ui-v580.css' not in s:
-              s=s.replace('</head>','<link rel="stylesheet" href="./premium-ui-v580.css">\n</head>')
-          scripts=[]
-          if 'tail-risk-v5.js' not in s: scripts.append('<script src="./tail-risk-v5.js"></script>')
-          if 'human-context-v58.js' not in s: scripts.append('<script src="./human-context-v58.js"></script>')
-          if 'premium-ui-v580.js' not in s: scripts.append('<script src="./premium-ui-v580.js"></script>')
-          if scripts: s=s.replace('</body>','\n'.join(scripts)+'\n</body>')
-          s=s.replace("navigator.serviceWorker.register('./sw.js')","Promise.resolve()")
+          s=re.sub(r'<div class="android-download-card" id="android-download-card"[\s\S]*?</div>\s*</div>', '', s, count=1)
+          s=s.replace('function setupAndroidDownload(){', 'function setupAndroidDownload(){ return; /* native APK build */ ')
           p.write_text(s,encoding='utf-8')
-
-          h=assets/'human-context-v58.js'
-          hs=h.read_text(encoding='utf-8')
-          hs=hs.replace("if (badge) badge.innerHTML = '<i></i>v5.8.0 · LIVE DATA / EV';",
-                        "if (badge) badge.innerHTML = '<i></i>v5.11.0 · DUAL-WHEEL / VALUE AUDIT';")
-          hs=hs.replace("if (toolbar) toolbar.innerHTML = '<i></i>AI予想プロンプト · UI v5.8.0 / LOGIC v5.10.0';",
-                        "if (toolbar) toolbar.innerHTML = '<i></i>AI予想プロンプト · UI v5.8.0 / LOGIC v5.11.0';")
-          h.write_text(hs,encoding='utf-8')
           PY
+          grep -q "v5.11.0 · HUMAN CONTEXT / EV" keirin-race-gate/android-shell/app/src/main/assets/index.html
+          grep -q "DUAL_WHEEL_REVERSAL_AUDIT_V511" keirin-race-gate/android-shell/app/src/main/assets/index.html
+          grep -q "RELEASE_UI_V511_FIXES" keirin-race-gate/android-shell/app/src/main/assets/index.html
 
-          grep -q "DUAL_WHEEL_REVERSAL_AUDIT_V511" keirin-race-gate/android-shell/app/src/main/assets/human-context-v58.js
-          grep -q "SELF_AUDIT_LOGIC_V511" keirin-race-gate/android-shell/app/src/main/assets/human-context-v58.js
-          grep -q "COLLAPSE_THIRD_SURVIVOR_AUDIT_V511" keirin-race-gate/android-shell/app/src/main/assets/human-context-v58.js
-          grep -q "TAIL_RISK_THIRD_SURVIVOR_V511" keirin-race-gate/android-shell/app/src/main/assets/human-context-v58.js
-          grep -q "premium-ui-v580.js" keirin-race-gate/android-shell/app/src/main/assets/index.html
-
-      - uses: actions/setup-java@v4
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
-      - uses: android-actions/setup-android@v3
-      - name: Install SDK
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android SDK 35
         run: |
           yes | sdkmanager --licenses >/dev/null || true
           sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
-      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Set up Gradle 8.10.2
+        uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.10.2'
+
       - name: Build APK
         working-directory: keirin-race-gate/android-shell
         run: gradle :app:assembleDebug --stacktrace
-      - name: Prepare artifact
-        run: cp keirin-race-gate/android-shell/app/build/outputs/apk/debug/app-debug.apk KEIRIN-RACE-GATE-v5.11.0-debug.apk
-      - uses: actions/upload-artifact@v4
+
+      - name: Prepare release files
+        run: |
+          set -euo pipefail
+          cp keirin-race-gate/android-shell/app/build/outputs/apk/debug/app-debug.apk KEIRIN-RACE-GATE-v5.11.0.apk
+          sha256sum KEIRIN-RACE-GATE-v5.11.0.apk > KEIRIN-RACE-GATE-v5.11.0.apk.sha256
+          test -s KEIRIN-RACE-GATE-v5.11.0.apk
+
+      - name: Upload Actions artifact
+        uses: actions/upload-artifact@v4
         with:
           name: KEIRIN-RACE-GATE-v5.11.0-APK
-          path: KEIRIN-RACE-GATE-v5.11.0-debug.apk
-          retention-days: 30
+          path: |
+            KEIRIN-RACE-GATE-v5.11.0.apk
+            KEIRIN-RACE-GATE-v5.11.0.apk.sha256
+          retention-days: 90
+
+      - name: Publish stable GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          TAG="keirin-race-gate-v5.11.0"
+          if ! gh release view "$TAG" >/dev/null 2>&1; then
+            gh release create "$TAG" --title "KEIRIN RACE GATE v5.11.0" --notes "Premium UI / Human Context / EV / Dual-Wheel / Collapse-third-survivor audit. Android standalone APK and SHA-256 checksum."
+          fi
+          gh release upload "$TAG" KEIRIN-RACE-GATE-v5.11.0.apk KEIRIN-RACE-GATE-v5.11.0.apk.sha256 --clobber
+          gh release view "$TAG" --json url,tagName,name

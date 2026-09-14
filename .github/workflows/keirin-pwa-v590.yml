@@ -8,6 +8,7 @@ on:
     paths:
       - ".github/workflows/keirin-pwa-v590.yml"
       - ".github/scripts/build_keirin_v511.py"
+      - "keirin-race-gate/ai-seisaku-kobo/**"
 
 permissions:
   contents: read
@@ -53,6 +54,9 @@ jobs:
           test -f _site/ai-seisaku-kobo/sw.js
           python3 -m json.tool _site/ai-seisaku-kobo/manifest.webmanifest >/dev/null
           node --check _site/ai-seisaku-kobo/sw.js
+          grep -q "2.5.0-Lite.1" _site/ai-seisaku-kobo/index.html
+          grep -q "LITE_MAX_UNITS=5" _site/ai-seisaku-kobo/index.html
+          grep -q "ai-seisaku-kobo-lite-v2.5.0-lite.1-pwa2" _site/ai-seisaku-kobo/sw.js
 
       - name: Configure Pages
         uses: actions/configure-pages@v5

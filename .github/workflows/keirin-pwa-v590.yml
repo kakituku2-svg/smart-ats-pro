@@ -1,4 +1,4 @@
-name: Deploy KEIRIN RACE GATE Premium UI v5.8.0
+name: Deploy KEIRIN RACE GATE Premium UI v5.11.0
 
 on:
   workflow_dispatch:
@@ -39,32 +39,32 @@ jobs:
           def inject_index(path, prefix='./'):
               p=Path(path)
               s=p.read_text(encoding='utf-8')
-              s=s.replace('<!-- KEIRIN AI RACE GATE v5.7.0 iPhone PWA -->','<!-- KEIRIN RACE GATE Premium UI v5.8.0 / prediction logic preserved -->')
-              css=f'<link rel="stylesheet" href="{prefix}premium-ui-v580.css?rev=5.8.0-r1" />'
+              s=s.replace('<!-- KEIRIN AI RACE GATE v5.7.0 iPhone PWA -->','<!-- KEIRIN RACE GATE Premium UI v5.8.0 / prediction logic v5.11.0 -->')
+              css=f'<link rel="stylesheet" href="{prefix}premium-ui-v580.css?rev=5.11.0-r1" />'
               if 'premium-ui-v580.css' not in s:
                   s=s.replace('</head>',css+'\n</head>')
               scripts=[]
               if 'tail-risk-v5.js' not in s:
-                  scripts.append(f'<script src="{prefix}tail-risk-v5.js?rev=5.8.0-r1"></script>')
+                  scripts.append(f'<script src="{prefix}tail-risk-v5.js?rev=5.11.0-r1"></script>')
               if 'human-context-v58.js' not in s:
-                  scripts.append(f'<script src="{prefix}human-context-v58.js?rev=5.10.0-r1"></script>')
+                  scripts.append(f'<script src="{prefix}human-context-v58.js?rev=5.11.0-r1"></script>')
               if 'premium-ui-v580.js' not in s:
-                  scripts.append(f'<script src="{prefix}premium-ui-v580.js?rev=5.8.0-r1"></script>')
+                  scripts.append(f'<script src="{prefix}premium-ui-v580.js?rev=5.11.0-r1"></script>')
               if scripts:
                   s=s.replace('</body>','\n'.join(scripts)+'\n</body>')
               p.write_text(s,encoding='utf-8')
 
-          def patch_human_ui(path):
+          def patch_release_ui(path):
               p=Path(path)
               s=p.read_text(encoding='utf-8')
-              s=s.replace("if (badge) badge.innerHTML = '<i></i>v5.10.0 · HUMAN CONTEXT / COLLAPSE AUDIT';",
-                          "if (badge) badge.innerHTML = '<i></i>v5.8.0 · LIVE DATA / EV';")
-              s=s.replace("if (toolbar) toolbar.innerHTML = '<i></i>AI予想プロンプト · v5.10.0';",
-                          "if (toolbar) toolbar.innerHTML = '<i></i>AI予想プロンプト · UI v5.8.0 / LOGIC v5.10.0';")
+              s=s.replace("if (badge) badge.innerHTML = '<i></i>v5.8.0 · LIVE DATA / EV';",
+                          "if (badge) badge.innerHTML = '<i></i>v5.11.0 · DUAL-WHEEL / VALUE AUDIT';")
+              s=s.replace("if (toolbar) toolbar.innerHTML = '<i></i>AI予想プロンプト · UI v5.8.0 / LOGIC v5.10.0';",
+                          "if (toolbar) toolbar.innerHTML = '<i></i>AI予想プロンプト · UI v5.8.0 / LOGIC v5.11.0';")
               p.write_text(s,encoding='utf-8')
 
           inject_index('_site/index.html','./')
-          patch_human_ui('_site/human-context-v58.js')
+          patch_release_ui('_site/human-context-v58.js')
 
           nested=Path('_site/keirin-race-gate')
           nested.mkdir(parents=True,exist_ok=True)
@@ -85,7 +85,7 @@ jobs:
           base=re.sub(r'<script src="\./premium-ui-v580\.js[^>]*></script>', lambda m:'<script>'+premium+'</script>', base)
           base=base.replace('<link rel="manifest" href="./manifest.webmanifest" />','')
           base=base.replace("navigator.serviceWorker.register('./sw.js')","Promise.resolve()")
-          Path('_site/downloads/KEIRIN-RACE-GATE-v5.8.0-Standalone.html').write_text(base,encoding='utf-8')
+          Path('_site/downloads/KEIRIN-RACE-GATE-v5.11.0-Standalone.html').write_text(base,encoding='utf-8')
           PY
 
           cat > _site/404.html <<'EOF'
@@ -94,12 +94,12 @@ jobs:
 
           grep -q "premium-ui-v580.css" _site/index.html
           grep -q "premium-ui-v580.js" _site/index.html
-          grep -q "v5.8.0 · LIVE DATA / EV" _site/human-context-v58.js
-          grep -q "SELF_AUDIT_LOGIC_V510" _site/human-context-v58.js
-          grep -q "COLLAPSE_THIRD_SURVIVOR_AUDIT_V510" _site/human-context-v58.js
-          grep -q "TAIL_RISK_THIRD_SURVIVOR_V510" _site/human-context-v58.js
+          grep -q "DUAL_WHEEL_REVERSAL_AUDIT_V511" _site/human-context-v58.js
+          grep -q "SELF_AUDIT_LOGIC_V511" _site/human-context-v58.js
+          grep -q "COLLAPSE_THIRD_SURVIVOR_AUDIT_V511" _site/human-context-v58.js
+          grep -q "TAIL_RISK_THIRD_SURVIVOR_V511" _site/human-context-v58.js
           test -f _site/keirin-race-gate/index.html
-          test -s _site/downloads/KEIRIN-RACE-GATE-v5.8.0-Standalone.html
+          test -s _site/downloads/KEIRIN-RACE-GATE-v5.11.0-Standalone.html
 
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v4

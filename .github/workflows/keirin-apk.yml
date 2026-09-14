@@ -1,20 +1,19 @@
-name: KEIRIN RACE GATE Android APK v5.11.0
+name: KEIRIN RACE GATE Android APK v5.12.0
 
 on:
   workflow_dispatch:
   push:
-    branches:
-      - main
+    branches: [main]
     paths:
       - ".github/workflows/keirin-apk.yml"
-      - ".github/scripts/build_keirin_v511.py"
+      - ".github/scripts/build_keirin_v512.py"
       - "keirin-race-gate/**"
 
 permissions:
   contents: write
 
 concurrency:
-  group: keirin-apk-v511
+  group: keirin-apk-v512
   cancel-in-progress: true
 
 jobs:
@@ -24,16 +23,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Build shared v5.11 web bundle
-        run: python3 .github/scripts/build_keirin_v511.py
-
+      - name: Build shared v5.12 web bundle
+        run: python3 .github/scripts/build_keirin_v512.py
       - name: Prepare Android standalone assets
         run: |
           set -euo pipefail
           rm -rf keirin-race-gate/android-shell/app/src/main/assets
           mkdir -p keirin-race-gate/android-shell/app/src/main/assets
-          cp _site/downloads/KEIRIN-RACE-GATE-v5.11.0-Standalone.html keirin-race-gate/android-shell/app/src/main/assets/index.html
+          cp _site/downloads/KEIRIN-RACE-GATE-v5.12.0-Standalone.html keirin-race-gate/android-shell/app/src/main/assets/index.html
           cp keirin-race-gate/icon.svg keirin-race-gate/android-shell/app/src/main/assets/icon.svg
           python3 - <<'PY'
           from pathlib import Path
@@ -44,57 +41,47 @@ jobs:
           s=s.replace('function setupAndroidDownload(){', 'function setupAndroidDownload(){ return; /* native APK build */ ')
           p.write_text(s,encoding='utf-8')
           PY
-          grep -q "v5.11.0 · HUMAN CONTEXT / EV" keirin-race-gate/android-shell/app/src/main/assets/index.html
-          grep -q "DUAL_WHEEL_REVERSAL_AUDIT_V511" keirin-race-gate/android-shell/app/src/main/assets/index.html
-          grep -q "RELEASE_UI_V511_FIXES" keirin-race-gate/android-shell/app/src/main/assets/index.html
-
+          grep -q "HEAD_RISE_SOLO_AXIS_SURVIVAL_AUDIT_V512" keirin-race-gate/android-shell/app/src/main/assets/index.html
+          grep -q "CANDIDATE_TO_COMBINATION_COMPLETENESS_V512" keirin-race-gate/android-shell/app/src/main/assets/index.html
+          grep -q "AXIS_PARTIAL_SURVIVAL_V512" keirin-race-gate/android-shell/app/src/main/assets/index.html
       - name: Set up Java 17
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
-
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
-
       - name: Install Android SDK 35
         run: |
           yes | sdkmanager --licenses >/dev/null || true
           sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
-
       - name: Set up Gradle 8.10.2
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.10.2'
-
       - name: Build APK
         working-directory: keirin-race-gate/android-shell
         run: gradle :app:assembleDebug --stacktrace
-
       - name: Prepare release files
         run: |
-          set -euo pipefail
-          cp keirin-race-gate/android-shell/app/build/outputs/apk/debug/app-debug.apk KEIRIN-RACE-GATE-v5.11.0.apk
-          sha256sum KEIRIN-RACE-GATE-v5.11.0.apk > KEIRIN-RACE-GATE-v5.11.0.apk.sha256
-          test -s KEIRIN-RACE-GATE-v5.11.0.apk
-
+          cp keirin-race-gate/android-shell/app/build/outputs/apk/debug/app-debug.apk KEIRIN-RACE-GATE-v5.12.0.apk
+          sha256sum KEIRIN-RACE-GATE-v5.12.0.apk > KEIRIN-RACE-GATE-v5.12.0.apk.sha256
+          test -s KEIRIN-RACE-GATE-v5.12.0.apk
       - name: Upload Actions artifact
         uses: actions/upload-artifact@v4
         with:
-          name: KEIRIN-RACE-GATE-v5.11.0-APK
+          name: KEIRIN-RACE-GATE-v5.12.0-APK
           path: |
-            KEIRIN-RACE-GATE-v5.11.0.apk
-            KEIRIN-RACE-GATE-v5.11.0.apk.sha256
+            KEIRIN-RACE-GATE-v5.12.0.apk
+            KEIRIN-RACE-GATE-v5.12.0.apk.sha256
           retention-days: 90
-
       - name: Publish stable GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          set -euo pipefail
-          TAG="keirin-race-gate-v5.11.0"
+          TAG="keirin-race-gate-v5.12.0"
           if ! gh release view "$TAG" >/dev/null 2>&1; then
-            gh release create "$TAG" --title "KEIRIN RACE GATE v5.11.0" --notes "Premium UI / Human Context / EV / Dual-Wheel / Collapse-third-survivor audit. Android standalone APK and SHA-256 checksum."
+            gh release create "$TAG" --title "KEIRIN RACE GATE v5.12.0" --notes "HEAD-RISE full rebuild / solo-closing rider + original-axis survival / candidate-to-combination completeness / axis partial-survival / collapse third-survivor audit. Android standalone APK."
           fi
-          gh release upload "$TAG" KEIRIN-RACE-GATE-v5.11.0.apk KEIRIN-RACE-GATE-v5.11.0.apk.sha256 --clobber
+          gh release upload "$TAG" KEIRIN-RACE-GATE-v5.12.0.apk KEIRIN-RACE-GATE-v5.12.0.apk.sha256 --clobber
           gh release view "$TAG" --json url,tagName,name

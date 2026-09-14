@@ -56,12 +56,13 @@ jobs:
           python3 -m json.tool _site/ai-seisaku-kobo/manifest.webmanifest >/dev/null
           node --check _site/ai-seisaku-kobo/sw.js
           node --check _site/ai-seisaku-kobo/app.js
-          grep -q "2.5.0-Lite.2" _site/ai-seisaku-kobo/app.js
+          grep -q "2.5.0-Lite.3" _site/ai-seisaku-kobo/app.js
           grep -q "LITE_MAX_UNITS=5" _site/ai-seisaku-kobo/app.js
-          grep -q 'app.js?v=2.5.0-lite.2' _site/ai-seisaku-kobo/index.html
+          grep -q 'app.js?v=2.5.0-lite.3' _site/ai-seisaku-kobo/index.html
           ! grep -q "function lpQaRun" _site/ai-seisaku-kobo/index.html
           grep -q "rec.continuous=false" _site/ai-seisaku-kobo/app.js
-          grep -q "ai-seisaku-kobo-lite-v2.5.0-lite.2-pwa3" _site/ai-seisaku-kobo/sw.js
+          grep -q "state.selected.size>=LITE_MAX_UNITS" _site/ai-seisaku-kobo/app.js
+          grep -q "ai-seisaku-kobo-lite-v2.5.0-lite.3-pwa4" _site/ai-seisaku-kobo/sw.js
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
@@ -94,11 +95,11 @@ jobs:
           curl -fsSL "${PAGE_URL}sw.js?release=511" | grep -q "keirin-race-gate-v5.11.0-r3"
           curl -fsSL "${PAGE_URL}premium-ui-v580.css?rev=5.11.0-r3" | grep -q "RELEASE_UI_V511_FIXES"
           curl -fsSL "${PAGE_URL}human-context-v58.js?rev=5.11.0-r3" | grep -q "DUAL_WHEEL_REVERSAL_AUDIT_V511"
-          curl -fsSL "${PAGE_URL}ai-seisaku-kobo/?release=2.5.0-lite.2" -o /tmp/ai-kobo.html
-          grep -q 'app.js?v=2.5.0-lite.2' /tmp/ai-kobo.html
+          curl -fsSL "${PAGE_URL}ai-seisaku-kobo/?release=2.5.0-lite.3" -o /tmp/ai-kobo.html
+          grep -q 'app.js?v=2.5.0-lite.3' /tmp/ai-kobo.html
           ! grep -q "function lpQaRun" /tmp/ai-kobo.html
-          curl -fsSL "${PAGE_URL}ai-seisaku-kobo/app.js?v=2.5.0-lite.2" -o /tmp/ai-kobo-app.js
-          grep -q "2.5.0-Lite.2" /tmp/ai-kobo-app.js
+          curl -fsSL "${PAGE_URL}ai-seisaku-kobo/app.js?v=2.5.0-lite.3" -o /tmp/ai-kobo-app.js
+          grep -q "2.5.0-Lite.3" /tmp/ai-kobo-app.js
           grep -q "LITE_MAX_UNITS=5" /tmp/ai-kobo-app.js
           grep -q "rec.continuous=false" /tmp/ai-kobo-app.js
-          curl -fsSL "${PAGE_URL}ai-seisaku-kobo/sw.js?release=2.5.0-lite.2" | grep -q "ai-seisaku-kobo-lite-v2.5.0-lite.2-pwa3"
+          curl -fsSL "${PAGE_URL}ai-seisaku-kobo/sw.js?release=2.5.0-lite.3" | grep -q "ai-seisaku-kobo-lite-v2.5.0-lite.3-pwa4"

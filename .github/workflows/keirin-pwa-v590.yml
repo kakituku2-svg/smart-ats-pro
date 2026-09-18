@@ -98,8 +98,11 @@ jobs:
           grep -q "v5.13.0" /tmp/krg-root.html
           curl -fsSL "${PAGE_URL}keirin-race-gate/?release=513-r2" -o /tmp/krg-nested.html
           grep -q "v5.13.0" /tmp/krg-nested.html
-          curl -fsSL "${PAGE_URL}sw.js?release=513-r2" | grep -q "keirin-race-gate-v5.13.0-r2"
-          curl -fsSL "${PAGE_URL}keirin-race-gate/sw.js?release=513-r2" | grep -q "keirin-race-gate-v5.13.0-r2"
-          curl -fsSL "${PAGE_URL}tail-risk-v5.js?release=513-r2" | grep -q "COMMENT_HISTORY_MATCH_V513"
+          curl -fsSL "${PAGE_URL}sw.js?release=513-r2" -o /tmp/krg-sw.js
+          grep -q "keirin-race-gate-v5.13.0-r2" /tmp/krg-sw.js
+          curl -fsSL "${PAGE_URL}keirin-race-gate/sw.js?release=513-r2" -o /tmp/krg-nested-sw.js
+          grep -q "keirin-race-gate-v5.13.0-r2" /tmp/krg-nested-sw.js
+          curl -fsSL "${PAGE_URL}tail-risk-v5.js?release=513-r2" -o /tmp/krg-tail.js
+          grep -q "COMMENT_HISTORY_MATCH_V513" /tmp/krg-tail.js
           curl -fsSL "${PAGE_URL}ai-seisaku-kobo/?release=2.5.0-lite.3" -o /tmp/ai-kobo.html
           grep -q 'app.js?v=2.5.0-lite.3' /tmp/ai-kobo.html

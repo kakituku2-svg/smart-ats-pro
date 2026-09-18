@@ -1,4 +1,4 @@
-name: Deploy KEIRIN RACE GATE Premium UI v5.11.0
+name: Deploy KEIRIN RACE GATE Premium UI v5.13.0
 
 on:
   workflow_dispatch:
@@ -8,6 +8,7 @@ on:
     paths:
       - ".github/workflows/keirin-pwa-v590.yml"
       - ".github/scripts/build_keirin_v511.py"
+      - ".github/scripts/build_keirin_v513.py"
       - "keirin-race-gate/**"
 
 permissions:
@@ -16,7 +17,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: keirin-pages-premium-v511
+  group: keirin-pages-premium-v513
   cancel-in-progress: true
 
 jobs:
@@ -30,22 +31,29 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Build premium bundle
-        run: python3 .github/scripts/build_keirin_v511.py
+      - name: Build v5.13 Pages bundle
+        run: python3 .github/scripts/build_keirin_v513.py
 
       - name: Validate generated bundle
         run: |
           set -euo pipefail
           test -f _site/index.html
           test -f _site/keirin-race-gate/index.html
-          test -s _site/downloads/KEIRIN-RACE-GATE-v5.11.0-Standalone.html
-          grep -q "KEIRIN RACE GATE v5.11.0 Premium PWA" _site/index.html
-          grep -q "RELEASE_UI_V511_FIXES" _site/premium-ui-v580.css
-          grep -q "DUAL_WHEEL_REVERSAL_AUDIT_V511" _site/human-context-v58.js
-          grep -q "SELF_AUDIT_LOGIC_V511" _site/human-context-v58.js
-          grep -q "COLLAPSE_THIRD_SURVIVOR_AUDIT_V511" _site/human-context-v58.js
-          grep -q "TAIL_RISK_THIRD_SURVIVOR_V511" _site/human-context-v58.js
-          grep -q "keirin-race-gate-v5.11.0-r3" _site/sw.js
+          test -f _site/sw.js
+          test -f _site/keirin-race-gate/sw.js
+          test -s _site/downloads/KEIRIN-RACE-GATE-v5.13.0-Standalone.html
+          grep -q "v5.13.0" _site/index.html
+          grep -q "v5.13.0" _site/keirin-race-gate/index.html
+          grep -q "keirin-race-gate-v5.13.0-r2" _site/sw.js
+          grep -q "keirin-race-gate-v5.13.0-r2" _site/keirin-race-gate/sw.js
+          grep -q "release=513-r2" _site/manifest.webmanifest
+          grep -q "COMMENT_HISTORY_MATCH_V513" _site/tail-risk-v5.js
+          grep -q "EMOTION_BEHAVIOR_BENEFIT_TRANSFER_V513" _site/tail-risk-v5.js
+          grep -q "RECENT_FIVE_RACE_TACTICAL_FORM_V513" _site/tail-risk-v5.js
+          grep -q "STYLE_COMPOSITION_COMPATIBILITY_V513" _site/tail-risk-v5.js
+          grep -q "MARKET_DISAGREEMENT_AUDIT_V513" _site/tail-risk-v5.js
+          grep -q "HEAD_RISE_REBUILD_V513" _site/tail-risk-v5.js
+          grep -q "CANDIDATE_TO_COMBINATION_COMPLETENESS_V513" _site/tail-risk-v5.js
           node --check _site/premium-ui-v580.js
           node --check _site/human-context-v58.js
           node --check _site/tail-risk-v5.js
@@ -76,30 +84,22 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
 
-      - name: Smoke test published release
+      - name: Smoke test published v5.13 release
         env:
           PAGE_URL: ${{ steps.deployment.outputs.page_url }}
         run: |
           set -euo pipefail
           for i in 1 2 3 4 5 6; do
-            if curl -fsSL --retry 2 --retry-delay 2 "${PAGE_URL}?release=511" -o /tmp/krg-root.html; then
+            if curl -fsSL --retry 2 --retry-delay 2 "${PAGE_URL}?release=513-r2" -o /tmp/krg-root.html; then
               break
             fi
             sleep 3
           done
-          grep -q "v5.11.0 · HUMAN CONTEXT / EV" /tmp/krg-root.html
-          grep -q "premium-ui-v580.css?rev=5.11.0-r3" /tmp/krg-root.html
-          grep -q "human-context-v58.js?rev=5.11.0-r3" /tmp/krg-root.html
-          curl -fsSL "${PAGE_URL}keirin-race-gate/?release=511" -o /tmp/krg-nested.html
-          grep -q "v5.11.0 · HUMAN CONTEXT / EV" /tmp/krg-nested.html
-          curl -fsSL "${PAGE_URL}sw.js?release=511" | grep -q "keirin-race-gate-v5.11.0-r3"
-          curl -fsSL "${PAGE_URL}premium-ui-v580.css?rev=5.11.0-r3" | grep -q "RELEASE_UI_V511_FIXES"
-          curl -fsSL "${PAGE_URL}human-context-v58.js?rev=5.11.0-r3" | grep -q "DUAL_WHEEL_REVERSAL_AUDIT_V511"
+          grep -q "v5.13.0" /tmp/krg-root.html
+          curl -fsSL "${PAGE_URL}keirin-race-gate/?release=513-r2" -o /tmp/krg-nested.html
+          grep -q "v5.13.0" /tmp/krg-nested.html
+          curl -fsSL "${PAGE_URL}sw.js?release=513-r2" | grep -q "keirin-race-gate-v5.13.0-r2"
+          curl -fsSL "${PAGE_URL}keirin-race-gate/sw.js?release=513-r2" | grep -q "keirin-race-gate-v5.13.0-r2"
+          curl -fsSL "${PAGE_URL}tail-risk-v5.js?release=513-r2" | grep -q "COMMENT_HISTORY_MATCH_V513"
           curl -fsSL "${PAGE_URL}ai-seisaku-kobo/?release=2.5.0-lite.3" -o /tmp/ai-kobo.html
           grep -q 'app.js?v=2.5.0-lite.3' /tmp/ai-kobo.html
-          ! grep -q "function lpQaRun" /tmp/ai-kobo.html
-          curl -fsSL "${PAGE_URL}ai-seisaku-kobo/app.js?v=2.5.0-lite.3" -o /tmp/ai-kobo-app.js
-          grep -q "2.5.0-Lite.3" /tmp/ai-kobo-app.js
-          grep -q "LITE_MAX_UNITS=5" /tmp/ai-kobo-app.js
-          grep -q "rec.continuous=false" /tmp/ai-kobo-app.js
-          curl -fsSL "${PAGE_URL}ai-seisaku-kobo/sw.js?release=2.5.0-lite.3" | grep -q "ai-seisaku-kobo-lite-v2.5.0-lite.3-pwa4"

@@ -1,12 +1,1 @@
-{
-  "name": "HALL SCOPE v4.6",
-  "short_name": "HALL SCOPE",
-  "start_url": "./",
-  "scope": "./",
-  "display": "standalone",
-  "background_color": "#f4f8fc",
-  "theme_color": "#f4f8fc",
-  "lang": "ja",
-  "description": "店・イベント・台を読み、検証結果を次回予測へ戻すホール分析ツール",
-  "icons": [{"src":"./icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
-}
+{"name":"HALL SCOPE","short_name":"HALL SCOPE","description":"店・イベント・台を読む / HALL INTELLIGENCE","start_url":"./","scope":"./","display":"standalone","background_color":"#f4f8fc","theme_color":"#f4f8fc","icons":[{"src":"./icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]}

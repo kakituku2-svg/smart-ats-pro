@@ -1,0 +1,41 @@
+{
+  "target": "Android mid-range / 60fps target, 30fps floor",
+  "mission_runtime": {
+    "active_mimo_max": 7,
+    "active_interference_enemy_max": 4,
+    "active_ai_total_soft_max": 11,
+    "visible_triangles_soft_max": 220000,
+    "draw_calls_soft_max": 135,
+    "dynamic_lights_max": 4,
+    "particles_soft_max": 1400
+  },
+  "stage1": {
+    "active_mimo_max": 6,
+    "active_signature_attack_max": 4,
+    "visible_triangles_soft_max": 180000,
+    "draw_calls_soft_max": 120,
+    "dynamic_lights_max": 3,
+    "particles_soft_max": 1200
+  },
+  "characters": {
+    "ren_triangles_soft_max": 35000,
+    "mimo_triangles_soft_max_each": 20000,
+    "interference_enemy_triangles_soft_max_each": 12000,
+    "ren_texture_max": 2048,
+    "mimo_texture_max": 1024,
+    "interference_enemy_texture_max": 1024
+  },
+  "environment": {
+    "hero_texture_max": 2048,
+    "prop_texture_max": 1024,
+    "decor_multimesh_instances_soft_max": 500,
+    "shadow_casting_small_decor": false
+  },
+  "notes": [
+    "Soft limits are art-production guards, not measured runtime performance.",
+    "Final acceptance requires profiling on Android hardware.",
+    "Mission runtime budget covers up to seven capture targets plus four interference enemies.",
+    "Prefer MultiMesh for repeated grass, flowers, reeds, pebbles and small plants.",
+    "Avoid 4K textures and per-prop dynamic lights across mission stages."
+  ]
+}

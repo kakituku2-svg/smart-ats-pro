@@ -1,0 +1,373 @@
+[gd_scene load_steps=24 format=3]
+
+[ext_resource path="res://scripts/stage/stage1_controller.gd" type="Script" id="1"]
+[ext_resource path="res://scenes/player/player.tscn" type="PackedScene" id="2"]
+[ext_resource path="res://scenes/mimo/mimo.tscn" type="PackedScene" id="3"]
+[ext_resource path="res://scenes/gadgets/hex_net.tscn" type="PackedScene" id="4"]
+[ext_resource path="res://scenes/gadgets/echo_scan.tscn" type="PackedScene" id="5"]
+[ext_resource path="res://scenes/ui/mobile_hud.tscn" type="PackedScene" id="6"]
+
+[sub_resource type="Environment" id="Environment_main"]
+background_mode = 1
+background_color = Color(0.17, 0.48, 0.68, 1)
+ambient_light_source = 3
+ambient_light_color = Color(0.52, 0.62, 0.61, 1)
+ambient_light_energy = 0.72
+
+[sub_resource type="BoxMesh" id="GroundMesh"]
+size = Vector3(58, 0.5, 58)
+
+[sub_resource type="BoxShape3D" id="GroundShape"]
+size = Vector3(58, 0.5, 58)
+
+[sub_resource type="StandardMaterial3D" id="GroundMat"]
+albedo_color = Color(0.09, 0.34, 0.18, 1)
+roughness = 1.0
+
+[sub_resource type="BoxMesh" id="BlockMesh"]
+size = Vector3(4, 2, 4)
+
+[sub_resource type="BoxShape3D" id="BlockShape"]
+size = Vector3(4, 2, 4)
+
+[sub_resource type="StandardMaterial3D" id="StoneMat"]
+albedo_color = Color(0.32, 0.38, 0.36, 1)
+roughness = 0.95
+
+[sub_resource type="StandardMaterial3D" id="WoodMat"]
+albedo_color = Color(0.31, 0.19, 0.085, 1)
+roughness = 0.95
+
+[sub_resource type="StandardMaterial3D" id="WaterMat"]
+albedo_color = Color(0.035, 0.32, 0.53, 0.82)
+transparency = 1
+roughness = 0.28
+
+[sub_resource type="StandardMaterial3D" id="SandMat"]
+albedo_color = Color(0.55, 0.46, 0.26, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="MossMat"]
+albedo_color = Color(0.10, 0.42, 0.20, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="TrunkMat"]
+albedo_color = Color(0.27, 0.14, 0.055, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="LeafMat"]
+albedo_color = Color(0.055, 0.27, 0.13, 1)
+roughness = 0.92
+
+[sub_resource type="StandardMaterial3D" id="LeafBrightMat"]
+albedo_color = Color(0.10, 0.42, 0.20, 1)
+roughness = 0.92
+
+[sub_resource type="BoxMesh" id="PatchMesh"]
+size = Vector3(10, 0.12, 9)
+
+[sub_resource type="CylinderMesh" id="TrunkMesh"]
+top_radius = 0.24
+bottom_radius = 0.34
+height = 4.0
+radial_segments = 8
+
+[sub_resource type="SphereMesh" id="CanopyMesh"]
+radius = 1.55
+height = 3.1
+radial_segments = 12
+rings = 6
+
+[sub_resource type="BoxMesh" id="RuinSlabMesh"]
+size = Vector3(3.4, 0.45, 1.3)
+
+[sub_resource type="BoxMesh" id="MossCapMesh"]
+size = Vector3(3.7, 0.18, 1.6)
+
+[node name="Stage1" type="Node3D"]
+script = ExtResource("1")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_main")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+rotation_degrees = Vector3(-52, -30, 0)
+shadow_enabled = true
+light_color = Color(1, 0.94, 0.80, 1)
+light_energy = 1.35
+
+[node name="Ground" type="StaticBody3D" parent="."]
+[node name="Mesh" type="MeshInstance3D" parent="Ground"]
+mesh = SubResource("GroundMesh")
+material_override = SubResource("GroundMat")
+[node name="Collision" type="CollisionShape3D" parent="Ground"]
+shape = SubResource("GroundShape")
+
+[node name="GroundDetail" type="Node3D" parent="."]
+
+[node name="RuinsSand" type="MeshInstance3D" parent="GroundDetail"]
+position = Vector3(-9, 0.31, -4)
+scale = Vector3(1.25, 1, 0.85)
+mesh = SubResource("PatchMesh")
+material_override = SubResource("SandMat")
+
+[node name="WaterSand" type="MeshInstance3D" parent="GroundDetail"]
+position = Vector3(12, 0.30, 14)
+scale = Vector3(1.25, 1, 0.62)
+mesh = SubResource("PatchMesh")
+material_override = SubResource("SandMat")
+
+[node name="ForestMoss" type="MeshInstance3D" parent="GroundDetail"]
+position = Vector3(-16, 0.31, -14)
+scale = Vector3(0.9, 1, 0.8)
+mesh = SubResource("PatchMesh")
+material_override = SubResource("MossMat")
+
+[node name="Player" parent="." instance=ExtResource("2")]
+position = Vector3(0, 0.3, 12)
+
+[node name="HexNet" parent="." instance=ExtResource("4")]
+[node name="EchoScan" parent="." instance=ExtResource("5")]
+
+[node name="Landmarks" type="Node3D" parent="."]
+
+[node name="AncientGateLeft" type="StaticBody3D" parent="Landmarks"]
+position = Vector3(-12, 1, -3)
+[node name="Mesh" type="MeshInstance3D" parent="Landmarks/AncientGateLeft"]
+mesh = SubResource("BlockMesh")
+material_override = SubResource("StoneMat")
+[node name="Collision" type="CollisionShape3D" parent="Landmarks/AncientGateLeft"]
+shape = SubResource("BlockShape")
+[node name="MossCap" type="MeshInstance3D" parent="Landmarks/AncientGateLeft"]
+position = Vector3(0, 1.08, 0)
+mesh = SubResource("MossCapMesh")
+material_override = SubResource("MossMat")
+
+[node name="AncientGateRight" type="StaticBody3D" parent="Landmarks"]
+position = Vector3(-6, 1, -3)
+[node name="Mesh" type="MeshInstance3D" parent="Landmarks/AncientGateRight"]
+mesh = SubResource("BlockMesh")
+material_override = SubResource("StoneMat")
+[node name="Collision" type="CollisionShape3D" parent="Landmarks/AncientGateRight"]
+shape = SubResource("BlockShape")
+[node name="MossCap" type="MeshInstance3D" parent="Landmarks/AncientGateRight"]
+position = Vector3(0, 1.08, 0)
+mesh = SubResource("MossCapMesh")
+material_override = SubResource("MossMat")
+
+[node name="GateLintel" type="MeshInstance3D" parent="Landmarks"]
+position = Vector3(-9, 3.0, -3)
+scale = Vector3(1.9, 1, 1)
+mesh = SubResource("RuinSlabMesh")
+material_override = SubResource("StoneMat")
+
+[node name="ObservationPlatform" type="StaticBody3D" parent="Landmarks"]
+position = Vector3(14, 2, -12)
+scale = Vector3(1.6, 2.0, 1.6)
+[node name="Mesh" type="MeshInstance3D" parent="Landmarks/ObservationPlatform"]
+mesh = SubResource("BlockMesh")
+material_override = SubResource("WoodMat")
+[node name="Collision" type="CollisionShape3D" parent="Landmarks/ObservationPlatform"]
+shape = SubResource("BlockShape")
+
+[node name="RavineRockA" type="StaticBody3D" parent="Landmarks"]
+position = Vector3(12, 1, 8)
+scale = Vector3(1.8, 1.0, 0.9)
+[node name="Mesh" type="MeshInstance3D" parent="Landmarks/RavineRockA"]
+mesh = SubResource("BlockMesh")
+material_override = SubResource("StoneMat")
+[node name="Collision" type="CollisionShape3D" parent="Landmarks/RavineRockA"]
+shape = SubResource("BlockShape")
+
+[node name="RavineRockB" type="MeshInstance3D" parent="Landmarks"]
+position = Vector3(16, 0.7, 5)
+rotation_degrees = Vector3(0, 22, 12)
+scale = Vector3(0.75, 0.65, 1.1)
+mesh = SubResource("BlockMesh")
+material_override = SubResource("StoneMat")
+
+[node name="ForestRock" type="StaticBody3D" parent="Landmarks"]
+position = Vector3(-16, 1, -15)
+scale = Vector3(0.9, 1.4, 1.3)
+[node name="Mesh" type="MeshInstance3D" parent="Landmarks/ForestRock"]
+mesh = SubResource("BlockMesh")
+material_override = SubResource("StoneMat")
+[node name="Collision" type="CollisionShape3D" parent="Landmarks/ForestRock"]
+shape = SubResource("BlockShape")
+
+[node name="Waterway" type="MeshInstance3D" parent="Landmarks"]
+position = Vector3(12, 0.36, 15)
+scale = Vector3(3.2, 0.08, 1.5)
+mesh = SubResource("BlockMesh")
+material_override = SubResource("WaterMat")
+
+[node name="BrokenSlabA" type="MeshInstance3D" parent="Landmarks"]
+position = Vector3(-2.5, 0.52, -7)
+rotation_degrees = Vector3(0, 28, -8)
+mesh = SubResource("RuinSlabMesh")
+material_override = SubResource("StoneMat")
+
+[node name="BrokenSlabB" type="MeshInstance3D" parent="Landmarks"]
+position = Vector3(4, 0.48, -4)
+rotation_degrees = Vector3(0, -34, 5)
+scale = Vector3(0.8, 1, 0.8)
+mesh = SubResource("RuinSlabMesh")
+material_override = SubResource("StoneMat")
+
+[node name="Decor" type="Node3D" parent="."]
+
+[node name="TreeA" type="Node3D" parent="Decor"]
+position = Vector3(-19, 0.25, 3)
+[node name="Trunk" type="MeshInstance3D" parent="Decor/TreeA"]
+position = Vector3(0, 2, 0)
+mesh = SubResource("TrunkMesh")
+material_override = SubResource("TrunkMat")
+[node name="Canopy" type="MeshInstance3D" parent="Decor/TreeA"]
+position = Vector3(0, 4.35, 0)
+scale = Vector3(1.0, 0.78, 1.0)
+mesh = SubResource("CanopyMesh")
+material_override = SubResource("LeafMat")
+
+[node name="TreeB" type="Node3D" parent="Decor"]
+position = Vector3(-17, 0.25, -8)
+scale = Vector3(0.86, 0.96, 0.86)
+[node name="Trunk" type="MeshInstance3D" parent="Decor/TreeB"]
+position = Vector3(0, 2, 0)
+mesh = SubResource("TrunkMesh")
+material_override = SubResource("TrunkMat")
+[node name="Canopy" type="MeshInstance3D" parent="Decor/TreeB"]
+position = Vector3(0, 4.35, 0)
+scale = Vector3(1.0, 0.78, 1.0)
+mesh = SubResource("CanopyMesh")
+material_override = SubResource("LeafBrightMat")
+
+[node name="TreeC" type="Node3D" parent="Decor"]
+position = Vector3(19, 0.25, 1)
+scale = Vector3(1.08, 1.08, 1.08)
+[node name="Trunk" type="MeshInstance3D" parent="Decor/TreeC"]
+position = Vector3(0, 2, 0)
+mesh = SubResource("TrunkMesh")
+material_override = SubResource("TrunkMat")
+[node name="Canopy" type="MeshInstance3D" parent="Decor/TreeC"]
+position = Vector3(0, 4.35, 0)
+scale = Vector3(1.0, 0.78, 1.0)
+mesh = SubResource("CanopyMesh")
+material_override = SubResource("LeafMat")
+
+[node name="TreeD" type="Node3D" parent="Decor"]
+position = Vector3(20, 0.25, -16)
+scale = Vector3(0.9, 1.0, 0.9)
+[node name="Trunk" type="MeshInstance3D" parent="Decor/TreeD"]
+position = Vector3(0, 2, 0)
+mesh = SubResource("TrunkMesh")
+material_override = SubResource("TrunkMat")
+[node name="Canopy" type="MeshInstance3D" parent="Decor/TreeD"]
+position = Vector3(0, 4.35, 0)
+scale = Vector3(1.0, 0.78, 1.0)
+mesh = SubResource("CanopyMesh")
+material_override = SubResource("LeafBrightMat")
+
+[node name="TreeE" type="Node3D" parent="Decor"]
+position = Vector3(2, 0.25, -22)
+scale = Vector3(1.18, 1.08, 1.18)
+[node name="Trunk" type="MeshInstance3D" parent="Decor/TreeE"]
+position = Vector3(0, 2, 0)
+mesh = SubResource("TrunkMesh")
+material_override = SubResource("TrunkMat")
+[node name="Canopy" type="MeshInstance3D" parent="Decor/TreeE"]
+position = Vector3(0, 4.35, 0)
+scale = Vector3(1.0, 0.78, 1.0)
+mesh = SubResource("CanopyMesh")
+material_override = SubResource("LeafMat")
+
+[node name="TreeF" type="Node3D" parent="Decor"]
+position = Vector3(-23, 0.25, -20)
+scale = Vector3(1.05, 1.0, 1.05)
+[node name="Trunk" type="MeshInstance3D" parent="Decor/TreeF"]
+position = Vector3(0, 2, 0)
+mesh = SubResource("TrunkMesh")
+material_override = SubResource("TrunkMat")
+[node name="Canopy" type="MeshInstance3D" parent="Decor/TreeF"]
+position = Vector3(0, 4.35, 0)
+scale = Vector3(1.0, 0.78, 1.0)
+mesh = SubResource("CanopyMesh")
+material_override = SubResource("LeafBrightMat")
+
+[node name="Mimos" type="Node3D" parent="."]
+
+[node name="Lumi" parent="Mimos" instance=ExtResource("3")]
+position = Vector3(-10, 0.5, 12)
+mimo_id = &"lumi"
+display_name = "Lumi"
+personality = "timid / grass-hider"
+area_name = "Sun-dappled Clearing"
+capture_hint = "Stay close until Lumi tires; the third NET swing can finish a close chase."
+accent_color = Color(1, 0.32, 0.28, 1)
+detection_distance = 7.0
+panic_speed = 6.6
+home_radius = 5.0
+
+[node name="Goro" parent="Mimos" instance=ExtResource("3")]
+position = Vector3(12, 0.5, 10)
+mimo_id = &"goro"
+display_name = "Goro"
+personality = "sassy / stone-zone runner"
+area_name = "Pebble Ravine"
+capture_hint = "Approach around the rock and force a long chase before NET."
+accent_color = Color(1, 0.76, 0.10, 1)
+panic_speed = 6.2
+home_radius = 5.5
+trick_bias = 0.18
+
+[node name="Boka" parent="Mimos" instance=ExtResource("3")]
+position = Vector3(-9, 0.5, -3)
+mimo_id = &"boka"
+display_name = "Boka"
+personality = "confident / tight-space challenger"
+area_name = "Ancient Gate Ruins"
+capture_hint = "Draw Boka into open space; NET 2 has the widest sweep."
+accent_color = Color(0.05, 0.75, 0.95, 1)
+detection_distance = 8.5
+home_radius = 4.2
+trick_bias = 0.10
+
+[node name="Nera" parent="Mimos" instance=ExtResource("3")]
+position = Vector3(15, 0.5, -11)
+mimo_id = &"nera"
+display_name = "Nera"
+personality = "sharp / high-awareness"
+area_name = "Observation Platform"
+capture_hint = "Break line-of-sight with the platform, then close in fast."
+accent_color = Color(0.62, 0.28, 0.96, 1)
+detection_distance = 11.5
+panic_speed = 6.8
+home_radius = 6.0
+
+[node name="Moku" parent="Mimos" instance=ExtResource("3")]
+position = Vector3(-16, 0.5, -14)
+mimo_id = &"moku"
+display_name = "Moku"
+personality = "sleepy / slow starter"
+area_name = "Windy Forest"
+capture_hint = "Moku is slower; stay close and save the finisher for when it tires."
+accent_color = Color(0.38, 0.78, 0.40, 1)
+move_speed = 1.4
+panic_speed = 4.8
+detection_distance = 6.0
+panic_stamina_drain = 30.0
+home_radius = 4.5
+
+[node name="Raku" parent="Mimos" instance=ExtResource("3")]
+position = Vector3(12, 0.5, 17)
+mimo_id = &"raku"
+display_name = "Raku"
+personality = "teasing / bridge-water trickster"
+area_name = "Waterway Ruins"
+capture_hint = "Raku cuts sideways often; NET 2 covers the broadest arc."
+accent_color = Color(1, 0.28, 0.68, 1)
+panic_speed = 6.5
+home_radius = 6.0
+trick_bias = 0.32
+
+[node name="UI" type="CanvasLayer" parent="."]
+[node name="MobileHUD" parent="UI" instance=ExtResource("6")]

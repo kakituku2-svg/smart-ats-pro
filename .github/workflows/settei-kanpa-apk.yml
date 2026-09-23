@@ -6,6 +6,7 @@ on:
     branches: [main]
     paths:
       - "settei-kanpa-ai-android/**"
+      - "keirin-race-gate/hall-scope/**"
       - ".github/workflows/settei-kanpa-apk.yml"
 
 permissions:
@@ -34,6 +35,13 @@ jobs:
           test -n "$SDKMANAGER"
           yes | "$SDKMANAGER" --licenses >/dev/null || true
           "$SDKMANAGER" 'platforms;android-35' 'build-tools;35.0.0'
+      - name: Stage HALL SCOPE v4.8 bundled app
+        shell: bash
+        run: |
+          mkdir -p settei-kanpa-ai-android/app/src/main/assets
+          rm -f settei-kanpa-ai-android/app/src/main/assets/app-v4.*.txt settei-kanpa-ai-android/app/src/main/assets/app-v4.*.b64
+          cp keirin-race-gate/hall-scope/app-v4.8.part*.txt settei-kanpa-ai-android/app/src/main/assets/
+          test "$(ls settei-kanpa-ai-android/app/src/main/assets/app-v4.8.part*.txt | wc -l)" -eq 8
       - name: Set up Gradle 8.10.2
         uses: gradle/actions/setup-gradle@v4
         with:
@@ -42,11 +50,11 @@ jobs:
         working-directory: settei-kanpa-ai-android
         run: gradle :app:assembleDebug --stacktrace
       - name: Stage APK
-        run: cp settei-kanpa-ai-android/app/build/outputs/apk/debug/app-debug.apk HALL-SCOPE-v4.7.0-debug.apk
+        run: cp settei-kanpa-ai-android/app/build/outputs/apk/debug/app-debug.apk HALL-SCOPE-v4.8.0-debug.apk
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: HALL-SCOPE-v4.7.0-APK
-          path: HALL-SCOPE-v4.7.0-debug.apk
+          name: HALL-SCOPE-v4.8.0-APK
+          path: HALL-SCOPE-v4.8.0-debug.apk
           if-no-files-found: error
           retention-days: 30

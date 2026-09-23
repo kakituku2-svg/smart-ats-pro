@@ -71,6 +71,24 @@ jobs:
           grep -q "rec.continuous=false" _site/ai-seisaku-kobo/app.js
           grep -q "state.selected.size>=LITE_MAX_UNITS" _site/ai-seisaku-kobo/app.js
           grep -q "ai-seisaku-kobo-lite-v2.5.0-lite.3-pwa4" _site/ai-seisaku-kobo/sw.js
+          test -f _site/hall-scope/index.html
+          test -f _site/hall-scope/loader-v480.js
+          grep -q "HALL SCOPE v4.8" _site/hall-scope/index.html
+          grep -q "app-v4.8.part1.txt" _site/hall-scope/loader-v480.js
+          grep -q "hall-scope-v4.8.0" _site/hall-scope/sw.js
+          node --check _site/hall-scope/loader-v480.js
+          python3 - <<'PY'
+          from pathlib import Path
+          import base64, gzip
+          root=Path("_site/hall-scope")
+          parts=[root/f"app-v4.8.part{i}.txt" for i in range(1,9)]
+          assert all(p.is_file() and p.stat().st_size > 0 for p in parts)
+          b64="".join(p.read_text(encoding="utf-8").strip() for p in parts)
+          html=gzip.decompress(base64.b64decode(b64)).decode("utf-8")
+          assert "HALL_SCOPE_V48_PACHINKO_EVENT_ENGINE" in html
+          assert "PACHINKO_EVENT_ENGINE_V48" in html
+          assert "EVENT_HANDOFF_MATRIX" in html
+          PY
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
@@ -106,3 +124,12 @@ jobs:
           grep -q "COMMENT_HISTORY_MATCH_V513" /tmp/krg-tail.js
           curl -fsSL "${PAGE_URL}ai-seisaku-kobo/?release=2.5.0-lite.3" -o /tmp/ai-kobo.html
           grep -q 'app.js?v=2.5.0-lite.3' /tmp/ai-kobo.html
+          curl -fsSL "${PAGE_URL}hall-scope/?release=480" -o /tmp/hall-scope.html
+          grep -q "HALL SCOPE" /tmp/hall-scope.html
+          grep -q "v4.8" /tmp/hall-scope.html
+          curl -fsSL "${PAGE_URL}hall-scope/loader-v480.js?v=4.8.0" -o /tmp/hall-scope-loader.js
+          grep -q "app-v4.8.part1.txt" /tmp/hall-scope-loader.js
+          curl -fsSL "${PAGE_URL}hall-scope/app-v4.8.part1.txt?v=4.8.0" -o /tmp/hall-scope-part1.txt
+          curl -fsSL "${PAGE_URL}hall-scope/app-v4.8.part8.txt?v=4.8.0" -o /tmp/hall-scope-part8.txt
+          test -s /tmp/hall-scope-part1.txt
+          test -s /tmp/hall-scope-part8.txt

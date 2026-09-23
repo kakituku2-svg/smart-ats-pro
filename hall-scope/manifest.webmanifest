@@ -1,0 +1,19 @@
+{
+  "name": "HALL SCOPE v4.8",
+  "short_name": "HALL SCOPE",
+  "description": "スマスロのホール・イベント・機種・配置・台番を階層分析するHALL SCOPE",
+  "start_url": "./?release=480-pia",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#050b13",
+  "theme_color": "#050b13",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

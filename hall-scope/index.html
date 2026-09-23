@@ -1,0 +1,1000 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>HALL SCOPE v4.8 — ADAPTIVE LOOP</title>
+<meta name="theme-color" content="#f4f8fc" />
+<meta name="color-scheme" content="light" />
+<meta name="description" content="エリアと日付からChatGPT用のパチスロ調査プロンプトを生成し、凍結予測と実戦収支を管理するPWA。" />
+<link rel="manifest" href="manifest.webmanifest" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<link rel="apple-touch-icon" href="icon.svg" />
+<style>
+:root{--bg:#050b13;--bg2:#081521;--panel:#0b1725;--panel2:#102235;--line:#223a50;--text:#f6f8fb;--muted:#92a9bd;--cyan:#65d8ff;--green:#69e3b5;--gold:#e8c979;--amber:#ffd166;--red:#ff7f93;--shadow:0 22px 70px rgba(0,0,0,.38);--r:20px}
+*{box-sizing:border-box}html{background:var(--bg);color:var(--text);font-family:Inter,"Noto Sans JP",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}body{margin:0;min-height:100vh;background:radial-gradient(circle at 12% -8%,rgba(45,126,166,.32) 0,transparent 29%),radial-gradient(circle at 92% 2%,rgba(129,104,47,.19) 0,transparent 27%),linear-gradient(180deg,#06111d 0,var(--bg) 48%,#03070c 100%);background-attachment:fixed}button,input,select,textarea{font:inherit}button{cursor:pointer}.wrap{width:min(1180px,100%);margin:0 auto;padding:22px 16px 70px}.top{display:flex;justify-content:space-between;gap:18px;align-items:center;margin-bottom:18px}.brand{display:flex;align-items:center;gap:13px}.mark{width:50px;height:50px;border-radius:15px;background:linear-gradient(145deg,#89e6ff 0,#61d7bd 52%,#e1c46d 100%);display:grid;place-items:center;color:#04121e;font-weight:1000;box-shadow:0 14px 38px rgba(87,216,255,.17),inset 0 1px 0 rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.28)}h1{font-size:clamp(20px,3.7vw,30px);margin:0}.sub{color:var(--muted);font-size:13px;margin-top:3px}.badge{border:1px solid rgba(232,201,121,.35);background:linear-gradient(180deg,rgba(232,201,121,.10),rgba(15,30,45,.88));color:#f2dda0;padding:8px 11px;border-radius:999px;font-size:11px;font-weight:900;letter-spacing:.06em;white-space:nowrap}.tabs{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;background:#071421;padding:7px;border:1px solid var(--line);border-radius:16px;margin:18px 0}.tab{border:0;border-radius:12px;padding:12px 8px;background:transparent;color:var(--muted);font-weight:800}.tab.active{background:linear-gradient(180deg,#17304c,#11253b);color:white;box-shadow:inset 0 0 0 1px #315171}.grid{display:grid;grid-template-columns:390px minmax(0,1fr);gap:16px}.card{background:linear-gradient(180deg,rgba(16,34,52,.95),rgba(7,19,32,.96));border:1px solid rgba(63,95,122,.48);border-radius:var(--r);box-shadow:var(--shadow),inset 0 1px 0 rgba(255,255,255,.025);backdrop-filter:blur(12px)}.form{padding:18px;position:sticky;top:12px;height:max-content}.result{padding:18px;min-height:620px}.section-title{font-size:13px;color:var(--cyan);font-weight:900;letter-spacing:.06em;margin:0 0 12px}.mode-title{font-size:20px;margin:0 0 5px}.mode-note{margin:0 0 18px;color:var(--muted);font-size:13px;line-height:1.7}.field{display:grid;gap:7px;margin:13px 0}.field label{font-size:12px;color:#b9c8d8;font-weight:800}.field input,.field select,.field textarea{width:100%;color:white;background:#071523;border:1px solid #2a405a;border-radius:12px;padding:12px 13px;outline:none}.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(87,216,255,.09)}textarea{resize:vertical;min-height:92px;line-height:1.55}.chips{display:flex;flex-wrap:wrap;gap:7px}.chip{border:1px solid #2d4662;background:#0a1a2b;color:#b8c8d8;padding:8px 10px;border-radius:999px;font-size:12px;font-weight:800}.chip.active{color:#07121d;background:var(--green);border-color:transparent}.primary{width:100%;border:0;border-radius:14px;padding:15px 16px;background:linear-gradient(135deg,#7fe2ff 0,#69e3b5 60%,#d9c077 100%);color:#03111a;font-weight:1000;margin-top:14px;box-shadow:0 14px 34px rgba(69,214,200,.16),inset 0 1px 0 rgba(255,255,255,.6)}.ghost{border:1px solid #304b69;background:#0b1a2b;color:white;border-radius:11px;padding:10px 12px;font-weight:800}.ghost:hover{border-color:#4b7399}.row{display:flex;gap:8px;flex-wrap:wrap}.check{display:flex;align-items:flex-start;gap:9px;font-size:12px;color:#b8c8d8;line-height:1.55}.check input{margin-top:3px}.details{border-top:1px solid var(--line);margin-top:17px;padding-top:14px}.details summary{cursor:pointer;color:#c9d7e5;font-size:13px;font-weight:900}.prompt-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}.prompt-box{white-space:pre-wrap;word-break:break-word;background:#05101b;border:1px solid #263d57;border-radius:14px;padding:15px;min-height:480px;max-height:720px;overflow:auto;font:12px/1.62 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#dce8f5}.empty{display:grid;place-items:center;min-height:520px;text-align:center;color:var(--muted);padding:30px}.empty strong{display:block;color:white;font-size:18px;margin-bottom:8px}.notice{margin-top:14px;border:1px solid #2a4f52;background:rgba(50,111,101,.14);padding:12px;border-radius:13px;color:#cbeadf;font-size:12px;line-height:1.65}.warning{border-color:#5d4c2c;background:rgba(131,93,28,.15);color:#f4dfad}.mini{font-size:11px;color:var(--muted)}.hist{margin-top:16px}.hist-list{display:grid;gap:8px;max-height:250px;overflow:auto}.hist-item{border:1px solid #29425e;background:#091827;border-radius:12px;padding:10px;display:grid;grid-template-columns:1fr auto;gap:8px}.hist-title{font-size:12px;font-weight:900}.hist-meta{font-size:11px;color:var(--muted);margin-top:3px}.freeze{margin-top:16px;padding-top:16px;border-top:1px solid var(--line)}.freeze textarea{min-height:140px}.status{font-size:11px;font-weight:900;padding:5px 8px;border-radius:999px;background:#10283a;color:var(--cyan)}.hidden{display:none!important}.kbd{font:11px ui-monospace,monospace;border:1px solid #40526a;border-bottom-width:2px;border-radius:6px;padding:2px 5px;color:#bdcadd}.foot{margin-top:18px;color:var(--muted);font-size:11px;line-height:1.6;text-align:center}.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(14px);opacity:0;pointer-events:none;background:#e7fff6;color:#092219;padding:10px 14px;border-radius:999px;font-weight:900;font-size:12px;transition:.2s;z-index:50}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+.kpi-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:0 0 16px}
+.kpi{padding:14px;border-radius:16px;border:1px solid #294158;background:linear-gradient(180deg,rgba(16,38,57,.85),rgba(7,22,36,.9))}
+.kpi .k{font-size:11px;color:var(--muted);font-weight:800;letter-spacing:.04em}.kpi .v{font-size:22px;font-weight:1000;margin-top:5px}.v.plus{color:var(--green)}.v.minus{color:var(--red)}.v.gold{color:var(--gold)}
+.ledger-view{display:none}.ledger-view.active{display:block}
+.ledger-shell{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(300px,.7fr);gap:16px}
+.ledger-main,.ledger-side{padding:18px}
+.monthbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+.monthtitle{font-size:21px;font-weight:1000;letter-spacing:.03em}.monthnav{display:flex;gap:8px}
+.calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:7px}
+.dow{font-size:10px;color:var(--muted);text-align:center;padding:5px 0;font-weight:900}
+.day{min-height:92px;border:1px solid #243b50;border-radius:13px;background:linear-gradient(180deg,#0a1a29,#07131f);padding:8px;text-align:left;color:var(--text);position:relative;transition:.15s}
+.day:hover{border-color:#49728d;transform:translateY(-1px)}.day.out{opacity:.25}.day.today{box-shadow:inset 0 0 0 1px var(--cyan)}.day.selected{border-color:var(--gold);box-shadow:0 0 0 2px rgba(232,201,121,.10)}
+.daynum{font-size:12px;font-weight:900}.daytotal{font-size:12px;font-weight:1000;margin-top:18px}.daytotal.plus{color:var(--green)}.daytotal.minus{color:var(--red)}.daycount{font-size:9px;color:var(--muted);margin-top:3px}
+.ledger-empty{color:var(--muted);font-size:12px;line-height:1.7;padding:10px 0}
+.session-list{display:grid;gap:8px;margin-top:10px}.session{border:1px solid #29445a;border-radius:13px;background:#071724;padding:10px}
+.session-head{display:flex;justify-content:space-between;gap:8px}.session-title{font-size:12px;font-weight:900}.session-meta{font-size:10px;color:var(--muted);margin-top:3px}.session-profit{font-size:13px;font-weight:1000}
+.form-grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.ledger-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.small-btn{border:1px solid #304b69;background:#0a1a2a;color:white;border-radius:10px;padding:8px 10px;font-size:11px;font-weight:900}
+.danger{border-color:#65404a;color:#ffb4c0}.gold-btn{border-color:rgba(232,201,121,.5);color:#f2dda0}
+.premium-line{height:1px;background:linear-gradient(90deg,transparent,rgba(232,201,121,.55),rgba(101,216,255,.5),transparent);margin:6px 0 18px}
+.install-btn{border:1px solid rgba(232,201,121,.45);background:rgba(232,201,121,.08);color:#f3dfa5;border-radius:999px;padding:8px 12px;font-size:11px;font-weight:900}
+@media(max-width:900px){.ledger-shell{grid-template-columns:1fr}.kpi-grid{grid-template-columns:1fr 1fr}.day{min-height:78px}.daytotal{margin-top:12px}}
+@media(max-width:520px){.calendar{gap:4px}.day{min-height:66px;padding:6px;border-radius:10px}.daytotal{font-size:10px;margin-top:9px}.daycount{display:none}.kpi .v{font-size:18px}.ledger-main,.ledger-side{padding:13px}}
+
+@media(max-width:860px){.top{align-items:flex-start}.badge{display:none}.tabs{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr}.form{position:static}.result{min-height:auto}.prompt-box{min-height:420px}.wrap{padding:14px 12px 60px}}@media(max-width:430px){.tabs{gap:5px;padding:5px}.tab{font-size:11px;padding:10px 5px}.card,.form,.result{border-radius:14px}.form,.result{padding:14px}.row>.ghost{flex:1}.prompt-head{align-items:flex-start;flex-direction:column}}
+
+/* v2.3 bottom navigation */
+.wrap{padding-bottom:112px}
+.bottom-nav{position:fixed;z-index:80;left:50%;bottom:max(10px,env(safe-area-inset-bottom));transform:translateX(-50%);width:min(720px,calc(100% - 20px));display:grid;grid-template-columns:repeat(5,1fr);gap:6px;padding:7px;background:rgba(4,13,22,.94);border:1px solid rgba(72,106,134,.62);border-radius:20px;box-shadow:0 18px 55px rgba(0,0,0,.48),inset 0 1px 0 rgba(255,255,255,.04);backdrop-filter:blur(18px)}
+.bottom-nav .tab{min-height:58px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border:0;border-radius:14px;padding:7px 4px;background:transparent;color:#8198ab;font-size:11px;font-weight:900}
+.bottom-nav .tab.active{background:linear-gradient(180deg,#183553,#10243a);color:#fff;box-shadow:inset 0 0 0 1px #31577a,0 8px 22px rgba(0,0,0,.18)}
+.nav-icon{font-size:15px;line-height:1;color:var(--cyan);font-weight:1000}
+.toast{bottom:96px}
+
+/* v2.3 counter */
+.counter-view{display:none}.counter-view.active{display:block}
+.counter-frame{height:calc(100dvh - 154px);min-height:480px;max-height:850px;display:flex;flex-direction:column;padding:14px;overflow:hidden}
+.counter-toolbar{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:end;padding-bottom:10px;border-bottom:1px solid var(--line)}
+.counter-toolbar .field{margin:0}
+.counter-summary{display:grid;grid-template-columns:1.1fr .9fr;gap:10px;padding:10px 0;flex:0 0 auto}
+.counter-kpi{border:1px solid #29455e;background:#071725;border-radius:14px;padding:10px 12px}.counter-kpi .k{font-size:10px;color:var(--muted);font-weight:900}.counter-kpi .v{font-size:22px;font-weight:1000;margin-top:3px}.counter-kpi .v.cyan{color:var(--cyan)}
+.game-controls{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:7px}.game-controls button{border:1px solid #304d68;background:#0a1a2b;color:white;border-radius:10px;padding:8px 5px;font-weight:900;font-size:11px}
+.counter-scroll{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#355875 #07111d;padding:2px 3px 10px 0}
+.counter-scroll::-webkit-scrollbar{width:7px}.counter-scroll::-webkit-scrollbar-track{background:#07111d;border-radius:99px}.counter-scroll::-webkit-scrollbar-thumb{background:#355875;border-radius:99px}
+.counter-row{display:grid;grid-template-columns:minmax(110px,1.5fr) 62px 84px 42px 52px;gap:7px;align-items:center;padding:9px 6px;border-bottom:1px solid rgba(43,66,85,.6)}
+.counter-row input{width:100%;color:white;background:#071523;border:1px solid #294158;border-radius:9px;padding:9px 8px;outline:none;font-size:12px}.counter-count{font-size:20px;font-weight:1000;text-align:center}.counter-rate{font-size:11px;color:var(--gold);font-weight:900;text-align:right;white-space:nowrap}.count-btn{height:40px;border-radius:11px;border:1px solid #31516d;background:#0a1b2c;color:white;font-weight:1000}.count-btn.plus{background:linear-gradient(135deg,#1c7e78,#2f9f86);border-color:#5ccab4;color:#fff}.count-btn.minus{color:#ffb7c2;border-color:#5d3e49}
+.counter-footer{display:flex;gap:8px;justify-content:space-between;align-items:center;border-top:1px solid var(--line);padding-top:10px;flex:0 0 auto}.counter-footer .mini{max-width:62%}
+body.counter-mode{overflow:hidden}body.counter-mode .wrap{height:100dvh;overflow:hidden}
+@media(max-width:680px){.counter-frame{height:calc(100dvh - 132px);min-height:0;border-radius:14px;padding:10px}.counter-toolbar{grid-template-columns:1fr}.counter-summary{grid-template-columns:1fr 1fr}.counter-row{grid-template-columns:minmax(90px,1.35fr) 45px 72px 38px 48px;gap:4px;padding:7px 2px}.counter-row input{padding:8px 6px;font-size:11px}.counter-count{font-size:17px}.counter-rate{font-size:10px}.count-btn{height:38px;padding:0}.bottom-nav{bottom:max(5px,env(safe-area-inset-bottom));width:calc(100% - 12px);border-radius:17px}.bottom-nav .tab{min-height:54px}.wrap{padding-bottom:92px}.toast{bottom:84px}}
+
+
+@media(max-width:420px){.bottom-nav .tab{font-size:9px;padding-left:2px;padding-right:2px}.bottom-nav .nav-icon{font-size:15px}}
+</style>
+
+<style id="app-ui-v24">
+:root{
+  --bg:#080b12;--bg2:#0d111a;--panel:#111722;--panel2:#151d2a;--line:#252f3d;
+  --text:#f7f8fb;--muted:#8e99aa;--cyan:#59d8ff;--green:#5fe0ad;--gold:#f0c96b;
+  --shadow:0 12px 28px rgba(0,0,0,.20);--r:18px;
+}
+html{background:#080b12;overscroll-behavior-y:none}
+body{background:linear-gradient(180deg,#0b0f17 0,#080b12 38%,#080b12 100%);background-attachment:fixed;-webkit-tap-highlight-color:transparent}
+button,input,select,textarea{-webkit-appearance:none;appearance:none}
+button{touch-action:manipulation}
+.wrap{width:min(960px,100%);padding:10px 14px 104px}
+.top{position:sticky;top:0;z-index:70;margin:0 -14px 10px;padding:12px 14px;background:rgba(8,11,18,.88);backdrop-filter:blur(22px) saturate(1.25);border-bottom:1px solid rgba(255,255,255,.06)}
+.brand{gap:10px}.mark{width:42px;height:42px;border-radius:13px;background:linear-gradient(145deg,#6ddfff,#5fe0ad);box-shadow:none;border:0;font-size:13px}
+h1{font-size:20px;letter-spacing:-.02em}.sub{font-size:11px;color:#818c9c;margin-top:1px}.version-pill{display:inline-flex;align-items:center;margin-left:4px;padding:3px 7px;border-radius:999px;background:#1e2632;color:var(--gold);font-size:10px;vertical-align:2px}.badge{background:#141a23;border:1px solid #252e3b;color:#9eabbc;padding:7px 9px}
+.quick-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 12px}.quick-item{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:7px;padding:10px 11px;border-radius:14px;background:#10151e;border:1px solid rgba(255,255,255,.055);font-size:10px;color:#8f9bab}.quick-item b{color:#dfe4ec;font-size:10px}.quick-dot{width:7px;height:7px;border-radius:50%}.cyan-dot{background:var(--cyan);box-shadow:0 0 10px rgba(89,216,255,.55)}.green-dot{background:var(--green);box-shadow:0 0 10px rgba(95,224,173,.45)}.gold-dot{background:var(--gold);box-shadow:0 0 10px rgba(240,201,107,.4)}
+.grid{grid-template-columns:360px minmax(0,1fr);gap:12px}.card{background:#10151f;border:1px solid rgba(255,255,255,.06);box-shadow:none;border-radius:20px}.form,.result{padding:16px}.form{top:76px}.section-title{font-size:11px;letter-spacing:.04em;color:#96a5b8;margin-bottom:9px}.mode-title{font-size:22px;letter-spacing:-.035em;margin-bottom:5px}.mode-note{font-size:12px;line-height:1.55;color:#818da0;margin-bottom:14px}
+.field{margin:11px 0;gap:6px}.field label{font-size:11px;color:#aab4c2}.field input,.field select,.field textarea{min-height:48px;background:#171e29;border:1px solid transparent;border-radius:14px;padding:13px 14px;color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.045)}.field input:focus,.field select:focus,.field textarea:focus{border-color:rgba(89,216,255,.6);box-shadow:0 0 0 3px rgba(89,216,255,.08)}
+.chips{gap:7px;flex-wrap:nowrap;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}.chips::-webkit-scrollbar{display:none}.chip{flex:0 0 auto;background:#171e29;border:1px solid rgba(255,255,255,.055);color:#98a5b6;padding:9px 12px;border-radius:12px;font-size:11px}.chip.active{background:#e9f7f3;color:#0b1714;border-color:transparent;box-shadow:none}
+.primary{min-height:52px;border-radius:15px;background:linear-gradient(135deg,#6ddfff 0,#62dfb0 68%,#e9ca79 100%);box-shadow:0 9px 22px rgba(69,210,190,.12);font-size:14px;letter-spacing:.01em}.ghost,.small-btn,.install-btn{background:#171e29;border:1px solid rgba(255,255,255,.07);border-radius:12px;color:#e4e8ee}.ghost{min-height:42px}.notice{background:#121e1c;border:1px solid rgba(95,224,173,.12);color:#bcd9cf;border-radius:14px}.warning{background:#211c12;border-color:rgba(240,201,107,.14);color:#ddcca5}.details{border-top:0;margin-top:12px;padding-top:0}.details summary{display:flex;align-items:center;justify-content:space-between;min-height:46px;padding:0 12px;border-radius:13px;background:#151c27;color:#c5cdd8}.details summary::-webkit-details-marker{display:none}.details summary:after{content:'›';font-size:19px;color:#758196;transform:rotate(90deg)}details[open] summary:after{transform:rotate(-90deg)}
+.result{min-height:560px}.empty{min-height:500px;background:radial-gradient(circle at 50% 35%,rgba(89,216,255,.06),transparent 28%);border-radius:16px}.empty strong{font-size:20px;letter-spacing:-.02em}.prompt-box{background:#0b1018;border:1px solid rgba(255,255,255,.055);border-radius:15px;min-height:430px;font-size:11px;color:#d8dee8}.status{background:#172530;color:#74d8ff}.hist-item,.session,.kpi{background:#151b25;border:1px solid rgba(255,255,255,.055);box-shadow:none}.hist-item{border-radius:14px}.kpi-grid{gap:8px}.kpi{border-radius:15px;padding:13px}.kpi .k{font-size:9px}.kpi .v{font-size:20px}
+.calendar{gap:5px}.day{border:1px solid rgba(255,255,255,.05);background:#121923;border-radius:12px}.day:hover{transform:none}.day.selected{border-color:rgba(240,201,107,.65);box-shadow:inset 0 0 0 1px rgba(240,201,107,.22)}.day.today{box-shadow:inset 0 0 0 1px rgba(89,216,255,.55)}
+.counter-frame{background:#0f151e}.counter-kpi{background:#151c27;border-color:rgba(255,255,255,.05)}
+.bottom-nav{left:50%;bottom:max(8px,env(safe-area-inset-bottom));width:min(520px,calc(100% - 18px));padding:6px;border-radius:22px;background:rgba(16,21,30,.93);border:1px solid rgba(255,255,255,.07);box-shadow:0 16px 36px rgba(0,0,0,.36);backdrop-filter:blur(24px) saturate(1.3)}.bottom-nav .tab{min-height:56px;border-radius:17px;color:#737f90;font-size:10px}.bottom-nav .tab.active{background:#212a37;color:#fff;box-shadow:none}.nav-icon{font-size:17px;line-height:1}.bottom-nav .tab.active .nav-icon{color:var(--cyan)}
+.toast{bottom:86px;background:#edf9f4;color:#0d2119}
+.foot{opacity:.55;padding:4px 18px}.premium-line{display:none}
+@media(max-width:860px){.wrap{padding:8px 10px 100px}.top{margin:0 -10px 8px;padding:10px}.grid{grid-template-columns:1fr}.form{position:static}.result{min-height:auto}.quick-strip{margin-top:2px}.badge{display:none}.sub{max-width:260px}.card{border-radius:18px}.result{padding:14px}.prompt-box{min-height:390px}.ledger-shell{gap:10px}.ledger-main,.ledger-side{padding:14px}}
+@media(max-width:540px){.top{min-height:62px}.mark{width:38px;height:38px;border-radius:12px}.brand h1{font-size:18px}.sub{display:none}.quick-strip{gap:5px}.quick-item{padding:8px 7px;border-radius:12px;font-size:9px}.quick-item b{font-size:9px}.mode-title{font-size:21px}.form{padding:14px}.result{padding:13px}.field input,.field select,.field textarea{font-size:16px}.prompt-head{align-items:flex-start;flex-direction:column}.prompt-head .row{width:100%;display:grid;grid-template-columns:repeat(3,1fr)}.prompt-head .ghost{padding:9px 6px;font-size:10px}.kpi-grid{grid-template-columns:repeat(2,1fr)}.calendar{gap:3px}.day{border-radius:10px}.bottom-nav{width:calc(100% - 12px);bottom:max(5px,env(safe-area-inset-bottom));border-radius:20px}.bottom-nav .tab{min-height:54px}.foot{display:none}}
+</style>
+
+<style id="native-app-v30">
+:root{--app-accent:#83e7ff;--app-accent2:#69e3b5;--surface:#111722;--surface2:#171f2b;--surface3:#1d2734;--hair:rgba(255,255,255,.065);--shadow2:0 14px 40px rgba(0,0,0,.26)}
+html{overscroll-behavior:none}body{background:#090d14;letter-spacing:.001em;-webkit-tap-highlight-color:transparent;user-select:none}.prompt-box,input,textarea{user-select:text}.wrap{max-width:1040px;padding-top:0}.top{top:0;padding-top:max(12px,env(safe-area-inset-top));border-bottom:1px solid var(--hair);background:linear-gradient(180deg,rgba(8,12,19,.98),rgba(8,12,19,.89));box-shadow:0 8px 30px rgba(0,0,0,.18)}
+.brand{min-width:0}.mark{background:linear-gradient(145deg,#8beaff,#6fe7be 70%);box-shadow:none;border:0;color:#07141d;position:relative;overflow:hidden}.mark:after{content:"";position:absolute;width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,.35);top:-8px;right:-8px;filter:blur(4px)}.version-pill{font-size:9px;background:#1e2b37;color:#9de7ff;border:1px solid rgba(131,231,255,.22);padding:3px 6px;border-radius:999px;vertical-align:middle}
+.quick-strip{position:sticky;top:66px;z-index:60;margin:0 -2px 12px;padding:7px;background:rgba(10,14,21,.88);backdrop-filter:blur(18px);border:0;box-shadow:none}.quick-item{background:#121a25;border:1px solid var(--hair);box-shadow:none}.quick-item b{color:#e8edf4}.card{border:1px solid var(--hair);background:linear-gradient(180deg,#111722,#0e141e);box-shadow:var(--shadow2)}.form{border-radius:24px}.result{border-radius:24px}.field{margin:12px 0}.field label{font-size:11px;color:#9aa8ba}.field input,.field select,.field textarea{background:#171f2b;border:1px solid rgba(255,255,255,.075);border-radius:14px;min-height:48px;padding:13px 14px;color:#f5f7fa;box-shadow:inset 0 1px 0 rgba(255,255,255,.02)}.field input:focus,.field select:focus,.field textarea:focus{border-color:rgba(131,231,255,.75);box-shadow:0 0 0 3px rgba(131,231,255,.08)}
+.chip{background:#171f2b;border-color:var(--hair);min-height:38px;padding:9px 13px}.chip.active{background:#ecfbf7;color:#0d1a17}.primary{min-height:54px;border-radius:16px;background:linear-gradient(135deg,#8beaff,#6ee6bd);box-shadow:0 10px 24px rgba(79,217,193,.15);font-size:14px;letter-spacing:.01em;transition:transform .08s ease}.primary:active,.ghost:active,.chip:active,.tab:active,.small-btn:active,.count-btn:active{transform:scale(.98)}.ghost,.small-btn{background:#18212d;border-color:var(--hair);border-radius:13px}.notice{border:1px solid rgba(105,227,181,.16);background:rgba(31,79,68,.16);border-radius:15px}.warning{border-color:rgba(232,201,121,.16);background:rgba(108,83,31,.13)}
+.prompt-box{background:#0a1018;border-color:var(--hair);border-radius:18px;box-shadow:inset 0 1px 0 rgba(255,255,255,.02)}.kpi{background:#121a25;border-color:var(--hair);border-radius:18px}.day{background:#111925;border-color:var(--hair)}.session{background:#111925;border-color:var(--hair)}.counter-frame{background:#0f1620;border-color:var(--hair)}
+.bottom-nav{background:rgba(13,18,27,.95);border-color:rgba(255,255,255,.08);box-shadow:0 18px 42px rgba(0,0,0,.42);padding:6px 7px}.bottom-nav .tab{transition:.14s ease}.bottom-nav .tab.active{background:#202a37}.bottom-nav .tab.active .nav-icon{filter:drop-shadow(0 0 8px rgba(131,231,255,.38))}.nav-icon{font-weight:900}
+.toast{border-radius:16px;box-shadow:0 12px 30px rgba(0,0,0,.28)}
+@media(max-width:860px){.wrap{padding-left:10px;padding-right:10px}.grid{gap:10px}.form,.result{border-radius:22px}.form{padding:15px}.result{padding:14px}.quick-strip{top:max(62px,calc(env(safe-area-inset-top) + 50px))}.card{box-shadow:none}}
+@media(max-width:540px){body{background:#090d14}.wrap{padding-bottom:94px}.top{margin:0 -10px 8px;padding-left:12px;padding-right:12px}.quick-strip{margin-left:-2px;margin-right:-2px}.quick-item span:not(.quick-dot){display:none}.quick-item{justify-content:center;gap:5px}.grid{display:block}.result{margin-top:10px}.form,.result{border-radius:20px}.mode-note{font-size:12px}.details{margin-top:15px}.primary{position:relative}.bottom-nav{width:calc(100% - 10px);border-radius:22px}.bottom-nav .tab{border-radius:16px}.prompt-box{max-height:58vh}.empty{min-height:220px}.badge{display:none}}
+
+/* v4.1 decision-support additions */
+.live-hint{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:10px 0}.live-hint>div{padding:10px;border-radius:13px;background:#141d28;border:1px solid rgba(255,255,255,.055)}.live-hint b{display:block;font-size:10px;color:#dfe6ef;margin-bottom:3px}.live-hint span{font-size:9px;color:#7f8da0;line-height:1.35}.decision-badge{display:inline-flex;align-items:center;gap:5px;padding:5px 8px;border-radius:999px;background:rgba(131,231,255,.08);border:1px solid rgba(131,231,255,.14);font-size:9px;color:#9be9ff}.bottom-nav .tab span:last-child{white-space:nowrap}@media(max-width:540px){.bottom-nav{padding:5px}.bottom-nav .tab{min-width:0;padding:5px 2px;font-size:8.5px}.nav-icon{font-size:15px}.live-hint{grid-template-columns:1fr}}
+</style>
+
+<style id="hall-light-v42">
+:root{
+  --bg:#f2f6fa;--bg2:#eaf1f7;--panel:#ffffff;--panel2:#f7fafc;--line:#d6e0e9;
+  --text:#172331;--muted:#657487;--cyan:#087ea4;--green:#168b69;--gold:#a66b00;--amber:#9b6600;--red:#c64255;
+  --shadow:0 10px 30px rgba(35,56,78,.09);--r:20px;--app-accent:#087ea4;--app-accent2:#168b69;
+  --surface:#fff;--surface2:#f6f9fc;--surface3:#edf3f8;--hair:rgba(50,75,100,.13);--shadow2:0 10px 28px rgba(35,56,78,.08)
+}
+html{background:#f2f6fa;color:var(--text);color-scheme:light}
+body{background:linear-gradient(180deg,#f9fcff 0,#f2f6fa 46%,#edf3f8 100%)!important;color:var(--text);letter-spacing:.001em}
+.top{background:rgba(255,255,255,.94)!important;border-bottom:1px solid #dbe4ec!important;box-shadow:0 6px 22px rgba(37,59,82,.08)!important}
+.brand h1,.empty strong{color:#172331}.sub{color:#68788b!important}.mark{background:linear-gradient(145deg,#49bfe1,#54c99e 72%)!important;color:#fff!important;box-shadow:0 7px 18px rgba(22,139,105,.18)!important}.mark:after{background:rgba(255,255,255,.6)!important}
+.version-pill{background:#e8f5fb!important;color:#087ea4!important;border:1px solid #b8ddec!important}.badge{background:#f4f7fa!important;border:1px solid #d5e0e8!important;color:#536476!important}
+.quick-strip{background:rgba(242,246,250,.92)!important}.quick-item{background:#fff!important;border:1px solid #d9e3eb!important;color:#667689!important;box-shadow:0 3px 12px rgba(39,63,88,.045)!important}.quick-item b{color:#203144!important}
+.card{background:#fff!important;border:1px solid #dbe4ec!important;box-shadow:var(--shadow)!important}.section-title{color:#087ea4!important}.mode-title{color:#182738}.mode-note{color:#657487!important}
+.field label{color:#526477!important;font-size:12px!important}.field input,.field select,.field textarea{background:#fff!important;border:1.5px solid #cdd9e4!important;color:#172331!important;box-shadow:0 1px 2px rgba(34,55,77,.03)!important;min-height:52px!important}.field input::placeholder,.field textarea::placeholder{color:#93a1b0}.field input:focus,.field select:focus,.field textarea:focus{border-color:#1793bb!important;box-shadow:0 0 0 4px rgba(23,147,187,.12)!important}
+.chip{background:#f3f7fa!important;border:1px solid #d5e0e8!important;color:#526477!important}.chip.active{background:#dff5ec!important;color:#116c53!important;border-color:#9fd9c7!important}
+.primary{background:linear-gradient(135deg,#1a97c0 0,#25a77d 100%)!important;color:#fff!important;box-shadow:0 9px 22px rgba(17,129,120,.20)!important;font-size:15px!important;min-height:56px!important}.primary:active{filter:brightness(.95)}
+.ghost,.small-btn,.install-btn{background:#fff!important;border:1.5px solid #cbd8e3!important;color:#284056!important;box-shadow:0 2px 7px rgba(39,60,83,.05)}.ghost:hover,.small-btn:hover,.install-btn:hover{border-color:#8fb1c6!important;background:#f7fbfe!important}
+.notice{background:#edf9f4!important;border:1px solid #bee4d4!important;color:#285f4e!important}.warning{background:#fff7df!important;border-color:#ead79a!important;color:#6f5717!important}.details summary{background:#f3f7fa!important;color:#34495e!important;border:1px solid #d7e1e9!important}.details summary:after{color:#6f8092!important}
+.prompt-box{background:#f8fafc!important;border:1px solid #d7e1e9!important;color:#24384c!important}.status{background:#e6f6fb!important;color:#087ea4!important}.hist-item,.session,.kpi,.counter-kpi{background:#fff!important;border:1px solid #dbe4ec!important}.hist-title,.session-title,.monthtitle,.counter-kpi .v,.kpi .v{color:#1d2f42}.hist-meta,.session-meta,.kpi .k,.counter-kpi .k,.mini,.ledger-empty,.daycount,.foot{color:#6b7b8d!important}
+.day{background:#fff!important;border:1px solid #dbe4ec!important;color:#24374a!important}.day.today{box-shadow:inset 0 0 0 2px rgba(8,126,164,.48)!important}.day.selected{border-color:#d29a2e!important;box-shadow:inset 0 0 0 1px rgba(210,154,46,.34)!important}
+.counter-frame{background:#fff!important;border:1px solid #dbe4ec!important}.counter-row{border-color:#e1e8ee!important}.count-btn{background:#edf6fb!important;border-color:#c4dce9!important;color:#1d607a!important}.game-controls button{background:#f2f6fa!important;border-color:#d3dfe8!important;color:#33495f!important}
+.bottom-nav{background:rgba(255,255,255,.96)!important;border:1px solid #d4dee7!important;box-shadow:0 12px 30px rgba(41,62,83,.16)!important;backdrop-filter:blur(22px) saturate(1.05)!important}.bottom-nav .tab{color:#6b7989!important}.bottom-nav .tab.active{background:#e9f5fb!important;color:#0e6281!important;box-shadow:inset 0 0 0 1px #b5d9e8!important}.bottom-nav .tab.active .nav-icon{color:#087ea4!important;filter:none!important}.nav-icon{color:#6f8295!important}
+.live-hint>div{background:#f7fafc!important;border:1px solid #d9e3eb!important}.live-hint b{color:#2a4054!important}.live-hint span{color:#718194!important}.decision-badge{background:#e8f6fb!important;border-color:#c1e0ec!important;color:#0d728f!important}
+.toast{background:#173f35!important;color:#fff!important;box-shadow:0 9px 24px rgba(24,60,50,.22)!important}
+.visibility-btn{min-height:38px;padding:8px 11px;border-radius:12px;background:#fff;border:1.5px solid #cbd8e3;color:#2b455b;font-weight:900;font-size:11px;box-shadow:0 2px 7px rgba(39,60,83,.05)}
+.visibility-btn .sun{display:inline-block;margin-right:5px}.hall-contrast{--text:#0b1218;--muted:#44515e}.hall-contrast body{background:#fff!important}.hall-contrast .card,.hall-contrast .quick-item,.hall-contrast .field input,.hall-contrast .field select,.hall-contrast .field textarea,.hall-contrast .bottom-nav{border-color:#aebdca!important}.hall-contrast .field label,.hall-contrast .mode-note,.hall-contrast .mini{color:#33424f!important}.hall-contrast .field input,.hall-contrast .field select,.hall-contrast .field textarea{font-weight:650}.hall-contrast .mode-title{font-weight:950}.hall-contrast .primary{background:#087ea4!important}.hall-contrast .bottom-nav .tab.active{background:#dff1f8!important;color:#064e68!important}.hall-contrast .quick-strip{background:#fff!important}
+@media(max-width:540px){
+  .top{padding-top:max(10px,env(safe-area-inset-top))!important}.visibility-btn{padding:7px 8px;font-size:10px}.quick-item{min-height:42px}.mode-title{font-size:22px!important}.field label{font-size:12px!important}.bottom-nav .tab{font-size:9px!important;min-height:58px!important}.bottom-nav{bottom:max(5px,env(safe-area-inset-bottom))!important}.nav-icon{font-size:16px!important}.form,.result{box-shadow:0 5px 18px rgba(40,61,82,.07)!important}
+}
+</style>
+
+<style id="onebar-v43">
+/* v4.5: one-row mobile navigation. Secondary tools live in a bottom sheet. */
+.wrap{padding-bottom:92px!important}
+.bottom-nav{grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:4px!important;max-width:540px!important;padding:5px!important}
+.bottom-nav .tab{min-width:0!important;min-height:56px!important;padding:5px 2px!important;gap:3px!important}
+.bottom-nav .tab span:last-child{font-size:9px!important;white-space:nowrap!important;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.bottom-nav .tab.live-main{position:relative}.bottom-nav .tab.live-main .nav-icon{font-size:19px!important}
+.history-view{display:none}.history-view.active{display:block}
+.history-shell{max-width:820px;margin:0 auto;padding:2px 0 12px}
+.history-card{padding:18px}.history-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px}
+.history-head h2{margin:2px 0 4px;font-size:21px}.history-panel-list{display:grid;gap:8px;margin-top:12px}.history-panel-list .hist-item{background:#fff!important}
+.more-backdrop{position:fixed;z-index:95;inset:0;background:rgba(23,38,52,.24);backdrop-filter:blur(3px);opacity:0;pointer-events:none;transition:.18s}
+.more-backdrop.open{opacity:1;pointer-events:auto}
+.more-sheet{position:fixed;z-index:96;left:50%;bottom:0;transform:translate(-50%,105%);width:min(560px,100%);background:#fff;border:1px solid #d4dee7;border-radius:24px 24px 0 0;padding:10px 14px calc(18px + env(safe-area-inset-bottom));box-shadow:0 -14px 42px rgba(39,59,79,.20);transition:transform .22s ease}
+.more-sheet.open{transform:translate(-50%,0)}
+.more-grabber{width:44px;height:5px;border-radius:99px;background:#cbd5de;margin:2px auto 13px}.more-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}.more-title b{font-size:16px;color:#1d2f42}.more-close{border:1px solid #d5e0e8;background:#f7fafc;color:#44586b;border-radius:12px;width:38px;height:38px;font-weight:900}
+.more-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.more-action{border:1px solid #d8e2ea;background:#f7fafc;color:#2d4357;border-radius:16px;min-height:86px;padding:10px 6px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-weight:900}.more-action .mi{font-size:22px;color:#087ea4}.more-action small{font-size:9px;color:#718194;font-weight:700}.more-action:active{transform:scale(.98);background:#edf6fa}
+body.more-open{overflow:hidden}
+@media(max-width:540px){
+  .wrap{padding-bottom:84px!important}.bottom-nav{width:calc(100% - 10px)!important;bottom:max(4px,env(safe-area-inset-bottom))!important;border-radius:19px!important}
+  .bottom-nav .tab{min-height:51px!important;border-radius:14px!important}.bottom-nav .tab span:last-child{font-size:8.5px!important}.nav-icon{font-size:15px!important}
+  .history-card{padding:14px}.history-head{align-items:center}.history-head h2{font-size:19px}.more-sheet{border-radius:22px 22px 0 0}.more-grid{gap:7px}.more-action{min-height:80px;border-radius:14px;padding:8px 4px}
+}
+@media(max-width:370px){.bottom-nav .tab span:last-child{font-size:8px!important}.bottom-nav{padding:4px!important}.more-action small{display:none}}
+</style>
+
+<style id="compact-top-v44">
+/* v4.4: reclaim vertical space for hall use */
+.top,.quick-strip{display:none!important}
+.wrap{padding-top:max(6px,env(safe-area-inset-top))!important}
+.form{top:8px!important;padding:13px 14px 15px!important}
+.form>.section-title{font-size:9px!important;letter-spacing:.08em!important;margin:0 0 3px!important;color:#7890a3!important}
+.v44-mode-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 7px}
+.v44-mode-row .mode-title{font-size:19px!important;line-height:1.2!important;margin:0!important;letter-spacing:-.025em!important}
+.v44-info-btn{flex:0 0 30px;width:30px;height:30px;border-radius:10px;border:1px solid #cbd9e4;background:#f7fafc;color:#587084;font-weight:950;font-size:13px;padding:0}
+.mode-note{display:none!important;margin:0 0 9px!important;padding:8px 10px!important;border-radius:10px!important;background:#f7fafc!important;border:1px solid #dfe8ef!important;color:#64788b!important;font-size:11px!important;line-height:1.45!important}
+.mode-note.v44-open{display:block!important}
+.form .field{margin:9px 0!important;gap:5px!important}
+.form .field label{font-size:10px!important}
+.form .field input,.form .field select,.form .field textarea{min-height:46px!important;padding:11px 13px!important;border-radius:12px!important}
+.form .chips{gap:6px!important}
+.form .chip{padding:8px 10px!important;border-radius:11px!important;font-size:10px!important}
+.form .primary{min-height:49px!important;margin-top:10px!important;border-radius:13px!important}
+.more-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+.more-action{min-height:72px!important}
+.v44-display-action .mi{font-size:20px!important}
+@media(max-width:540px){
+  .wrap{padding-left:8px!important;padding-right:8px!important;padding-top:max(5px,env(safe-area-inset-top))!important}
+  .grid{gap:8px!important}
+  .card{border-radius:17px!important}
+  .form{padding:12px 13px 14px!important}
+  .v44-mode-row{margin-bottom:5px!important}
+  .v44-mode-row .mode-title{font-size:18px!important}
+  .form>.section-title{margin-bottom:2px!important}
+}
+
+/* v4.8 PIA-STYLE STRUCTURE ENGINE */
+.learning-view{display:none}.learning-view.active{display:block}.learning-shell{display:grid;gap:12px}.learning-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.learning-kpi{padding:13px;border-radius:15px;background:#fff;border:1px solid #dbe4ec}.learning-kpi .k{font-size:9px;color:#6b7b8d;font-weight:850;letter-spacing:.07em}.learning-kpi .v{font-size:20px;font-weight:950;color:#1d2f42;margin-top:5px}.learning-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:12px}.learning-list{display:grid;gap:8px;margin-top:10px}.learning-item{padding:11px;border-radius:14px;background:#f8fafc;border:1px solid #dde6ed}.learning-item .t{font-weight:900;color:#1d2f42;font-size:12px}.learning-item .m{font-size:10px;color:#6b7b8d;line-height:1.55;margin-top:4px}.weight{display:inline-flex;min-width:34px;justify-content:center;padding:3px 6px;border-radius:999px;font-size:9px;font-weight:950;margin-left:5px}.weight.up{background:#e4f7ee;color:#0f7750}.weight.down{background:#fff0ef;color:#a33b36}.weight.flat{background:#edf2f6;color:#657487}.learning-actions{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:10px}.learning-actions button{min-height:50px}.learning-note{font-size:10px;line-height:1.6;color:#66788a}.tag-hint{font-size:9px;color:#7890a3;margin-top:4px;line-height:1.45}.adaptive-chip{display:inline-flex;padding:4px 7px;border-radius:999px;background:#e9f5fb;color:#0e6281;border:1px solid #c6e1ec;font-size:9px;font-weight:900;margin:2px 3px 2px 0}
+@media(max-width:780px){.learning-grid{grid-template-columns:1fr}.learning-kpis{grid-template-columns:1fr 1fr}}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><div class="mark">HS</div><div><h1>HALL SCOPE <span class="version-pill">v4.5</span></h1><div class="sub">店・イベント・台を読む / HALL INTELLIGENCE</div></div></div>
+    <div class="row" style="align-items:center"><button id="visibilityBtn" class="visibility-btn" type="button" aria-pressed="false"><span class="sun">☀</span>高視認</button><button id="installBtn" class="install-btn hidden" type="button">アプリをインストール</button><div class="badge">ZERO-BASE</div></div>
+  </header>
+
+  <div id="nativeBadge" class="native-badge" style="display:none"></div>
+  <section class="quick-strip" aria-label="アプリステータス">
+    <div class="quick-item"><span class="quick-dot cyan-dot"></span><span>AIリサーチ</span><b>ON</b></div>
+    <div class="quick-item"><span class="quick-dot green-dot"></span><span>ZERO-BASE</span><b>固定</b></div>
+    <div class="quick-item"><span class="quick-dot gold-dot"></span><span>NO BET</span><b>対応</b></div>
+  </section>
+
+  <div class="grid" id="promptWorkspace">
+    <section class="card form">
+      <p class="section-title">予測条件</p>
+      <h2 class="mode-title" id="modeTitle">今日どこで打つ？</h2>
+      <p class="mode-note" id="modeNote">エリアと日付だけで全店を横断し、まず上位3店舗を同じ粒度で比較します。選んだ店は「この店」で台番まで深掘りします。台選びは直近30日ローリング＋同一イベント再現性を標準にします。</p>
+
+      <div id="areaFields">
+        <div class="field"><label for="area">エリア</label><input id="area" placeholder="例：○○ / ○○〜○○ / ○○エリア" /></div>
+      </div>
+      <div id="storeFields" class="hidden">
+        <div class="field"><label for="store">店舗名</label><input id="store" placeholder="例：○○店 / ○○パーラー○○" /></div>
+        <div class="field"><label for="storeArea">エリア（任意）</label><input id="storeArea" placeholder="例：○○" /></div>
+      </div>
+      <div id="eventFields" class="hidden">
+        <div class="field"><label for="eventStore">店舗名</label><input id="eventStore" placeholder="例：○○店 / ○○パーラー○○" /></div>
+        <div class="field"><label for="eventName">イベント名・来店名（任意）</label><input id="eventName" placeholder="空欄なら対象日のイベントを自動検出" /></div>
+        <div class="field"><label for="eventLookback">台選び比較期間</label><select id="eventLookback"><option value="30d" selected>直近30日ローリング（標準）</option></select></div>
+      </div>
+      <div id="liveFields" class="hidden">
+        <div class="notice warning"><b>LIVE再判定</b><br>朝の予測を結果に合わせて書き換えず、今その場で観測できる情報だけを追加して「続行 / 移動 / 見送り」を再判定します。</div>
+        <div class="field"><label for="livePredictionRef">凍結した事前予測（任意）</label><select id="livePredictionRef"><option value="">事前予測なしで再判定</option></select></div>
+        <div class="form-grid2">
+          <div class="field"><label for="liveStore">店舗名</label><input id="liveStore" placeholder="例：○○店" /></div>
+          <div class="field"><label for="liveTime">現在時刻</label><input id="liveTime" type="time" /></div>
+        </div>
+        <div class="form-grid2">
+          <div class="field"><label for="liveMachine">今いる機種</label><input id="liveMachine" placeholder="例：スマスロ○○" /></div>
+          <div class="field"><label for="liveMachineNo">台番</label><input id="liveMachineNo" inputmode="numeric" placeholder="例：123" /></div>
+        </div>
+        <div class="form-grid2">
+          <div class="field"><label for="liveGames">現在G数</label><input id="liveGames" type="number" inputmode="numeric" min="0" placeholder="例：1800" /></div>
+          <div class="field"><label for="liveInvest">現在投資（円）</label><input id="liveInvest" type="number" inputmode="numeric" min="0" step="1000" placeholder="例：18000" /></div>
+        </div>
+        <div class="field"><label for="liveEntry">抽選・入場・空席状況</label><textarea id="liveEntry" placeholder="例：本命満席、対抗2台空き、島の稼働7割 など"></textarea></div>
+        <div class="field"><label for="liveEvidence">自台で今確認できる材料</label><textarea id="liveEvidence" placeholder="設定示唆、小役、初当たり、挙動。未確認は未確認のまま"></textarea></div>
+        <div class="field"><label for="liveSurroundings">周辺・同機種の状況</label><textarea id="liveSurroundings" placeholder="隣接台、同機種、島全体のG数・当たり・空席など。見た事実だけ"></textarea></div>
+        <div class="form-grid2">
+          <div class="field"><label for="liveBudget">残り予算（円・任意）</label><input id="liveBudget" type="number" inputmode="numeric" min="0" step="1000" placeholder="例：30000" /></div>
+          <div class="field"><label for="liveHours">残り時間（時間・任意）</label><input id="liveHours" type="number" inputmode="decimal" min="0" step="0.5" placeholder="例：4" /></div>
+        </div>
+        <div class="live-hint"><div><b>仮説維持</b><span>朝の根拠が残っているか</span></div><div><b>反証優先</b><span>都合の悪い情報も同じ重みで確認</span></div><div><b>撤退可能</b><span>候補が弱ければ打たないを正解にする</span></div></div>
+      </div>
+
+      <div class="field"><label for="targetDate">対象日</label><input id="targetDate" type="date" /></div>
+
+      <div id="priorityWrap">
+        <div class="field"><label>実戦の優先軸（任意）</label>
+          <div class="chips" id="priorityChips">
+            <button type="button" class="chip active" data-priority="balanced">総合</button>
+            <button type="button" class="chip" data-priority="setting">設定期待</button>
+            <button type="button" class="chip" data-priority="access">座りやすさ</button>
+            <button type="button" class="chip" data-priority="small">少数台・バラ</button>
+            <button type="button" class="chip" data-priority="lowrisk">低投資</button>
+          </div>
+        </div>
+      </div>
+
+      <details class="details">
+        <summary>高度設定</summary>
+        <div style="margin-top:12px;display:grid;gap:10px">
+          <label class="check"><input id="strictZero" type="checkbox" checked disabled /><span><b>過去会話を完全遮断</b><br>ユーザーが以前話した機種・台番・好みを候補抽出に使わない。</span></label>
+          <label class="check"><input id="includePachinko" type="checkbox" /><span>パチンコも同時比較（既定はパチスロのみ）</span></label>
+          <label class="check"><input id="attachGuide" type="checkbox" checked /><span>フロアマップ・店舗告知画像などの添付活用指示を含める</span></label>
+          <input id="topStores" type="hidden" value="3" /><div class="notice" style="margin-top:0"><b>エリア検索は上位3店舗固定</b><br>3店舗を同じ粒度で比較し、店舗を選んだ後に「この店」で台番まで深掘りします。</div>
+          <div class="field"><label for="topMachines">台番ランキング件数</label><select id="topMachines"><option>5</option><option selected>10</option><option>15</option></select></div>
+        </div>
+      </details>
+
+      <button class="primary" id="generateBtn">ChatGPT分析プロンプトを生成</button>
+      <div class="notice">アプリ本体は固定DBで結論を出さず、<b>最新データの検索・解析はChatGPT側</b>に任せます。過去同イベント・前月・同日付条件・店固有の投入癖まで毎回Webで再検証します。</div>
+      <div class="notice warning"><b>PRIVACY SAFE UI</b>：入力例に実在地名・実在店舗名を固定表示しません。例示は「○○」で統一し、エリア欄も初期値は空欄です。</div>
+
+      <div class="hist">
+        <div class="row" style="justify-content:space-between;align-items:center;margin-bottom:8px"><span class="section-title" style="margin:0">最近の予測</span><button class="ghost" id="exportBtn" type="button">履歴JSON</button></div>
+        <div class="hist-list" id="historyList"></div>
+      </div>
+    </section>
+
+    <section class="card result">
+      <div id="emptyState" class="empty"><div><strong>入力 → プロンプト生成</strong><span>「ホーム」→「店比較」→事前予測を凍結。現地では「LIVE」で再判定。イベント・収支・小役は「その他」にまとめました。<br>弱い日はNO BETを正式な正解として扱います。</span></div></div>
+      <div id="resultState" class="hidden">
+        <div class="prompt-head"><div><p class="section-title" style="margin-bottom:5px">AI分析リクエスト</p><div class="mini" id="promptMeta"></div></div><div class="row"><button class="ghost" id="copyBtn">コピー</button><button class="ghost" id="shareBtn">共有</button><button class="ghost" id="openChatBtn">ChatGPTを開く</button></div></div>
+        <div class="prompt-box" id="promptBox"></div>
+        <div class="notice warning" id="coverageNotice">生成プロンプトでは、ChatGPTに「全台取得できなければ全台比較済みと主張せず、カバレッジと欠損を明記する」よう強制しています。</div>
+        <div class="freeze" id="freezeBlock">
+          <p class="section-title">予測を保存</p>
+          <div class="mini" style="margin-bottom:8px">ChatGPTが返した<b>結果を見る前の予測本文</b>を貼り付けて保存すると、履歴の「検証」から後日そのまま答え合わせできます。</div>
+          <textarea id="predictionAnswer" placeholder="ChatGPTの予測回答をここへ貼り付け"></textarea>
+          <div class="row" style="margin-top:8px"><button class="ghost" id="freezeBtn">予測を凍結保存</button><span class="status" id="freezeStatus">未保存</span></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <section id="ledgerView" class="ledger-view">
+    <div class="premium-line"></div>
+    <div class="kpi-grid">
+      <div class="kpi"><div class="k">MONTHLY P/L</div><div class="v" id="monthPL">¥0</div></div>
+      <div class="kpi"><div class="k">INVESTMENT</div><div class="v gold" id="monthInvestment">¥0</div></div>
+      <div class="kpi"><div class="k">RECOVERY</div><div class="v" id="monthRecovery">¥0</div></div>
+      <div class="kpi"><div class="k">WIN DAYS / PLAY DAYS</div><div class="v" id="monthWinDays">0 / 0</div></div>
+      <div class="kpi"><div class="k">MONTHLY ROI</div><div class="v" id="monthROI">—</div></div>
+      <div class="kpi"><div class="k">HOURLY P/L</div><div class="v" id="monthHourly">—</div></div>
+      <div class="kpi"><div class="k">PREDICTION SCORE</div><div class="v" id="monthPredictionHit">—</div></div>
+    </div>
+    <div class="ledger-shell">
+      <section class="card ledger-main">
+        <div class="monthbar">
+          <div>
+            <p class="section-title" style="margin-bottom:5px">実戦カレンダー</p>
+            <div class="monthtitle" id="ledgerMonthTitle"></div>
+          </div>
+          <div class="monthnav">
+            <button class="ghost" id="prevMonthBtn" type="button">‹</button>
+            <button class="ghost" id="thisMonthBtn" type="button">今月</button>
+            <button class="ghost" id="nextMonthBtn" type="button">›</button>
+          </div>
+        </div>
+        <div class="calendar" id="ledgerCalendar"></div>
+      </section>
+      <aside class="card ledger-side">
+        <p class="section-title">実戦詳細</p>
+        <h2 class="mode-title" id="ledgerSelectedTitle">日付を選択</h2>
+        <p class="mode-note">1日に複数台を登録できます。予測との紐づけ・実戦時間も保存し、AI予測と実際の立ち回りを分けて検証できます。</p>
+        <div id="ledgerDaySummary" class="notice">カレンダーの日付をタップしてください。</div>
+
+        <div id="ledgerEntryForm" class="hidden">
+          <div class="field"><label for="ledgerStore">店舗</label><input id="ledgerStore" placeholder="例：○○店 / ○○パーラー○○" /></div>
+          <div class="form-grid2">
+            <div class="field"><label for="ledgerType">種別</label><select id="ledgerType"><option>パチスロ</option><option>パチンコ</option></select></div>
+            <div class="field"><label for="ledgerMachineNo">台番</label><input id="ledgerMachineNo" placeholder="例：123" /></div>
+          </div>
+          <div class="field"><label for="ledgerMachine">機種</label><input id="ledgerMachine" placeholder="例：スマスロ○○" /></div>
+          <div class="field"><label for="ledgerEventLabel">イベント / 日条件（任意）</label><input id="ledgerEventLabel" placeholder="例：旧イベ / 来店 / 通常日 / 新台3日目" /></div>
+          <div class="form-grid2">
+            <div class="field"><label for="ledgerActualDelta">台の確定実績 差枚/差玉（任意）</label><input id="ledgerActualDelta" type="number" inputmode="numeric" step="100" placeholder="例：1500 / -800" /></div>
+            <div class="field"><label for="ledgerSignalTags">予測根拠タグ（任意）</label><input id="ledgerSignalTags" list="signalTagList" placeholder="末尾,角,少数設置" /><datalist id="signalTagList"><option value="末尾"><option value="角"><option value="角2"><option value="少数設置"><option value="全台系"><option value="ローテーション"><option value="新台"><option value="高稼働凹み"><option value="通常日アンカー"><option value="同イベント再現"><option value="機種塊"><option value="据え置き"></datalist></div>
+          </div>
+          <div class="tag-hint">カンマ区切りで複数可。3件以上たまったタグだけ、次回予測の学習プロファイルに反映します。</div>
+          <div class="field"><label for="ledgerPredictionRef">凍結予測との紐づけ（任意）</label><select id="ledgerPredictionRef"><option value="">予測と紐づけない</option></select></div>
+          <div class="field"><label for="ledgerPredictionResult">事後の予測判定</label><select id="ledgerPredictionResult"><option value="">未判定</option><option>的中</option><option>部分的中</option><option>外れ</option></select></div>
+          <div class="form-grid2">
+            <div class="field"><label for="ledgerPredictionRelation">予測上の位置づけ</label><select id="ledgerPredictionRelation"><option value="">未分類</option><option>本命</option><option>対抗</option><option>保険</option><option>穴候補</option><option>予測外</option><option>NO BETを無視</option></select></div>
+            <div class="field"><label for="ledgerDecisionReason">選択理由</label><select id="ledgerDecisionReason"><option value="">未分類</option><option>予測どおり着席</option><option>本命が満席・抽選負け</option><option>店内状況で変更</option><option>昼の再分析で変更</option><option>投資リスクで変更</option><option>自主判断</option><option>その他</option></select></div>
+          </div>
+          <div class="form-grid2">
+            <div class="field"><label for="ledgerInvest">投資（円）</label><input id="ledgerInvest" type="number" inputmode="numeric" min="0" step="1000" value="0" /></div>
+            <div class="field"><label for="ledgerRecover">回収（円）</label><input id="ledgerRecover" type="number" inputmode="numeric" min="0" step="1000" value="0" /></div>
+          </div>
+          <div class="field"><label for="ledgerHours">実戦時間（時間・任意）</label><input id="ledgerHours" type="number" inputmode="decimal" min="0" step="0.25" placeholder="例：○○" /></div>
+          <div class="field"><label for="ledgerMemo">メモ（任意）</label><textarea id="ledgerMemo" placeholder="設定示唆、ヤメ理由、実戦メモなど"></textarea></div>
+          <button class="primary" id="addSessionBtn" type="button">この実戦を追加</button>
+          <div class="session-list" id="ledgerSessionList"></div>
+        </div>
+        <div class="ledger-actions">
+          <button class="small-btn gold-btn" id="exportLedgerCsvBtn" type="button">月間CSV</button>
+          <button class="small-btn" id="exportFullBackupBtn" type="button">全データJSON</button>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+
+
+  <section id="historyView" class="history-view">
+    <div class="history-shell">
+      <section class="card history-card">
+        <div class="history-head">
+          <div><p class="section-title" style="margin-bottom:4px">予測履歴</p><h2>凍結した事前予測</h2><p class="mode-note" style="margin:0">結果を見る前に保存した予測だけを一覧化。ここから答え合わせ用プロンプトを作れます。</p></div>
+          <button class="ghost" id="historyExportBtn" type="button">JSON</button>
+        </div>
+        <div id="historyPanelList" class="history-panel-list"></div>
+      </section>
+    </div>
+  </section>
+
+  <section id="learningView" class="learning-view">
+    <div class="learning-shell">
+      <div class="learning-kpis">
+        <div class="learning-kpi"><div class="k">JUDGED</div><div class="v" id="labJudged">0</div></div>
+        <div class="learning-kpi"><div class="k">PREDICTION SCORE</div><div class="v" id="labScore">—</div></div>
+        <div class="learning-kpi"><div class="k">TRACKED STORES</div><div class="v" id="labStores">0</div></div>
+        <div class="learning-kpi"><div class="k">PENDING AUDITS</div><div class="v" id="labPending">0</div></div>
+      </div>
+      <div class="learning-grid">
+        <section class="card" style="padding:14px">
+          <p class="section-title">STORE FINGERPRINT</p>
+          <h2 class="mode-title" style="font-size:20px">店ごとの相性・再現性</h2>
+          <p class="learning-note">実戦ログから店舗別の予測スコア・ROI・有効タグを自動集計。サンプルが少ない店は強く学習しません。</p>
+          <div id="labStoreList" class="learning-list"></div>
+        </section>
+        <section class="card" style="padding:14px">
+          <p class="section-title">ADAPTIVE WEIGHTS</p>
+          <h2 class="mode-title" style="font-size:20px">根拠タグの重み</h2>
+          <p class="learning-note">的中/部分的中/外れを0〜1点化し、少数サンプルを縮小補正。n≥3のみ次回プロンプトへ追記します。</p>
+          <div id="labFeatureList" class="learning-list"></div>
+          <div class="learning-actions"><button class="ghost" id="labRebuildBtn" type="button">再計算</button><button class="ghost" id="labExportBtn" type="button">学習JSON</button></div>
+        </section>
+      </div>
+      <section class="card" style="padding:14px">
+        <p class="section-title">VALIDATION LAB</p>
+        <div class="form-grid2"><div class="field"><label for="labStoreSelect">店舗指紋を深掘り</label><select id="labStoreSelect"><option value="">店舗を選択</option></select></div><div class="field"><label>現在の自動学習</label><div id="labProfileStatus" class="notice">データ待ち</div></div></div>
+        <div class="learning-actions"><button class="primary" id="labLearningPromptBtn" type="button">学習レビューを生成</button><button class="ghost" id="labWalkForwardBtn" type="button">WF検証を生成</button><button class="ghost" id="labFingerprintBtn" type="button">店舗指紋を生成</button><button class="ghost" id="labPendingAuditBtn" type="button">未検証を確認</button></div>
+        <div class="notice" style="margin-top:10px"><b>ADAPTIVE LOOP</b>：実戦結果を入力 → ローカルで重みを再計算 → 次回の店/台予測に補助情報として自動追記。Web結果の自動取得はまだ行わず、結果確認は凍結予測の検証プロンプトで実施します。</div>
+      </section>
+    </div>
+  </section>
+
+  <section id="counterView" class="counter-view">
+    <div class="premium-line"></div>
+    <section class="card counter-frame">
+      <div class="counter-toolbar">
+        <div class="field"><label for="counterMachine">機種 / メモ</label><input id="counterMachine" placeholder="例：スマスロ○○ / ○○番台" /></div>
+        <div class="row"><select id="counterPreset" class="ghost" style="min-width:130px"><option value="generic">汎用</option><option value="atype">Aタイプ</option><option value="custom">カスタム</option></select><button class="ghost" id="counterResetBtn" type="button">リセット</button></div>
+      </div>
+      <div class="counter-summary">
+        <div class="counter-kpi"><div class="k">TOTAL GAMES</div><div class="v cyan" id="counterGamesView">0 G</div><div class="game-controls"><button type="button" data-game-add="-1">-1</button><button type="button" data-game-add="10">+10</button><button type="button" data-game-add="50">+50</button><button type="button" data-game-add="100">+100</button></div></div>
+        <div class="counter-kpi"><div class="k">TOTAL COUNT</div><div class="v" id="counterTotalCount">0</div><div class="mini" style="margin-top:7px">各小役の確率は総Gに対する 1/x を自動表示</div></div>
+      </div>
+      <div class="counter-scroll" id="counterScroll" aria-label="小役一覧"></div>
+      <div class="counter-footer"><div class="mini">画面全体は固定。小役一覧だけ、この枠内でスクロールします。内容は端末内へ自動保存。</div><button class="small-btn gold-btn" id="counterAddRowBtn" type="button">項目追加</button></div>
+    </section>
+  </section>
+
+  <div class="foot">HALL SCOPE v4.8 — ADAPTIVE LOOP / 予測は確率保証ではありません。過去イベントは具体日・n・反証・類似度・レジーム変化まで確認し、データ不足時の NO BET を正式な出力として扱います。</div>
+</div>
+<div class="toast" id="toast"></div>
+<nav class="bottom-nav" aria-label="メインメニュー">
+  <button class="tab active" data-mode="area"><span class="nav-icon">⌂</span><span>ホーム</span></button>
+  <button class="tab" data-mode="store"><span class="nav-icon">◎</span><span>店比較</span></button>
+  <button class="tab live-main" data-mode="live"><span class="nav-icon">↻</span><span>LIVE</span></button>
+  <button class="tab" data-mode="history"><span class="nav-icon">▤</span><span>履歴</span></button>
+  <button class="tab" id="moreTab" type="button"><span class="nav-icon">•••</span><span>その他</span></button>
+</nav>
+<div id="moreBackdrop" class="more-backdrop" aria-hidden="true"></div>
+<section id="moreSheet" class="more-sheet" aria-label="その他の機能" aria-hidden="true">
+  <div class="more-grabber"></div>
+  <div class="more-title"><b>その他の機能</b><button id="moreClose" class="more-close" type="button" aria-label="閉じる">×</button></div>
+  <div class="more-grid">
+    <button class="more-action" type="button" data-more-mode="event"><span class="mi">≋</span><span>イベント・癖</span><small>同イベント / 店の癖</small></button>
+    <button class="more-action" type="button" data-more-mode="ledger"><span class="mi">▦</span><span>収支</span><small>カレンダー / ROI</small></button>
+    <button class="more-action" type="button" data-more-mode="counter"><span class="mi">＋1</span><span>小役</span><small>カウンター</small></button>
+    <button class="more-action" type="button" data-more-mode="learning"><span class="mi">↗</span><span>検証・学習</span><small>店指紋 / WF / 重み</small></button>
+  </div>
+</section>
+
+
+<script>
+(() => {
+  'use strict';
+  const $ = (id) => document.getElementById(id);
+  const els = {
+    tabs:[...document.querySelectorAll('.bottom-nav .tab[data-mode]')], modeTitle:$('modeTitle'), modeNote:$('modeNote'), areaFields:$('areaFields'), storeFields:$('storeFields'), eventFields:$('eventFields'), liveFields:$('liveFields'), priorityWrap:$('priorityWrap'), area:$('area'), store:$('store'), storeArea:$('storeArea'), eventStore:$('eventStore'), eventName:$('eventName'), eventLookback:$('eventLookback'), livePredictionRef:$('livePredictionRef'), liveStore:$('liveStore'), liveTime:$('liveTime'), liveMachine:$('liveMachine'), liveMachineNo:$('liveMachineNo'), liveGames:$('liveGames'), liveInvest:$('liveInvest'), liveEntry:$('liveEntry'), liveEvidence:$('liveEvidence'), liveSurroundings:$('liveSurroundings'), liveBudget:$('liveBudget'), liveHours:$('liveHours'), targetDate:$('targetDate'), includePachinko:$('includePachinko'), attachGuide:$('attachGuide'), topStores:$('topStores'), topMachines:$('topMachines'), generateBtn:$('generateBtn'), emptyState:$('emptyState'), resultState:$('resultState'), promptBox:$('promptBox'), promptMeta:$('promptMeta'), copyBtn:$('copyBtn'), shareBtn:$('shareBtn'), openChatBtn:$('openChatBtn'), predictionAnswer:$('predictionAnswer'), freezeBtn:$('freezeBtn'), freezeStatus:$('freezeStatus'), freezeBlock:$('freezeBlock'), historyList:$('historyList'), exportBtn:$('exportBtn'), toast:$('toast'), promptWorkspace:$('promptWorkspace'), ledgerView:$('ledgerView'), counterView:$('counterView'), installBtn:$('installBtn'), ledgerCalendar:$('ledgerCalendar'), ledgerMonthTitle:$('ledgerMonthTitle'), prevMonthBtn:$('prevMonthBtn'), nextMonthBtn:$('nextMonthBtn'), thisMonthBtn:$('thisMonthBtn'), monthPL:$('monthPL'), monthInvestment:$('monthInvestment'), monthRecovery:$('monthRecovery'), monthWinDays:$('monthWinDays'), monthROI:$('monthROI'), monthHourly:$('monthHourly'), monthPredictionHit:$('monthPredictionHit'), ledgerSelectedTitle:$('ledgerSelectedTitle'), ledgerDaySummary:$('ledgerDaySummary'), ledgerEntryForm:$('ledgerEntryForm'), ledgerStore:$('ledgerStore'), ledgerType:$('ledgerType'), ledgerMachineNo:$('ledgerMachineNo'), ledgerMachine:$('ledgerMachine'), ledgerPredictionRef:$('ledgerPredictionRef'), ledgerPredictionResult:$('ledgerPredictionResult'), ledgerPredictionRelation:$('ledgerPredictionRelation'), ledgerDecisionReason:$('ledgerDecisionReason'), ledgerInvest:$('ledgerInvest'), ledgerRecover:$('ledgerRecover'), ledgerHours:$('ledgerHours'), ledgerMemo:$('ledgerMemo'), addSessionBtn:$('addSessionBtn'), ledgerSessionList:$('ledgerSessionList'), exportLedgerCsvBtn:$('exportLedgerCsvBtn'), exportFullBackupBtn:$('exportFullBackupBtn'), counterMachine:$('counterMachine'), counterPreset:$('counterPreset'), counterResetBtn:$('counterResetBtn'), counterGamesView:$('counterGamesView'), counterTotalCount:$('counterTotalCount'), counterScroll:$('counterScroll'), counterAddRowBtn:$('counterAddRowBtn'), historyView:$('historyView'), historyPanelList:$('historyPanelList'), historyExportBtn:$('historyExportBtn'), learningView:$('learningView'), labJudged:$('labJudged'), labScore:$('labScore'), labStores:$('labStores'), labPending:$('labPending'), labStoreList:$('labStoreList'), labFeatureList:$('labFeatureList'), labStoreSelect:$('labStoreSelect'), labProfileStatus:$('labProfileStatus'), labRebuildBtn:$('labRebuildBtn'), labExportBtn:$('labExportBtn'), labLearningPromptBtn:$('labLearningPromptBtn'), labWalkForwardBtn:$('labWalkForwardBtn'), labFingerprintBtn:$('labFingerprintBtn'), labPendingAuditBtn:$('labPendingAuditBtn'), ledgerEventLabel:$('ledgerEventLabel'), ledgerActualDelta:$('ledgerActualDelta'), ledgerSignalTags:$('ledgerSignalTags'), moreTab:$('moreTab'), moreBackdrop:$('moreBackdrop'), moreSheet:$('moreSheet'), moreClose:$('moreClose')
+  };
+  const MODE = {
+    area:{title:'今日どこで打つ？', note:'対象エリアを全店横断し、まず上位3店舗を同じ粒度で比較します。店を決めた後に「この店」で台番まで深掘りします。'},
+    store:{title:'この店で何打つ？', note:'指定店舗だけを改めてゼロベースで全機種→取得可能な全台へ掘り下げ、具体的な台番まで順位付けします。'},
+    event:{title:'このイベント、店の癖は？', note:'同イベント・前月・同日付条件・来店/取材・複合条件を具体的な過去日付で洗い出し、投入機構の再現性を判定します。'},
+    live:{title:'現地LIVE再判定', note:'朝の予測を固定したまま、現在時刻までに観測できた事実を追加し、続行・台移動・店移動・見送りを再評価します。'},
+    history:{title:'予測履歴', note:'結果を見る前に凍結した予測を一覧表示し、後日そのまま答え合わせできます。'},
+    ledger:{title:'収支カレンダー', note:'実戦した店・機種・台番・投資・回収を日別保存し、月間収支をカレンダーで可視化します。'},
+    counter:{title:'小役カウンター', note:'画面は固定したまま、小役一覧だけを枠内スクロール。実戦中に片手で入力しやすい構成です。'},
+    learning:{title:'検証・学習', note:'凍結予測と実戦結果から、店別の相性・有効特徴・過学習リスクを検証し、次回予測へ補助情報を戻します。'}
+  };
+  let currentMode='area';
+  let currentPrompt='';
+  let currentDraftId=null;
+  let priority='balanced';
+  const LS_KEY='settei_kanpa_ai_v4_history';
+  const LS_LEDGER_KEY='settei_kanpa_ai_v22_ledger';
+  const LS_COUNTER_KEY='settei_kanpa_ai_v23_counter';
+  const LS_ADAPTIVE_KEY='hall_scope_v46_adaptive_profile';
+  let ledgerCursor=new Date(); ledgerCursor.setDate(1); let ledgerSelectedDate='';
+
+  const localDate = () => {
+    const d=new Date(); const p=n=>String(n).padStart(2,'0');
+    return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;
+  };
+  els.targetDate.value=localDate();
+  if(els.liveTime){const now=new Date();els.liveTime.value=`${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;}
+
+  const getHistory = () => { try{return JSON.parse(localStorage.getItem(LS_KEY)||'[]')}catch{return[]} };
+  const saveHistory = (arr) => localStorage.setItem(LS_KEY, JSON.stringify(arr.slice(0,100)));
+  const esc = (s='') => String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+  const toast = (msg) => { els.toast.textContent=msg; els.toast.classList.add('show'); setTimeout(()=>els.toast.classList.remove('show'),1800); };
+
+  function modeUI(){
+    const isLedger=currentMode==='ledger', isCounter=currentMode==='counter', isHistory=currentMode==='history', isLearning=currentMode==='learning', isArea=currentMode==='area', isStore=currentMode==='store', isEvent=currentMode==='event', isLive=currentMode==='live';
+    els.promptWorkspace.classList.toggle('hidden',isLedger||isCounter||isHistory||isLearning);
+    els.ledgerView.classList.toggle('active',isLedger);
+    els.counterView.classList.toggle('active',isCounter);
+    if(els.historyView) els.historyView.classList.toggle('active',isHistory);
+    if(els.learningView) els.learningView.classList.toggle('active',isLearning);
+    document.body.classList.toggle('counter-mode',isCounter);
+    if(!isLedger&&!isCounter&&!isHistory&&!isLearning){
+      els.modeTitle.textContent=MODE[currentMode].title; els.modeNote.textContent=MODE[currentMode].note;
+      els.areaFields.classList.toggle('hidden',!isArea);
+      els.storeFields.classList.toggle('hidden',!isStore);
+      els.eventFields.classList.toggle('hidden',!isEvent);
+      els.liveFields.classList.toggle('hidden',!isLive);
+      els.priorityWrap.classList.toggle('hidden',isEvent||isLive);
+      els.freezeBlock.classList.toggle('hidden',isLive);
+      if(isLive) renderLivePredictionOptions();
+    } else if(isLedger){ renderLedger(); }
+    else if(isCounter){ renderCounter(); }
+    else if(isLearning){ renderLearning(); }
+    else { renderHistory(); }
+    els.tabs.forEach(t=>t.classList.toggle('active',t.dataset.mode===currentMode));
+    if(els.moreTab) els.moreTab.classList.toggle('active',['event','ledger','counter','learning'].includes(currentMode));
+    if(isCounter) window.scrollTo({top:0,behavior:'instant'});
+  }
+
+  els.tabs.forEach(t=>t.addEventListener('click',()=>{currentMode=t.dataset.mode; modeUI()}));
+  function setMoreOpen(open){
+    if(!els.moreSheet||!els.moreBackdrop)return;
+    els.moreSheet.classList.toggle('open',open); els.moreBackdrop.classList.toggle('open',open);
+    els.moreSheet.setAttribute('aria-hidden',String(!open)); els.moreBackdrop.setAttribute('aria-hidden',String(!open));
+    document.body.classList.toggle('more-open',open);
+  }
+  if(els.moreTab) els.moreTab.addEventListener('click',()=>setMoreOpen(true));
+  if(els.moreClose) els.moreClose.addEventListener('click',()=>setMoreOpen(false));
+  if(els.moreBackdrop) els.moreBackdrop.addEventListener('click',()=>setMoreOpen(false));
+  document.querySelectorAll('[data-more-mode]').forEach(b=>b.addEventListener('click',()=>{currentMode=b.dataset.moreMode;setMoreOpen(false);modeUI();window.scrollTo({top:0,behavior:'instant'});}));
+  document.querySelectorAll('.chip').forEach(c=>c.addEventListener('click',()=>{document.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));c.classList.add('active');priority=c.dataset.priority;}));
+
+  function priorityText(){return ({balanced:'総合バランス',setting:'設定投入期待を最優先',access:'座席確保・第二候補の厚さも重視',small:'少数設置・バラエティも強く評価',lowrisk:'投資リスクと出玉到達しやすさも重視'})[priority]}
+
+  function allSessions(){
+    const data=getLedger(); const out=[];
+    Object.entries(data).forEach(([date,list])=>{if(Array.isArray(list))list.forEach(x=>out.push({...x,date}))});
+    return out;
+  }
+  const resultPoints=(r)=>r==='的中'?1:r==='部分的中'?0.5:r==='外れ'?0:null;
+  const parseTags=(v='')=>[...new Set(String(v).split(/[、,，]/).map(x=>x.trim()).filter(Boolean))];
+  function computeAdaptiveProfile(){
+    const ss=allSessions(), judged=ss.filter(x=>resultPoints(x.predictionResult)!=null);
+    const base=judged.length?judged.reduce((a,x)=>a+resultPoints(x.predictionResult),0)/judged.length:0.5;
+    const stores={};
+    ss.forEach(x=>{const k=(x.store||'').trim();if(!k)return;(stores[k]||(stores[k]=[])).push(x)});
+    const storeStats=Object.entries(stores).map(([store,list])=>{
+      const j=list.filter(x=>resultPoints(x.predictionResult)!=null),score=j.length?j.reduce((a,x)=>a+resultPoints(x.predictionResult),0)/j.length:null;
+      const inv=list.reduce((a,x)=>a+Number(x.invest||0),0),rec=list.reduce((a,x)=>a+Number(x.recover||0),0),roi=inv?((rec-inv)/inv):null;
+      const tag={}; list.forEach(x=>parseTags(x.signalTags).forEach(t=>{const p=resultPoints(x.predictionResult);if(p==null)return;const z=tag[t]||(tag[t]={n:0,s:0});z.n++;z.s+=p}));
+      const topTags=Object.entries(tag).map(([t,z])=>({tag:t,n:z.n,raw:z.s/z.n,adj:(z.s+base*2)/(z.n+2),lift:(z.s+base*2)/(z.n+2)-base})).sort((a,b)=>Math.abs(b.lift)-Math.abs(a.lift)).slice(0,4);
+      return {store,n:list.length,judged:j.length,score,roi,topTags};
+    }).sort((a,b)=>(b.judged-a.judged)||(b.n-a.n));
+    const feat={}; judged.forEach(x=>parseTags(x.signalTags).forEach(t=>{const z=feat[t]||(feat[t]={n:0,s:0,delta:0,deltaN:0});z.n++;z.s+=resultPoints(x.predictionResult);if(x.actualDelta!==''&&x.actualDelta!=null&&!Number.isNaN(Number(x.actualDelta))){z.delta+=Number(x.actualDelta);z.deltaN++}}));
+    const featureStats=Object.entries(feat).map(([tag,z])=>{const adj=(z.s+base*2)/(z.n+2),lift=adj-base;let weight=0;if(z.n>=3){if(lift>=.15)weight=2;else if(lift>=.07)weight=1;else if(lift<=-.15)weight=-2;else if(lift<=-.07)weight=-1}return {tag,n:z.n,raw:z.s/z.n,adj,lift,weight,avgDelta:z.deltaN?z.delta/z.deltaN:null}}).sort((a,b)=>(b.n-a.n)||Math.abs(b.lift)-Math.abs(a.lift));
+    const prof={version:'4.8',updatedAt:new Date().toISOString(),judged:judged.length,baseScore:base,stores:storeStats,features:featureStats};
+    try{localStorage.setItem(LS_ADAPTIVE_KEY,JSON.stringify(prof))}catch(e){}
+    return prof;
+  }
+  function getAdaptiveProfile(){try{return JSON.parse(localStorage.getItem(LS_ADAPTIVE_KEY)||'null')||computeAdaptiveProfile()}catch{return computeAdaptiveProfile()}}
+  function adaptiveContext(store=''){
+    const p=getAdaptiveProfile();
+    if(!p||!p.judged)return '  status: "NO_LOCAL_JUDGED_DATA"\n  rule: "ローカル学習データがないため加点しない"';
+    const fs=(p.features||[]).filter(x=>x.n>=3&&x.weight!==0).slice(0,8);
+    const st=store?(p.stores||[]).find(x=>x.store===store):null;
+    const lines=[`  judged_samples: ${p.judged}`,`  global_prediction_score: ${(p.baseScore*100).toFixed(1)}%`,'  use_as: "SECONDARY_PRIOR_ONLY"','  safeguards:','    - n<3の特徴は無視する','    - 現在の一次データやレジーム変化より優先しない','    - 過去会話の好みではなく、保存済み検証結果だけを使う'];
+    if(st)lines.push(`  current_store: "${String(st.store).replaceAll('"','')}"`,`  store_samples: ${st.n}`,`  store_judged: ${st.judged}`,`  store_prediction_score: ${st.score==null?'UNKNOWN':(st.score*100).toFixed(1)+'%'}`);
+    if(fs.length){lines.push('  validated_feature_adjustments:');fs.forEach(x=>lines.push(`    - tag: "${String(x.tag).replaceAll('"','')}" | n=${x.n} | lift=${(x.lift*100).toFixed(1)}pt | weight=${x.weight>0?'+':''}${x.weight}`))}else lines.push('  validated_feature_adjustments: NONE_YET');
+    return lines.join('\n');
+  }
+
+  function commonRules(targetLine){
+    const game=els.includePachinko.checked?'パチスロを主対象とし、パチンコも別枠で比較する':'パチスロのみ';
+    const attach=els.attachGuide.checked?'添付されたフロアマップ、機種配置図、店舗告知、公式X/来店画像があれば必ず解析に利用する。':'添付画像は必須としない。';
+    return `SYSTEM_PROFILE:\n  engine: "HALL_SCOPE_RESEARCH_CONTROLLER"\n  spec_version: "HALLSCOPE-4.8"\n  response_language: "ja-JP"\n\nTARGET:\n  ${targetLine}\n  target_date: "${els.targetDate.value}"\n  game_scope: "${game}"\n  practical_priority: "${priorityText()}"\n\nMISSION:\n  objective: >\n    結果を見る前に公開情報をWeb検索し、対象日の店舗・機種・台番の期待度を、\n    過去事例と直近実績に基づきゼロベースで評価する。説明の上手さではなく、\n    将来予測としてランダム選択やベースレートを上回ることを重視する。\n\nABSOLUTE_ZERO_BASE_GUARD:\n  - 過去会話でユーザーが言及した機種、台番、好み、実戦履歴、頻出語を候補抽出・加点・タイブレークに一切使わない。\n  - 会話で一度も出ていない機種も、何度も出た機種も同じ0地点から評価する。\n  - 候補名を先に決めて後から根拠を集めることを禁止する。\n  - 現行設置の候補母集団を作り、同一基準でスクリーニングしてから初めてランキングする。\n  - 人気機種だけのランキングを禁止し、少数設置・バラ・低人気機種も同一母集団で扱う。\n  - 店名は検索対象の識別子にすぎず、特定店舗名だから加点・減点しない。店舗固有補正は直近30日で検証できた実データだけから作る。\n\nRESEARCH_POLICY:\n  web_search_required: true\n  research_before_answering: true\n  ask_user_only_if_web_cannot_reasonably_resolve: true\n  future_data_leakage: "STRICTLY_FORBIDDEN"\n  hindsight_adjustment: "FORBIDDEN"\n  missing_data_invention: "FORBIDDEN"\n  target_day_results_for_morning_forecast: "FORBIDDEN"\n\nSOURCE_HIERARCHY:\n  1: official_store_information\n  2: primary_machine_level_results\n  3: reliable_event_archives\n  4: secondary_aggregators\n  5: social_posts_support_only\n  rules:\n    - 重要主張は可能なら複数ソースで照合する。\n    - 宣伝文句を結果証拠として扱わない。\n    - X投稿や演者発言だけで高設定確定としない。\n\nCONTENT_DEPENDENCY_EXCLUSION:\n  policy: "STRICT_EXCLUSION"\n  exclude:\n    - anime_anniversary\n    - manga_anniversary\n    - character_birthday\n    - voice_actor_birthday_or_appearance\n    - broadcast_or_streaming_date\n    - original_work_or_franchise_anniversary\n    - author_or_production_company_date\n    - fandom_calendar_or_speculation\n    - character_story_association\n  rule: "検索信号・採点・タイブレークの全てで使用禁止"\n\nHISTORICAL_DATA:\n  selection_window: "ROLLING_30_DAYS_STRICT"\n  windows_for_scoring: [3d,5d,7d,14d,30d]\n  older_than_30d_for_machine_or_seat_scoring: "EXCLUDED_BY_DEFAULT"\n  weighting:\n    same_event_within_30d: "HIGHEST"\n    recent_3_to_7_days: "CURRENT_FORM_SUPPORT"\n    8_to_14_days: "RECENT_CYCLE_SUPPORT"\n    15_to_30_days: "SECONDARY_SUPPORT"\n    older_than_30_days: "NO_DIRECT_SCORE"\n  rules:\n    - 台選び・機種選びの直接採点は対象日前30日間だけで行う。31日以前の成功例を朝イチ順位の加点に使わない。\n    - 新台・増台・減台・配置変更・店の推し替えで傾向が変わる前提を置く。\n    - 31日以前の情報は、レジーム変更やデータ定義の確認に限り参照可。古い強台を現在候補へ直接加点しない。\n    - 同一イベントが直近30日に複数回ある場合、その同一イベント履歴を最優先する。通常日は通常日だけで比較する。\n  requirements: [exact_selection_window_start_and_end,missing_days_within_30d,period_coverage,machine_replacement_detection,install_count_change_detection,layout_change_detection_if_possible]\n\nSTANDARD_MACHINE_SELECTION_LOGIC:\n  scope: "ALL_STORES_COMMON_STANDARD"\n  store_name_role: "TARGET_IDENTIFIER_ONLY"\n  steps:\n    1_day_condition_separation:\n      - 取材日・旧イベント日・通常日・新台入替等を混ぜない。\n      - 同一イベントがある場合は直近30日内の同一イベントを最優先。\n      - 通常日は通常日で繰り返し扱われた機種・台番・位置を評価する。\n    2_rolling_30d:\n      - 直接採点は直近30日ローリング。31日以前は原則捨てる。\n    3_model_first:\n      - 最初に機種単位で候補を作る。\n      - 同一イベントで複数回機種平均プラス、高稼働、少台数全台系の再現がある機種を上位化する。\n      - 設置3〜6台は、対象機種になった後の少台数メリットとして加点する。設置台数だけで本命化しない。\n    4_machine_number_recurrence:\n      - 同一イベントで同じ台番/同じ機種内位置が複数回強いかを見る。\n      - 同一台番が2回ともプラス、または複数回8000〜10000G級の高稼働なら再現性を加点する。\n      - 単発の+10000枚より、複数回同じ位置が使われた事実を優先する。\n      - 負けていても終日級に追われた台は「高稼働マイナス」として別評価し、差枚だけで落とさない。\n    5_difference_is_outcome:\n      - 差枚/差玉は朝イチ候補抽出の結果指標として使うが、設定推測そのものへ過剰使用しない。\n      - 一撃AT機で+10000枚=高設定としない。\n      - -1000〜-3000枚でも8000〜10000G級なら高稼働マイナスとして再評価する。\n    6_counter_semantics_guard:\n      - 公開BB/RB/ART/AT等のカウンター定義をサイトごとに確認する。\n      - 定義不明なART×50G控除、RB→CZ、ボーナス回数→AT初当たり等の独自換算は禁止。\n      - 公式AT初当たり/CZ確率と直接比較するのは、公開項目の意味が確認できた場合だけ。\n    7_previous_day_context:\n      - 前日強かったから下げ、前日負けたから上げ、という単純反転を禁止。\n      - 前日その機種/位置を使い切った形か、同じ位置を連投する店か、機種を残して塊サイズだけ変える店かを検証する。\n      - 前日2000〜3000G程度しか回されていない台は前日の主役と断定しない。\n    8_cluster_and_location:\n      - 3台並び、4台窓、島前半/後半、機種内特定側などの位置再現が繰り返す場合は単品履歴より優先できる。\n      - 台番そのものより「同一機種内位置」「連番塊」「島位置」の再現を確認する。\n    9_suffix_is_secondary:\n      - 末尾は補助材料。複数回同一イベントで増分優位が確認できた場合のみ加点する。\n      - 日付語呂合わせだけで末尾を選ばない。台番/位置・機種実績より上に置かない。\n    10_split_morning_and_post_seat:\n      - 朝イチ順位は同一イベント再現性＋直近30日＋台番/位置再現性＋少台数メリット＋前日状況補正＋末尾補助で作る。\n      - 着席後は差枚ではなく、その機種固有の設定判別要素で継続/移動を判断する。\n  morning_formula: "朝イチ期待度 = 同一イベント再現性 × 直近30日重み × 台番/位置再現性 × 少台数メリット + 前日状況補正 + 末尾補助"\n  formula_note: "確率ではなく候補比較の構造。掛け算項目のどれかが弱ければ本命度を大きく下げる。"\n\nSTANDARD_LOGIC_NEVER_DO:\n  - 過去半年など30日超の差枚ランキングだけで選ばない。\n  - 一撃万枚を設定6扱いしない。\n  - 公開BB/RB/ARTを意味確認なしでAT初当たり/CZへ換算しない。\n  - 昨日負けたから上げ、昨日勝ったから下げと決めつけない。\n  - 語呂合わせ末尾を主根拠にしない。\n  - 店名そのものを事前の優遇/冷遇根拠にしない。\n\nEVENT_INTELLIGENCE:\n  auto_detect:\n    - old_event_day\n    - visitor_event\n    - media_coverage\n    - new_machine_replacement\n    - remodel_or_reopening\n    - consecutive_event\n    - compound_event\n  rules:\n    - イベントA+Bを単純加算しない。A単体、B単体、A+B複合の過去結果を分けて検証する。\n    - 連日開催はDAY1 / DAY2 / DAY3+を分け、投入位置・機種・塊の移動を検証する。\n    - 同イベントで全台系、部分機種、3台並び、単品、少数台、バラ等のどの投入機構が多いか推定する。\n    - 対象日前30日内で、まず同一イベント/同一来店/同一媒体を探索し、次に通常日・複合条件・曜日/日付条件を別バケットで比較する。\n    - 31日以前のイベント例は台選びスコアに加えず、レジーム変化確認だけに使う。\n    - 過去例は必ず YYYY-MM-DD の具体的な開催日を列挙し、サンプル数 n を示す。\n    - 設定4/5/6等の断定は確定演出・公式根拠など裏付けがある場合のみ。通常は「高設定挙動」「設定投入推定」と表現する。\n    - 各過去開催について、店舗平均差枚/勝率/平均G数/高稼働台比率/強かった機種/台番位置/塊サイズを可能な範囲で揃える。\n    - 同一イベントは直近30日内で2回以上の再現を強く評価する。その他の弱い特徴は原則3回以上を優先し、再現率と反証例を併記する。\n\nEVENT_IDENTITY_LOCK:\n  purpose: "別イベント・複合条件・連日DAYを混ぜて見せかけの再現性を作らない"\n  identity_key: [store,event_name,visitor_or_media,compound_condition,old_event_day,new_machine_context,consecutive_day_index]\n  rules:\n    - 同じ店舗でもイベント名・来店/媒体・複合条件・DAY1/DAY2/DAY3+が違えば別母集団として扱う。\n    - exact matchを最優先し、部分一致はSIMILAR_DAYとして降格する。\n    - イベント名だけ一致して運用構造が変わった場合はREGIME SHIFTを優先する。\n    - 旧イベント日と取材が重なった日を、旧イベント単独日へそのまま流用しない。\n\nPIA_STYLE_STRUCTURE_ENGINE:\n  purpose: "PIA分析で有効だった構造分解を全店舗へ一般化する"\n  layers:\n    1_store_power: [same_condition_store_average,positive_rate,average_games,high_utilization_density]\n    2_event_predictability: [exact_event_recurrence,cluster_count_recurrence,allocation_mechanism_recurrence]\n    3_model_allocation: [model_share_of_strong_seats,small_install_target_rate,main_model_rotation]\n    4_physical_structure: [adjacent_cluster,window_of_3_to_5,island_segment,position_within_model]\n    5_individual_seat: [same_seat_reuse,high_utilization_failure,recent_use_interval]\n  allocation_roles: [ANCHOR_CONTINUATION,DAILY_HERO_ROTATION,SINGLE_OR_SCATTER,FALLBACK_CLUSTER]\n  rules:\n    - まず店全体の強さ、次に同条件イベントの再現性、その後に機種配分、最後に塊/位置/台番を見る。\n    - 前日強機種が翌日も一部残る場合はANCHOR_CONTINUATION、当日の新主役をDAILY_HERO_ROTATIONとして別々に評価する。\n    - アンカー継続と主役ローテが併存する店では「昨日強かったから除外」を禁止する。\n    - 3〜5台程度の連番窓や島区間が繰り返される場合、個別台番再登場より上位特徴として扱う。\n    - 高稼働負けは4000G+と6000G+を分離し、6000〜9000G級は強い再検査信号として扱う。差枚マイナスだけで候補から落とさない。\n    - 機種平均差枚だけでなく、対象率・高稼働密度・塊数・塊サイズ・位置再現をセットで比較する。\n    - 予想抽選人数または入場競争度を推定し、本命が取れる確率ではなくSEAT_ACCESSIBILITYとして別軸表示する。\n\nSTRUCTURE_SCORECARD:\n  separate_scores_0_to_100:\n    - STORE_POWER\n    - EVENT_MATCH\n    - MODEL_ALLOCATION_CONFIDENCE\n    - CLUSTER_POSITION_REPRODUCIBILITY\n    - SEAT_LEVEL_EVIDENCE\n    - SEAT_ACCESSIBILITY\n    - DATA_QUALITY\n  final_outputs: [PREDICTION_SCORE,PRACTICAL_VALUE_SCORE,PLAY_GRADE]\n  rule: "総合点だけを出さず、どの層が強くどの層が弱いかを必ず残す"\n\nSTORE_HABIT_ENGINE:\n  inspect:\n    - repeated_full_model_pattern\n    - partial_model_pattern\n    - adjacent_cluster_pattern\n    - single_machine_pattern\n    - small_install_and_variety_pattern\n    - suffix_and_repdigit_pattern\n    - corner_and_corner2_pattern\n    - model_rotation_pattern\n    - island_rotation_pattern\n    - previous_event_winner_repeat_or_avoidance\n    - high_utilization_loss_reuse\n    - event_day_before_after_shift\n  output:\n    - habit_name\n    - supporting_dates\n    - sample_n\n    - recurrence_rate\n    - recent_recurrence_rate\n    - counterexamples\n    - current_applicability\n  rule: "店の癖は直近30日内で検証する。末尾は補助、前日凹み/勝ちの単純反転は禁止。台番単体より塊/島位置の再現が強い場合は位置を優先する。"\n\nMACHINE_LIFECYCLE_AND_CURRENT_CYCLE:\n  inspect_within_30d: [new_machine_replacement_days,new_install_day_0_to_3,new_install_day_4_to_7,new_install_day_8_to_14,new_install_day_15_to_30,increase_or_decrease_installation,reintroduction_or_move,current_main_model_vs_small_install_allocation]\n  rules:\n    - 新台・増台・減台・移設で台番/位置の意味が変わったら変更前履歴を無効化する。\n    - 人気機種は元々稼働が高いため、人気だけを設定期待として加点せずベースレート補正する。\n    - 現在の30日サイクル内で再現していない古い店舗スタイルは採点へ持ち込まない。\n\nLAYOUT_IDENTITY:\n  machine_number_is_not_permanent_identity: true\n  track: [machine_number,machine_model,installation_period,layout_version,island,cluster,position_within_model]\n  rule: "入替後は古い台番履歴を無効化または大幅減衰する"\n\nFEATURE_ENGINE:\n  evaluate_for_all_retrievable_candidates:\n    - same_event_reappearance\n    - abnormal_utilization\n    - high_utilization_failure_4000G_plus\n    - high_utilization_failure_6000G_plus\n    - small_install_models\n    - recurring_variety\n    - same_model_rotation\n    - consecutive_day_rotation\n    - previous_use_interval\n    - recent_hit_penalty\n    - new_or_increased_machine\n    - new_machine_age_bucket\n    - same_store_historical_replacement_day_lift\n    - popular_model_base_rate_adjusted_lift\n    - long_term_store_style_fit\n    - physical_position_if_validated\n  weak_priors_validate_first: [suffix,repeated_digits,weekday,fixed_machine_number,corner,corner2]\n\nNORMAL_DAY_MODEL:\n  enabled: true\n  concept: "NORMAL_DAY_ANCHOR"\n  inspect:\n    - store_average_games_vs_machine_games\n    - 3_of_last_5_days_4000G_plus\n    - recent_7d_average_games\n    - loss_days_with_4000G_plus\n    - next_day_reuse_rate\n    - high_utilization_loss_to_48h_rebound_rate\n  rule: "イベント日ロジックと通常日ロジックを混同しない"\n\nBASE_RATE_CONTROL:\n  compare_against:\n    - random_pick\n    - store_positive_machine_base_rate\n    - model_positive_machine_base_rate\n    - popularity_or_utilization_baseline\n  require_incremental_lift: true\n\nSAMPLE_SIZE_AND_REGIME:\n  exact_same_event_minimum_recurrence_preference: 2\n  weak_feature_minimum_recurrence_preference: 3\n  shrink_small_samples: true\n  penalize_single_day_outliers: true\n  detect_regime_change: [major_layout_change,large_replacement,store_strength_shift,event_policy_change]\n  downweight_pre_change_history: true\n\nDATA_QUALITY_GATE:\n  mandatory_reporting:\n    - stores_checked\n    - models_checked\n    - machines_checked\n    - estimated_total_candidates\n    - coverage_rate\n    - period_coverage\n    - missing_sources\n    - uncertain_machine_identity\n  rule: "取得不足なら『全台公平比較済み』と書かない。カバレッジ不足はConfidenceを下げる。"\n\nDECISION_EDGE_GATE:\n  purpose: "候補を無理に出さず、打つ価値そのものを先に判定する"\n  assess_separately:\n    - evidence_strength\n    - historical_recurrence\n    - incremental_lift_vs_baseline\n    - current_regime_fit\n    - data_coverage\n    - seat_accessibility\n    - fallback_depth\n    - volatility_and_bankroll_fit\n  output:\n    - PLAY_GRADE: [S,A,B,C,NO_BET]\n    - strongest_reason_to_play\n    - strongest_reason_not_to_play\n    - evidence_that_would_flip_decision\n  rules:\n    - C以下または優位性がベースレートを上回らないならNO_BETを積極採用する。\n    - データが多いことと予測力があることを混同しない。\n    - 「イベントだから」「前回凹んだから」だけではPLAY判定しない。\n\nSIMILAR_DAY_MATCHER:\n  score_is_not_probability: true\n  dimensions:\n    - exact_event_or_visitor_match\n    - compound_event_match\n    - calendar_match\n    - store_strength_regime_match\n    - machine_mix_and_layout_match\n    - new_machine_cycle_match\n    - recency\n  rules:\n    - 各過去日へ0-100のSIMILARITY_SCOREを付け、何が一致/不一致か明示する。\n    - 高類似日でも結果が割れているなら再現性を低く扱う。\n    - 古い高類似日より、運用方針が変わった後の中類似日を優先する場合がある。\n\nREGIME_SHIFT_DETECTOR:\n  inspect:\n    - major_replacement_or_layout_change\n    - machine_mix_change\n    - store_average_utilization_shift\n    - event_strength_shift\n    - repeated_pattern_break\n    - management_or_operating_policy_change_if_publicly_verifiable\n  output:\n    - regime_status: [STABLE,CAUTION,CHANGED,UNKNOWN]\n    - suspected_change_date\n    - evidence\n    - history_to_downweight\n  rule: "レジーム変更前の癖を現在へ機械的に継承しない"\n\nSOURCE_CONFLICT_AND_FRESHNESS:\n  - 重要データは取得日時/対象日を確認し、古い設置情報や古いフロア情報を現在情報として使わない。\n  - 同一日の差枚やイベント情報がソース間で矛盾する場合は矛盾を明記し、Confidenceを下げる。\n  - ソース数ではなく独立性と一次性を重視する。\n\nPRACTICAL_CONTINGENCY_PLAN:\n  require:\n    - first_choice\n    - fallback_A\n    - fallback_B\n    - late_entry_option\n    - leave_store_condition\n  rule: "本命が取れない時に、その場で人気台へ流されず、事前に代替順を作る"\n\nPRACTICAL_VALUE_SCORE:\n  purpose: "設定期待度と実際に座る価値を分離する"\n  factors:\n    - setting_or_positive_expectation\n    - recurrence_and_incremental_lift\n    - seat_accessibility\n    - remaining_time_value\n    - bankroll_and_volatility_fit\n    - fallback_quality\n  output: [PREDICTION_SCORE, PRACTICAL_VALUE_SCORE]\n  rule: "最も強そうな台と、実際に打つ価値が最も高い台が違う場合は両方を明示する"\n\nADVERSARIAL_REVIEW:\n  required: true\n  role: "本命を推す分析とは別に、外れる理由だけを探す反証担当"\n  inspect:\n    - sample_size_trap\n    - event_confounding\n    - popularity_or_utilization_bias\n    - layout_or_machine_mix_change\n    - source_conflict\n    - recent_pattern_break\n    - overfit_to_single_feature\n  rule: "反証が強ければ候補順位またはPLAY_GRADEを下げる。説明で打ち消さない。"\n\nADAPTIVE_LOCAL_PROFILE:\n${adaptiveContext(currentMode==='store'?els.store.value.trim():(currentMode==='event'?els.eventStore.value.trim():''))}\n\nDECISION_POLICY:\n  allow_no_bet: true\n  do_not_force_candidates: true\n  confidence_bands: [HIGH,MEDIUM,LOW]\n  score_is_not_probability: true\n  ${attach}`;
+  }
+
+  function areaPrompt(){
+    const area=els.area.value.trim(); if(!area) throw new Error('エリアを入力してください');
+    return `${commonRules(`area: "${area.replaceAll('"','')}"
+  mode: "AREA_THREE_STORE_SHORTLIST"`)}
+
+TWO_STAGE_WORKFLOW:
+  stage_now: "STAGE_1_THREE_STORE_SHORTLIST"
+  next_stage: "STAGE_2_SELECTED_STORE_DEEP_DIVE"
+  rule: >
+    この回答では台番1店舗だけへ偏って深掘りしない。エリア全体を横断した後、
+    上位3店舗を同じ必須項目・ほぼ同じ調査粒度で比較する。ユーザーが行く店舗を選んだ後、
+    別プロンプト「この店で何打つ？」でその1店舗だけを全台深掘りする。
+
+EXECUTION_PROTOCOL:
+  PHASE_1_AREA_WIDE_SCAN:
+    - 対象エリア内の候補店舗を可能な限り横断検索する。
+    - 当日の公式イベント、旧イベント、来店、取材、新台入替、リニューアル、連日/複合条件を確認する。
+    - イベント広告の有無だけで順位を決めず、同条件過去結果・直近店舗状態・データ品質を確認する。
+
+  PHASE_2_SELECT_EXACTLY_THREE_IF_EVIDENCE_ALLOWS:
+    - 原則TOP3店舗を選ぶ。根拠不足なら無理に3店へ水増しせず、該当店なし/2店のみも許可する。
+    - STORE_POWER / EVENT_MATCH / PREDICTABILITY / SEAT_ACCESSIBILITY / SECONDARY_TARGET_DEPTH / DATA_QUALITYを分ける。\n    - EVENT IDENTITY LOCKを行い、旧イベ単独・来店単独・複合開催・連日DAYを別母集団として比較する。\n    - 同条件で予想される強い塊数（例: 3〜5台窓が何箇所か）と、アンカー継続/主役ローテ/単品の構成まで推定する。
+    - 3店舗を選び終えるまでは、特定1店舗の台番へ調査資源を集中させない。
+
+  PHASE_3_EQUAL_DEPTH_THREE_STORE_REVIEW:
+    - TOP3各店舗について、以下を全店舗で必ず揃える。
+      1) 今日のイベント/通常日条件
+      2) 同イベント・前月・同日付条件の過去具体例（開催日付き）
+      3) 連日ならDAY1/DAY2/DAY3+傾向
+      4) 過去の投入機構（全台系/部分機種/並び/単品/少数台/バラ）と再現率
+      5) 直近3〜7日の店舗状態
+      6) 狙い機種候補3〜5機種
+      7) 新台入替・長期店舗スタイルとの整合
+      8) 座りやすさ/第二候補の厚さ
+      9) 反証・弱点
+      10) データカバレッジ
+    - 各店舗の機種候補は現行設置全機種を可能な範囲で公平スキャンしてから出す。
+    - この段階では台番TOP10の本格深掘りをしない。台番は明確な一次データが容易に取れる場合のみ参考欄に少数示す程度とする。
+
+OUTPUT_SCHEMA:
+  1. 今日のエリア結論（1〜3位を一目で比較）
+  2. TOP3比較表：店 / 今日の条件 / 店期待度 / 実戦価値 / データ品質 / 一言
+  3. 第1候補店の簡易深掘り
+     - 今日のイベント
+     - 過去同条件実績
+     - 投入傾向
+     - 狙い機種TOP3〜5
+     - 反証
+  4. 第2候補店を同じ項目・同程度の粒度で深掘り
+  5. 第3候補店を同じ項目・同程度の粒度で深掘り
+  6. 3店舗の比較：設定期待 / 座りやすさ / 低投資 / 穴の厚さ
+  7. 今日ならどの店を選ぶか、その理由
+  8. 店舗別データカバレッジと欠損
+  9. 次のアクション：
+     「行く店を決めたら、HALL SCOPEの『この店』タブに店舗名を入力して、台番まで全台深掘りしてください」と明示
+
+FAIRNESS_CHECK_BEFORE_FINAL:
+  - 第1候補だけ情報量が極端に多く、第2・第3候補が薄くなっていないか確認する。
+  - 過去会話で頻出した店舗・機種が優遇されていないか確認する。
+  - 3店舗とも同じ必須項目を埋める。
+
+FINAL_REQUIREMENT:
+  この回答の目的は「まず3店舗を公平に比較して行く店を決める」こと。
+  1店舗の台番まで先走って深掘りしない。`;
+  }
+
+  function storePrompt(){
+    const store=els.store.value.trim(); if(!store) throw new Error('店舗名を入力してください');
+    const area=els.storeArea.value.trim();
+    const base=commonRules(`store_name: "${store.replaceAll('"','')}"
+  area_hint: "${area.replaceAll('"','')}"
+  mode: "SELECTED_STORE_FULL_DEEP_DIVE"`);
+    return `${base}
+
+STAGE_2_SELECTED_STORE_POLICY:
+  - 前段階のエリアTOP3回答があっても、そこで挙がった機種を無条件に優遇しない。
+  - この店舗の現行設置全機種・取得可能な全台を改めてゼロベース評価する。
+  - 店舗選定時の仮説は検証対象であり、結論ではない。
+
+EXECUTION_PROTOCOL:
+  1. 今日を「同一取材/旧イベ/通常日/新台入替/複合条件」のどれかに分類し、異なる営業条件を混ぜない。
+  2. 対象日前30日だけを台選びの直接採点期間として固定する。31日以前は原則採点から除外する。
+  3. 現行設置全機種・台番・設置台数・配置を取得し、まず機種単位で全候補を評価する。
+  4. 同一イベント内の機種平均、複数回高稼働、3〜6台少数設置の全台系/高対象率再現を評価し、狙い機種TOP5を作る。
+  5. その後に上位機種の台番/機種内位置/塊/島位置の直近30日再現性を調べる。
+  6. 同じ台番が同一イベントで複数回使われたか、8000〜10000G級の高稼働が繰り返されたか、高稼働マイナスがあるかを分けて評価する。
+  7. 差枚は結果指標として使い、一撃万枚を高設定確定としない。高稼働マイナスは再評価対象とする。
+  8. 公開BB/RB/ART/ATの意味を確認し、定義不明な独自換算を行わない。
+  9. 前日は上げ下げの単純反転ではなく、使い切り/連投/塊サイズ変更/低稼働の別を確認する。2000〜3000G程度なら前日の主役と断定しない。
+  10. 同一イベントで塊/島位置の再現が台番単体より強い場合は位置再現を優先する。末尾は補助に留める。
+  11. 全候補採点後にのみ本命台番TOP${els.topMachines.value}を決め、朝イチ順位と着席後判別を明確に分離する。
+  12. SETTING_EXPECTATION / MORNING_ENTRY_VALUE / PRACTICAL_PLAY_VALUE を別々に表示し、取得不足ならMODEL ONLY / NO BETを許可する。
+
+OUTPUT_SCHEMA:
+  1. 今日の店舗期待度 0-100（確率ではない）
+  2. 今日のイベント/通常日分類
+  3. 直近30日内の同条件投入傾向と具体例（YYYY-MM-DD / イベント/通常日 / 機種平均 / 高稼働 / 投入位置 / 根拠）
+  4. 店の癖ランキング（再現率・サンプル数・直近再現・反証） / 長期店舗スタイル / 新台入替時の癖
+  5. 現行全機種スキャン概要
+  6. 狙い機種TOP5
+  9. 狙い塊・位置TOP5（連番窓/島区間/機種内位置/想定塊サイズ）\n  10. 狙い台番TOP${els.topMachines.value}
+     - 設定期待スコア
+     - 実戦価値スコア
+     - 直近根拠
+     - 直近30日根拠
+     - 反証
+  8. 少数設置・バラ・座りやすい候補
+  9. 投資リスク / 荒さ / 自力要求 / 出玉到達しやすさ
+  10. 抽選・入場・営業時間・交換/再プレイ条件（公開確認できる範囲のみ）
+  15. 7軸スコアカード（STORE_POWER / EVENT_MATCH / MODEL_ALLOCATION / CLUSTER_POSITION / SEAT_EVIDENCE / SEAT_ACCESSIBILITY / DATA_QUALITY）\n  16. 朝イチ期待度式の内訳（同一イベント再現×30日×台番/位置×少台数＋前日＋末尾補助）と、本命が取れない場合の代替順
+  12. PLAY_GRADE（S/A/B/C/NO BET）と、その判定を覆す条件
+  13. 本命満席時のFallback A / B / 遅番・昼参戦候補 / 店を離れる条件
+  14. 類似過去日TOP5（SIMILARITY_SCOREと一致/不一致理由）
+  15. レジーム変化判定（STABLE/CAUTION/CHANGED/UNKNOWN）
+  16. データカバレッジ・ソース矛盾・情報鮮度
+  17. 惜しくも落選した候補
+  18. 結果確認前の凍結予測
+
+FINAL_REQUIREMENT:
+  「人気だから」ではなく、今日この店舗のこの台番である理由まで、比較対象との差を含めて説明する。`;
+  }
+
+  function eventPrompt(){
+    const store=els.eventStore.value.trim(); if(!store) throw new Error('店舗名を入力してください');
+    const eventName=els.eventName.value.trim();
+    const lookback=els.eventLookback.value;
+    const lookbackText=({"30d":"直近30日ローリングのみを台選び採点に使用。31日以前は原則採点から除外"})[lookback]||lookback;
+    return `${commonRules(`store_name: "${store.replaceAll('"','')}"
+  event_hint: "${eventName.replaceAll('"','')}"
+  mode: "EVENT_AND_STORE_HABIT_AUDIT"`)}
+
+EVENT_HABIT_AUDIT:
+  objective: >
+    対象日より前に確認できる情報だけを使い、この店舗で対象日と同じ/似たイベント条件が
+    対象日前30日内で過去にいつ発生し、その際にどんな投入機構・強機種・位置傾向が再現していたかを時系列で調べる。
+    イベント名が空欄なら対象日の公式告知・媒体・来店・旧イベント・新台入替等を自動検出する。
+  focus_range: "${lookbackText}"
+
+SIMILAR_DAY_BUCKETS:
+  A_exact_same_event:
+    - 同じイベント名 / 同じ来店者 / 同じ取材媒体
+  B_previous_occurrence:
+    - 直近30日内の直前回 / その前の回
+  C_calendar_similarity:
+    - 同じ日付末尾
+    - 同じ第N曜日
+    - 月初 / 中旬 / 月末
+    - 祝日 / 連休 / 給料日前後
+  D_compound_similarity:
+    - イベント + 新台入替
+    - イベント + 来店
+    - 旧イベント + 曜日
+    - 連日イベント DAY1 / DAY2 / DAY3+
+  rule: "A/B/C/Dを混ぜず、別々に再現率を算出してから最終統合する"
+
+PAST_EVENT_TABLE_REQUIRED:
+  columns:
+    - date_YYYY_MM_DD
+    - event_or_condition
+    - evidence_source
+    - store_avg_difference_if_available
+    - positive_rate_if_available
+    - avg_games_if_available
+    - strongest_models
+    - candidate_high_setting_machines_or_positions
+    - mechanism_full_partial_cluster_single_variety
+    - confirmed_setting_4_5_6_only_if_verified
+    - notes
+  rules:
+    - 対象日前30日内の該当回を全件探索する。2回以上あれば再現性を比較し、1回以下ならサンプル不足を明記する。
+    - 具体的な過去開催日を省略しない。
+    - 「設定6だった」等は確定根拠がある場合のみ。差枚だけなら高設定挙動/推定とする。
+
+STORE_HABIT_SCORECARD:
+  evaluate:
+    - 全台系を繰り返す機種
+    - 1/2・1/3など部分投入
+    - 2〜5台並び
+    - 単品投入
+    - 少数設置・バラエティ
+    - 末尾 / ゾロ目 / 角 / 角2
+    - 同一機種内ローテーション
+    - 島・列ローテーション
+    - 前回強台の据え置き/回避
+    - 前回不発高稼働台の再利用
+    - 新台導入後0-3/4-7/8-14/15-30日の扱い
+  score_each:
+    - supporting_dates
+    - sample_n
+    - recurrence_rate
+    - recent_recurrence_rate
+    - baseline_lift
+    - counterexamples
+    - regime_change_risk
+    - verdict_STRONG_MEDIUM_WEAK_REJECT
+
+OUTPUT_SCHEMA:
+  1. 対象日のイベント構成
+  2. 過去イベント時系列表（具体的な日付）
+  3. 直近30日内の直前回・その前の回の比較
+  4. 同イベントだけの再現性
+  5. 同日付/曜日条件だけの再現性
+  6. 複合イベント時だけの再現性
+  7. 類似過去日ランキング TOP10（SIMILARITY_SCORE / 一致点 / 不一致点）
+  8. 店の癖ランキング TOP10（再現率 / n / 反証 / ベースレート差）
+  9. レジーム変化判定と、現在へ持ち越してよい履歴 / 捨てる履歴
+  10. 過去に強かった機種・位置・塊のランキング
+  11. 設定4/5/6の確定情報があるケースのみ一覧。なければ「確定情報なし」と明記
+  12. 今回も再現しそうな仕掛け / 再現しにくい仕掛け
+  13. PLAY_GRADEとNO BET理由
+  14. 次に「この店」タブで台番予測へ渡すべき仮説
+  15. データ欠損・ソース矛盾・情報鮮度・信頼度
+
+FINAL_REQUIREMENT:
+  1回の出来事を「店の癖」と断定しない。具体的な日付・サンプル数・再現率・反証例をセットで示し、
+  今日の予測へ使える情報と、面白いだけで予測力のない情報を明確に分ける。`;
+  }
+
+  function renderLivePredictionOptions(){
+    if(!els.livePredictionRef) return;
+    const current=els.livePredictionRef.value;
+    const arr=getHistory().filter(x=>!els.targetDate.value || x.date===els.targetDate.value);
+    els.livePredictionRef.innerHTML='<option value="">事前予測なしで再判定</option>'+arr.map(x=>`<option value="${esc(x.id)}">${esc(x.date)} / ${esc(x.target)} / ${esc(MODE[x.mode]?.title||x.mode)}</option>`).join('');
+    if(arr.some(x=>x.id===current)) els.livePredictionRef.value=current;
+  }
+
+  function livePrompt(){
+    const store=els.liveStore.value.trim(); if(!store) throw new Error('店舗名を入力してください');
+    const ref=els.livePredictionRef.value;
+    const frozen=ref?getHistory().find(x=>x.id===ref):null;
+    const frozenText=frozen?.predictionAnswer||'';
+    const candidate=[els.liveMachine.value.trim(),els.liveMachineNo.value.trim()?`#${els.liveMachineNo.value.trim()}`:''].filter(Boolean).join(' ');
+    return `SYSTEM_PROFILE:
+  engine: "PACHISLOT_LIVE_DECISION_UPDATER"
+  spec_version: "HALLSCOPE-4.8"
+  response_language: "ja-JP"
+
+TARGET:
+  store: "${store.replaceAll('"','')}"
+  target_date: "${els.targetDate.value}"
+  observation_cutoff_time: "${els.liveTime.value||'未入力'}"
+  current_candidate: "${candidate.replaceAll('"','')}"
+  current_games: "${els.liveGames.value||'未入力'}"
+  current_investment_yen: "${els.liveInvest.value||'未入力'}"
+  remaining_budget_yen: "${els.liveBudget.value||'未入力'}"
+  remaining_hours: "${els.liveHours.value||'未入力'}"
+
+FROZEN_MORNING_FORECAST:
+${frozenText?`----- BEGIN FROZEN -----\n${frozenText}\n----- END FROZEN -----`:'  none: true'}
+
+ADAPTIVE_LOCAL_PROFILE:
+${adaptiveContext(store)}
+
+OBSERVED_NOW_USER_FACTS:
+  entry_and_seat_status: |
+    ${els.liveEntry.value.trim().replaceAll('\n','\n    ')||'未入力'}
+  current_machine_evidence: |
+    ${els.liveEvidence.value.trim().replaceAll('\n','\n    ')||'未入力'}
+  surrounding_and_same_model_status: |
+    ${els.liveSurroundings.value.trim().replaceAll('\n','\n    ')||'未入力'}
+
+MISSION:
+  朝の事前予測は結果に合わせて改変せず固定する。そのうえで、現在時刻までに利用可能な公開情報と
+  ユーザーが現地で観測した事実だけを追加し、「続行 / 同店で移動 / 店移動 / NO BET」を再判定する。
+
+TIME_CUTOFF_GUARD:
+  - observation_cutoff_timeより後に発生した当日情報を使わない。
+  - 未来の当日結果や閉店後データを混ぜない。
+  - 朝予測とLIVE更新の根拠を分離して表示する。
+
+LIVE_UPDATE_RULES:
+  - 自台の短期出玉だけで設定を断定しない。
+  - 周辺が出ている/凹んでいるだけで機械的に追随しない。
+  - 確定示唆 > 強い設定差要素 > 複数要素の一致 > 出玉グラフ単体 の順で証拠強度を扱う。
+  - 当初仮説に反する情報を必ず列挙し、確証バイアスを防ぐ。
+  - 本命が満席なら、朝に定義されたFallbackと現在の空席を照合する。
+  - 残り予算・残り時間と機種の荒さを踏まえ、追う価値が薄ければNO BET/終了を選ぶ。
+  - 投資額が増えたこと自体を続行理由にしない（サンクコスト禁止）。
+
+POST_SEAT_SETTING_DISCRIMINATION:
+  principle: "朝イチ候補順位と着席後の設定判別を分離する"
+  prioritize_when_officially_defined:
+    - normal_games_and_sample_size
+    - CZ_or_equivalent_entry_rate
+    - AT_or_bonus_first_hit_rate
+    - direct_hit
+    - machine_specific_small_roles
+    - mode_or_state_transition_with_setting_difference
+    - ending_screen
+    - trophy_or_confirmed_setting_hint
+  rules:
+    - 機種固有の公式/信頼できる設定差だけを使う。
+    - 公開カウンターの意味が不明ならAT初当たり/CZへ変換しない。
+    - 差枚グラフや一撃出玉を設定判別の主証拠にしない。
+    - 高稼働マイナスでも設定差要素・確定示唆が強ければ継続候補になり得る。
+
+LIVE_DECISION_MATRIX:
+  evaluate:
+    - original_thesis_survival
+    - new_supporting_evidence
+    - new_counter_evidence
+    - evidence_quality
+    - same_model_and_island_context
+    - alternative_seat_quality
+    - data_freshness
+    - remaining_time_budget_fit
+  output_decisions: [CONTINUE, MOVE_MACHINE, MOVE_STORE, STOP_NO_BET]
+
+LIVE_HEATMAP:
+  output_zones: [SELF, SAME_MODEL, ISLAND, STORE, ALTERNATIVES]
+  labels: [HOT,WARM,NEUTRAL,COLD,UNKNOWN]
+  rule: "短期出玉だけでHOT判定せず、示唆・設定差・複数台整合・稼働を分離して判定する"
+
+TIME_VALUE_ENGINE:
+  evaluate:
+    - additional_games_needed_for_information
+    - remaining_hours
+    - remaining_budget
+    - machine_volatility
+    - alternative_quality
+  rule: "設定期待が残っていても、判別コストが残り時間に見合わなければSTOP/MOVEを選べる"
+
+ADVERSARIAL_LIVE_CHECK:
+  required: true
+  rule: "現在の本命仮説が外れていると仮定し、その説明がより自然かを必ず比較する"
+
+OUTPUT_SCHEMA:
+  1. 現在時刻までの情報カバレッジ
+  2. 朝の仮説：維持 / 弱化 / 崩壊 / 事前予測なし
+  3. 支持材料と反証材料を同数程度で整理
+  4. 自台評価（設定期待と出玉結果を分離）
+  5. 同機種・周辺・店全体との整合
+  6. 代替候補がある場合の優先順位
+  7. 続行 / 移動 / 店移動 / STOP_NO_BET の結論
+  8. 結論を変える次の観測条件
+  9. 撤退条件（サンクコストを使わない）
+  10. LIVEヒートマップ（SELF/SAME_MODEL/ISLAND/STORE/ALTERNATIVES）
+  11. 時間価値判定（追加判別G数 vs 残り時間・予算）
+  12. 信頼度 HIGH/MEDIUM/LOW とデータ不足
+
+FINAL_REQUIREMENT:
+  「負けているからそろそろ出る」「出ているから高設定」のような後付けを禁止し、
+  朝の予測との差分と、今この瞬間からの意思決定だけを評価する。`;
+  }
+
+  function auditPrompt(item){
+    const frozen=item?.predictionAnswer||''; if(!frozen) throw new Error('凍結予測がありません');
+    const meta=`保存ID: ${item.id}
+対象日: ${item.date}
+モード: ${item.mode}
+入力: ${item.target}`;
+    return `SYSTEM_PROFILE:
+  engine: "PACHISLOT_FORECAST_AUDITOR"
+  spec_version: "HALLSCOPE-4.8"
+  response_language: "ja-JP"
+
+MISSION:
+  凍結済みの事前予測を一切変更せず、公開済みの確定結果と突合して精度を検証する。
+  当たった例だけを拾わず、外れ・未判定も保存する。
+
+SNAPSHOT_META:
+${meta}
+
+FROZEN_PREDICTION_DO_NOT_EDIT:
+----- BEGIN FROZEN -----
+${frozen}
+----- END FROZEN -----
+
+AUDIT_RULES:
+  - 予測順位・候補・根拠を結果に合わせて変更しない。
+  - 結果がまだ公開されていない項目はPENDING。
+  - 店選び / 機種選び / 台番選びを分ける。
+  - 差枚プラス、+1500、+3000、4000G、6000Gを別集計。
+  - ランダム、店プラス率、機種プラス率、単純高稼働戦略と比較する。
+  - AI予測精度と実際の着席/立ち回り実行を分離する。
+  - Confidence別の的中率を出し、HIGHがLOWを上回っているか校正を見る。
+  - Precision@1 / @3 / @5 / @10 を可能な範囲で計算する。
+  - 店・イベント・機種・台番・位置特徴ごとに偽陽性（推したが外れ）を記録する。
+  - 同じ特徴を外した回数が増えたら、その特徴の重みを下げる候補として提示する。
+  - NO BET判定が妥当だった日も成功として別集計し、無理に打つ方向へ最適化しない。
+  - 台選び検証は対象日前30日ローリングに限定し、31日以前の成功例を後付けで持ち込まない。
+  - 同一イベント再現、機種単位、台番/位置、塊、少台数、前日状況、末尾補助を分解してどこが当たった/外れたか記録する。
+  - 高稼働マイナスを単純な外れ扱いにせず、設定差要素が確認できる場合は「結果負け/判別支持」を分離する。
+  - 公開カウンターの意味が不明な場合、推定AT初当たり等を監査KPIに使用しない。
+
+OUTPUT:
+  1. 結果データ取得状況
+  2. 店選び
+  3. 機種選び
+  4. 台番ごとの予測 vs 実績
+  5. KPI
+  6. ベースライン比較
+  7. 当たった特徴 / 外した特徴
+  8. データ不足失敗 / ロジック失敗
+  9. Confidence校正 / Precision@K / 偽陽性
+  10. 店の癖・イベント特徴の重みを上げる/下げる提案
+  11. NO BET判定の妥当性
+  12. 次回検証仮説
+  13. 未確定項目
+  14. 次回学習へ戻す特徴タグ（上げる/維持/下げる、nと根拠付き）
+  15. WALK_FORWARDで再検証すべき仮説`;
+  }
+
+  function generate(){
+    if(!els.targetDate.value) throw new Error('対象日を入力してください');
+    if(currentMode==='area') return areaPrompt();

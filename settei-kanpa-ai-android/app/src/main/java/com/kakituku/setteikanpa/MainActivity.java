@@ -12,7 +12,7 @@ import java.util.zip.GZIPInputStream;
 
 public class MainActivity extends Activity {
   private static final String HALL_SCOPE_URL = "https://kakituku2-svg.github.io/smart-ats-pro/hall-scope/";
-  private static final String[] PARTS = {"app-v4.7.html.gz.b64"};
+  private static final String[] PARTS = {"app-v4.8.part1.txt","app-v4.8.part2.txt","app-v4.8.part3.txt","app-v4.8.part4.txt","app-v4.8.part5.txt","app-v4.8.part6.txt","app-v4.8.part7.txt","app-v4.8.part8.txt"};
   private WebView web;
   private boolean fallbackLoaded = false;
 
@@ -31,7 +31,7 @@ public class MainActivity extends Activity {
     s.setAllowFileAccess(true);
     s.setAllowContentAccess(true);
     s.setMediaPlaybackRequiresUserGesture(true);
-    s.setUserAgentString(s.getUserAgentString() + " HallScope/4.7 Android");
+    s.setUserAgentString(s.getUserAgentString() + " HallScope/4.8 Android");
     web.setWebViewClient(new WebViewClient() {
       @Override public boolean shouldOverrideUrlLoading(WebView v, WebResourceRequest r) {
         Uri u = r.getUrl();

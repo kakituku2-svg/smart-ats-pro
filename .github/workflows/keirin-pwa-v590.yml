@@ -77,6 +77,15 @@ jobs:
           grep -q "Manga2Tok" _site/manga2tok/index.html
           grep -q "manga2tok-v1.0.0" _site/manga2tok/sw.js
           python3 -m json.tool _site/manga2tok/manifest.webmanifest >/dev/null
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          html=Path("_site/manga2tok/index.html").read_text(encoding="utf-8")
+          scripts=re.findall(r'<script type="module">([\\s\\S]*?)</script>', html, flags=re.I)
+          assert scripts, "Manga2Tok inline module script missing"
+          Path("/tmp/manga2tok-inline.js").write_text(scripts[-1], encoding="utf-8")
+          PY
+          node --check /tmp/manga2tok-inline.js
           test -f _site/hall-scope/index.html
           test -f _site/hall-scope/loader-v480.js
           grep -q "HALL SCOPE v4.8" _site/hall-scope/index.html

@@ -224,6 +224,9 @@ def validate() -> None:
         (CACHE in sw, "v5.13 service-worker cache"),
         ("release=513-r2" in manifest, "iOS manifest cache-bust"),
         ((SITE / "ai-seisaku-kobo" / "index.html").exists(), "AI Kobo preserved"),
+        ((SITE / "manga2tok" / "index.html").exists(), "Manga2Tok preserved"),
+        ((SITE / "manga2tok" / "manifest.webmanifest").exists(), "Manga2Tok manifest preserved"),
+        ((SITE / "manga2tok" / "sw.js").exists(), "Manga2Tok service worker preserved"),
     ]
     failed = [name for ok, name in checks if not ok]
     if missing or failed:
@@ -239,6 +242,13 @@ def main() -> None:
     # Reuse the proven iPhone/mobile layout build, then promote the generated
     # Pages bundle to the current v5.13 prediction engine and cache namespace.
     base.main()
+
+    # Preserve and publish Manga2Tok as a sibling PWA without changing the existing root app.
+    manga_src = ROOT / "manga2tok"
+    manga_dst = SITE / "manga2tok"
+    if manga_dst.exists():
+        shutil.rmtree(manga_dst)
+    shutil.copytree(manga_src, manga_dst)
 
     patch_index(SITE / "index.html")
     patch_premium_js(SITE / "premium-ui-v580.js")

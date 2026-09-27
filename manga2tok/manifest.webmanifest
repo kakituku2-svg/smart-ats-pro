@@ -1,0 +1,12 @@
+{
+  "name":"Manga2Tok — 漫画動画メーカー",
+  "short_name":"Manga2Tok",
+  "id":"./",
+  "start_url":"./?v=1.0.0",
+  "scope":"./",
+  "display":"standalone",
+  "background_color":"#0b0c10",
+  "theme_color":"#111217",
+  "description":"漫画画像を選ぶだけでTikTok向け1分超MP4を生成",
+  "icons":[{"src":"./icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
+}

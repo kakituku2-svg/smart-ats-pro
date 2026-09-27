@@ -9,7 +9,8 @@ on:
       - ".github/workflows/keirin-pwa-v590.yml"
       - ".github/scripts/build_keirin_v511.py"
       - ".github/scripts/build_keirin_v513.py"
-      - "keirin-race-gate/**"\n      - "manga2tok/**"
+      - "keirin-race-gate/**"
+      - "manga2tok/**"
 
 permissions:
   contents: read
@@ -81,7 +82,7 @@ jobs:
           from pathlib import Path
           import re
           html=Path("_site/manga2tok/index.html").read_text(encoding="utf-8")
-          scripts=re.findall(r'<script type="module">([\\s\\S]*?)</script>', html, flags=re.I)
+          scripts=re.findall(r'<script type="module">(.*?)</script>', html, flags=re.I|re.S)
           assert scripts, "Manga2Tok inline module script missing"
           Path("/tmp/manga2tok-inline.js").write_text(scripts[-1], encoding="utf-8")
           PY

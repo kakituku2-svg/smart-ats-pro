@@ -168,8 +168,16 @@
     }return problems;
   }
   async function canvasToPNG(i){const c=document.createElement('canvas');paintSlide(c,state.pages[i],i,state.pages.length,state.images[i]);return await new Promise((resolve,reject)=>c.toBlob(b=>b?resolve(b):reject(Error('PNG生成に失敗')),'image/png'));}
-  function download(blob,name){const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),30000);}
-  async function downloadOne(){if(!state.pages.length)return;try{const i=state.index;const blob=await canvasToPNG(i);download(blob,'AI-Kobo-P'+pad(i+1)+'.png');status('P'+(i+1)+'を独立したPNGとして書き出しました');}catch(e){status(String(e),true);}}
+  async function download(blob,name){
+    if(window.AIKoboDownload && typeof window.AIKoboDownload.save==='function'){
+      const bytes=new Uint8Array(await blob.arrayBuffer());if(bytes.length>30_000_000)throw Error('Androidへの書き出しは30MB以内にしてください');
+      let binary='';for(let i=0;i<bytes.length;i+=8192)binary+=String.fromCharCode.apply(null,bytes.subarray(i,i+8192));
+      window.AIKoboDownload.save(name,blob.type||'application/octet-stream',btoa(binary));
+      return 'native';
+    }
+    const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),30000);return 'browser';
+  }
+  async function downloadOne(){if(!state.pages.length)return;try{const i=state.index;const blob=await canvasToPNG(i);const mode=await download(blob,'AI-Kobo-P'+pad(i+1)+'.png');status(mode==='native'?'端末で保存先を選んでください':'P'+(i+1)+'を独立したPNGとして書き出しました');}catch(e){status(String(e),true);}}
   const crcTable=Array.from({length:256},(_,i)=>{let c=i;for(let j=0;j<8;j++)c=c&1?0xedb88320^(c>>>1):c>>>1;return c>>>0;});
   function crc32(bytes){let c=0xffffffff;for(const b of bytes)c=crcTable[(c^b)&255]^(c>>>8);return (c^0xffffffff)>>>0;}
   function u16(a,n,v){a[n]=v&255;a[n+1]=(v>>>8)&255;}
@@ -193,15 +201,15 @@
       for(let i=0;i<state.pages.length;i++){status('PNG '+(i+1)+' / '+state.pages.length+' を描画中…');const blob=await canvasToPNG(i);files.push({name:'slide-'+pad(i+1)+'.png',bytes:new Uint8Array(await blob.arrayBuffer())});}
       const manifest={app:'AI制作工房 図解スタジオ',version:CREATIVE_STUDIO_VERSION,format:state.format,preset:state.preset,oneImagePerPage:true,pages:state.pages};
       files.push({name:'project.json',bytes:enc.encode(JSON.stringify(manifest,null,2))});
-      download(zipStore(files),'AI-Kobo-Slides-'+state.pages.length+'pages.zip');
-      status(state.pages.length+'枚の独立画像と編集データをZIPへ保存しました');
+      const mode=await download(zipStore(files),'AI-Kobo-Slides-'+state.pages.length+'pages.zip');
+      status(mode==='native'?'ZIPの保存先を選んでください':state.pages.length+'枚の独立画像と編集データをZIPへ保存しました');
     }catch(e){status('ZIPの作成に失敗：'+String(e.message||e),true);}
     finally{state.busy=false;$('zipBtn').disabled=false;}
   }
   function project(){return {version:CREATIVE_STUDIO_VERSION,preset:state.preset,format:state.format,pages:state.pages,source:$('source').value};}
   function saveProject(){if(!state.pages.length){status('先にページを作成してください',true);return;}try{localStorage.setItem(STORAGE,JSON.stringify(project()));status('この端末に保存しました。APIキーと画像素材は保存しません。');}catch(e){status('保存に失敗：端末の空き容量を確認してください',true);}}
   function applyProject(obj){if(!obj||!Array.isArray(obj.pages)||!obj.pages.length)throw Error('ページデータがありません');if(obj.pages.length>MAX_PAGES)throw Error('Lite版の上限は5ページです');snapshot();state.pages=obj.pages.map(page);state.preset=PRESETS.some(x=>x.id===obj.preset)?obj.preset:'navy';state.format=obj.format==='portrait'?'portrait':'landscape';state.index=0;state.images={};$('format').value=state.format;$('pageCount').value=String(state.pages.length);$('source').value=text(obj.source,20000);buildGallery();renderAll();}
-  function downloadProject(){download(new Blob([JSON.stringify(project(),null,2)],{type:'application/json'}),'AI-Kobo-Project.json');status('編集可能なプロジェクトJSONを保存しました');}
+  async function downloadProject(){try{const mode=await download(new Blob([JSON.stringify(project(),null,2)],{type:'application/json'}),'AI-Kobo-Project.json');status(mode==='native'?'JSONの保存先を選んでください':'編集可能なプロジェクトJSONを保存しました');}catch(e){status('書き出しに失敗：'+String(e.message||e),true);}}
   async function loadImage(file){if(!file)return;if(file.size>12*1024*1024){status('画像は12MB以内にしてください',true);return;}if(!file.type.startsWith('image/')){status('画像ファイルを選択してください',true);return;}const url=URL.createObjectURL(file),image=new Image();image.onload=()=>{URL.revokeObjectURL(url);state.images[state.index]=image;renderPreview();status('現在のページに写真を配置しました');};image.onerror=()=>{URL.revokeObjectURL(url);status('画像の読み込みに失敗しました',true);};image.src=url;}
   function wire(){
     $('localBtn').onclick=localGenerate;$('aiBtn').onclick=aiGenerate;$('generateImageBtn').onclick=generatePageIllustration;$('undoBtn').onclick=restore;$('downloadBtn').onclick=downloadOne;$('zipBtn').onclick=downloadZIP;$('saveBtn').onclick=saveProject;$('jsonBtn').onclick=downloadProject;
@@ -216,5 +224,6 @@
     $('sampleBtn').onclick=()=>{$('source').value='店舗の売上改善提案\n現状：平日夕方の来客が少ない。\nターゲット：仕事帰りの近隣住民。\n施策1：夕方限定セットメニューを導入する。\n施策2：LINE登録特典で再来店を促進する。\n施策3：SNS告知のクリエイティブを統一する。\nKPI：時間帯別客数、客単価、再来店率。\n注意：売上増加率は実測データから計算する。';$('pageCount').value='4';localGenerate();};
   }
   buildGallery();wire();renderAll();status('文章を入力し、デザインを選んで構成を作成してください。');
+  window.AIKoboDownloadStatus=(message)=>status(String(message||''));
   window.CREATIVE_STUDIO_VERSION=CREATIVE_STUDIO_VERSION;
 })();

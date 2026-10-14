@@ -6,11 +6,11 @@
 
 ## AI制作工房 Android APK
 
-**最新版:** AI制作工房 v1.2.0
+**最新版:** AI制作工房 v1.3.0
 
-[AI制作工房 v1.2.0 APKをダウンロード](https://github.com/kakituku2-svg/smart-ats-pro/releases/download/ai-seisaku-kobo-v1.2.0/AI-Seisaku-Kobo-v1.2.0-debug.apk)
+[AI制作工房 v1.3.0 APKをダウンロード](https://github.com/kakituku2-svg/smart-ats-pro/releases/download/ai-seisaku-kobo-v1.3.0/AI-Seisaku-Kobo-v1.3.0-debug.apk)
 
-Releaseページ: https://github.com/kakituku2-svg/smart-ats-pro/releases/tag/ai-seisaku-kobo-v1.2.0
+Releaseページ: https://github.com/kakituku2-svg/smart-ats-pro/releases/tag/ai-seisaku-kobo-v1.3.0
 
 ## 主なアプリ
 
@@ -19,6 +19,8 @@ Releaseページ: https://github.com/kakituku2-svg/smart-ats-pro/releases/tag/ai
 - アプリ名: `AI制作工房`
 - applicationId: `jp.kakituku.aiseisakukobo`
 - Androidネイティブ音声認識対応
+- 図解スタジオ 2.6：8種テーマ、独立PNG・ZIP、個別編集、Gemini連携（キー任意）
+- 無料Web Lite：1〜5ページ。APIキーと写真は端末保存しない。
 - Android内部バージョン: `1.2.0`
 
 ### Smart ATS

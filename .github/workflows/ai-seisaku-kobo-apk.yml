@@ -46,8 +46,14 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
+      - name: Use preinstalled Android SDK (avoid deprecated tools package)
+        run: |
+          SDK="${ANDROID_SDK_ROOT:-/usr/local/lib/android/sdk}"
+          echo "ANDROID_HOME=$SDK" >> "$GITHUB_ENV"
+          MANAGER="$(find "$SDK/cmdline-tools" -type f -name sdkmanager | head -n1)"
+          test -x "$MANAGER"
+          echo "$(dirname "$MANAGER")" >> "$GITHUB_PATH"
+          "$MANAGER" --version
 
       - name: Install Android SDK 35
         run: |
@@ -73,29 +79,29 @@ jobs:
 
       - name: Stage APK
         run: |
-          cp ai-seisaku-kobo-android/app/build/outputs/apk/debug/app-debug.apk AI-Seisaku-Kobo-v1.2.0-debug.apk
-          sha256sum AI-Seisaku-Kobo-v1.2.0-debug.apk > AI-Seisaku-Kobo-v1.2.0-debug.apk.sha256
-          test -s AI-Seisaku-Kobo-v1.2.0-debug.apk
+          cp ai-seisaku-kobo-android/app/build/outputs/apk/debug/app-debug.apk AI-Seisaku-Kobo-v1.3.0-debug.apk
+          sha256sum AI-Seisaku-Kobo-v1.3.0-debug.apk > AI-Seisaku-Kobo-v1.3.0-debug.apk.sha256
+          test -s AI-Seisaku-Kobo-v1.3.0-debug.apk
 
       - name: Upload workflow artifact
         uses: actions/upload-artifact@v4
         with:
-          name: AI-Seisaku-Kobo-v1.2.0-APK
+          name: AI-Seisaku-Kobo-v1.3.0-APK
           path: |
-            AI-Seisaku-Kobo-v1.2.0-debug.apk
-            AI-Seisaku-Kobo-v1.2.0-debug.apk.sha256
+            AI-Seisaku-Kobo-v1.3.0-debug.apk
+            AI-Seisaku-Kobo-v1.3.0-debug.apk.sha256
           retention-days: 30
 
       - name: Publish APK release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          TAG='ai-seisaku-kobo-v1.2.0'
+          TAG='ai-seisaku-kobo-v1.3.0'
           if gh release view "$TAG" >/dev/null 2>&1; then
-            gh release upload "$TAG" AI-Seisaku-Kobo-v1.2.0-debug.apk AI-Seisaku-Kobo-v1.2.0-debug.apk.sha256 --clobber
+            gh release upload "$TAG" AI-Seisaku-Kobo-v1.3.0-debug.apk AI-Seisaku-Kobo-v1.3.0-debug.apk.sha256 --clobber
           else
-            gh release create "$TAG" AI-Seisaku-Kobo-v1.2.0-debug.apk AI-Seisaku-Kobo-v1.2.0-debug.apk.sha256 \
+            gh release create "$TAG" AI-Seisaku-Kobo-v1.3.0-debug.apk AI-Seisaku-Kobo-v1.3.0-debug.apk.sha256 \
               --target "$GITHUB_SHA" \
-              --title 'AI制作工房 v1.2.0 Deep Prompt Compiler Android APK' \
-              --notes 'OUTPUT ROUTERに旧ミニアプリ工房のKnowledge/QA/失敗防止を再統合したDeep Prompt Compiler版。品質MAX/標準/軽量、12成果物専用ENGINE、Androidネイティブ音声認識を搭載。'
+              --title 'AI制作工房 v1.3.0 Creative Studio Android APK' \
+              --notes 'Deep Prompt Compilerと図解スタジオを統合。8種デザイン、ページ編集、PNG・ZIP、任意Gemini AI構成・挿絵生成を搭載。'
           fi

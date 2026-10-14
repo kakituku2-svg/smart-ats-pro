@@ -99,6 +99,33 @@
     }catch(e){status('画像AIの処理に失敗：'+String(e.message||e),true);}
     finally{btn.disabled=false;}
   }
+  async function revisePageIllustration(){
+    const i=state.index,old=state.images[i],key=$('apiKey').value.trim(),instruction=$('imageEditInstruction').value.trim();
+    if(!old){status('先に画像をアップロードするか、AIで挿絵を生成してください',true);return;}
+    if(!instruction){status('変更したい内容を入力してください',true);return;}
+    if(!key){status('AIによる画像修正にはGemini APIキーが必要です',true);return;}
+    if(!confirm('現在のページの画像と修正指示をGemini APIへ送信します。外部API利用料金が発生する場合があります。続行しますか？'))return;
+    const button=$('editImageBtn');button.disabled=true;status('P'+(i+1)+'の挿絵だけをAI修正中…');
+    try{
+      const size=1024,w=old.naturalWidth||old.width,h=old.naturalHeight||old.height,rate=Math.min(1,size/Math.max(w,h));
+      const canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.floor(w*rate));canvas.height=Math.max(1,Math.floor(h*rate));
+      canvas.getContext('2d').drawImage(old,0,0,canvas.width,canvas.height);
+      const data64=canvas.toDataURL('image/png').split(',')[1];
+      const prompt='Edit ONLY the supplied image based on this change request: '+instruction.slice(0,800)+'. Keep everything else visually consistent, preserve framing, color style, background and subject identity where possible. No writing, no text, no logos. Return one edited image (not a collage or slide).';
+      const req={contents:[{role:'user',parts:[{text:prompt},{inlineData:{mimeType:'image/png',data:data64}}]}],generationConfig:{responseModalities:['IMAGE'],responseFormat:{image:{aspectRatio:state.format==='portrait'?'3:4':'16:9'}}}};
+      const res=await fetch('https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash-image:generateContent',{method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':key},body:JSON.stringify(req)});
+      if(!res.ok)throw Error('API '+res.status+'：'+(await res.text()).slice(0,150));
+      const response=await res.json(),part=response.candidates?.[0]?.content?.parts?.find(x=>x.inlineData?.data);
+      if(!part)throw Error('修正後の画像が返されませんでした');
+      const mime=part.inlineData.mimeType||'image/png';if(!/^image\/(png|jpeg|webp)$/i.test(mime))throw Error('未対応の画像形式');
+      const binary=atob(part.inlineData.data);if(binary.length>16*1024*1024)throw Error('画像が大きすぎます');
+      const url=URL.createObjectURL(new Blob([Uint8Array.from(binary,c=>c.charCodeAt(0))],{type:mime})),image=new Image();
+      try{await new Promise((resolve,reject)=>{image.onload=resolve;image.onerror=()=>reject(Error('画像デコード失敗'));image.src=url;});}finally{URL.revokeObjectURL(url);}
+      state.images[i]=image;if(state.index===i)renderPreview();
+      status('P'+(i+1)+'の挿絵を修正しました。ページ内のテキストは変更していません。');
+    }catch(e){status('画像修正に失敗：'+String(e.message||e),true);}
+    finally{button.disabled=false;}
+  }
   function renderTabs(){
     const host=$('pageTabs');host.replaceChildren();
     state.pages.forEach((p,i)=>{const b=document.createElement('button');b.type='button';b.className='page-tab'+(state.index===i?' active':'');b.textContent='P'+pad(i+1)+' '+p.title.slice(0,10);b.setAttribute('aria-current',state.index===i?'page':'false');b.onclick=()=>{state.index=i;renderTabs();renderEditor();renderPreview();};host.append(b);});
@@ -212,7 +239,7 @@
   async function downloadProject(){try{const mode=await download(new Blob([JSON.stringify(project(),null,2)],{type:'application/json'}),'AI-Kobo-Project.json');status(mode==='native'?'JSONの保存先を選んでください':'編集可能なプロジェクトJSONを保存しました');}catch(e){status('書き出しに失敗：'+String(e.message||e),true);}}
   async function loadImage(file){if(!file)return;if(file.size>12*1024*1024){status('画像は12MB以内にしてください',true);return;}if(!file.type.startsWith('image/')){status('画像ファイルを選択してください',true);return;}const url=URL.createObjectURL(file),image=new Image();image.onload=()=>{URL.revokeObjectURL(url);state.images[state.index]=image;renderPreview();status('現在のページに写真を配置しました');};image.onerror=()=>{URL.revokeObjectURL(url);status('画像の読み込みに失敗しました',true);};image.src=url;}
   function wire(){
-    $('localBtn').onclick=localGenerate;$('aiBtn').onclick=aiGenerate;$('generateImageBtn').onclick=generatePageIllustration;$('undoBtn').onclick=restore;$('downloadBtn').onclick=downloadOne;$('zipBtn').onclick=downloadZIP;$('saveBtn').onclick=saveProject;$('jsonBtn').onclick=downloadProject;
+    $('localBtn').onclick=localGenerate;$('aiBtn').onclick=aiGenerate;$('generateImageBtn').onclick=generatePageIllustration;$('editImageBtn').onclick=revisePageIllustration;$('undoBtn').onclick=restore;$('downloadBtn').onclick=downloadOne;$('zipBtn').onclick=downloadZIP;$('saveBtn').onclick=saveProject;$('jsonBtn').onclick=downloadProject;
     $('format').onchange=()=>{snapshot();state.format=$('format').value;renderPreview();};
     ['kicker','title','body','footer'].forEach(k=>{const el=$('edit_'+k);el.addEventListener('focus',()=>{if(state.pages.length)snapshot();},{passive:true});el.addEventListener('input',syncEditor);});
     $('pageImage').onchange=e=>{loadImage(e.target.files?.[0]);e.target.value='';};

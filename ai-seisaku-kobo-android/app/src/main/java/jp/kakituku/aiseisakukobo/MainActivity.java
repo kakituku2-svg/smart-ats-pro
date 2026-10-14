@@ -20,6 +20,8 @@ import java.util.ArrayList;
 
 public class MainActivity extends Activity {
     private static final int AUDIO_PERMISSION = 7001;
+    private static final int DOCUMENT_SAVE_REQUEST = 7002;
+    private byte[] pendingDownloadBytes = null;
     private WebView webView;
     private SpeechRecognizer recognizer;
     private Intent recognizerIntent;
@@ -44,6 +46,7 @@ public class MainActivity extends Activity {
         webView.setWebViewClient(new WebViewClient());
         webView.setWebChromeClient(new WebChromeClient());
         webView.addJavascriptInterface(new NativeVoiceBridge(), "NativeVoice");
+        webView.addJavascriptInterface(new NativeDownloadBridge(), "AIKoboDownload");
         webView.loadUrl("file:///android_asset/index.html");
     }
 
@@ -56,6 +59,62 @@ public class MainActivity extends Activity {
         }
         @JavascriptInterface public boolean isAvailable() {
             return SpeechRecognizer.isRecognitionAvailable(MainActivity.this);
+        }
+    }
+
+    // Use Storage Access Framework: users explicitly choose each PNG/ZIP destination.
+    // No filesystem-wide write permission is required (Android 8+).
+    public class NativeDownloadBridge {
+        @JavascriptInterface public void save(String fileName, String mime, String base64) {
+            runOnUiThread(() -> {
+                try {
+                    String page = webView.getUrl();
+                    if (page == null || !page.startsWith("file:///android_asset/")) throw new SecurityException("Untrusted page");
+                    if (base64 == null || base64.length() > 42_000_000) throw new IllegalArgumentException("File too large");
+                    String safeName = (fileName == null ? "ai-kobo-export" : fileName).replaceAll("[^a-zA-Z0-9._-]", "_");
+                    if (safeName.length() > 100) safeName = safeName.substring(safeName.length() - 100);
+                    if (safeName.isEmpty()) safeName = "ai-kobo-export";
+                    String safeMime = "image/png".equals(mime) ? mime : "application/zip".equals(mime) ? mime : "application/json".equals(mime) ? mime : "application/octet-stream";
+                    pendingDownloadBytes = android.util.Base64.decode(base64, android.util.Base64.DEFAULT);
+                    if (pendingDownloadBytes.length > 30_000_000) throw new IllegalArgumentException("File too large");
+                    Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+                    intent.addCategory(Intent.CATEGORY_OPENABLE);
+                    intent.setType(safeMime);
+                    intent.putExtra(Intent.EXTRA_TITLE, safeName);
+                    startActivityForResult(intent, DOCUMENT_SAVE_REQUEST);
+                    notifyFileSave("保存先を選んでください");
+                } catch (Exception ex) {
+                    pendingDownloadBytes = null;
+                    notifyFileSave("保存の準備に失敗しました");
+                }
+            });
+        }
+    }
+
+    private void notifyFileSave(String message) {
+        final String value = JSONObject.quote(message);
+        handler.post(() -> webView.evaluateJavascript("window.AIKoboDownloadStatus&&window.AIKoboDownloadStatus(" + value + ");", null));
+    }
+
+    @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode != DOCUMENT_SAVE_REQUEST) return;
+        byte[] bytes = pendingDownloadBytes;
+        pendingDownloadBytes = null;
+        if (resultCode != RESULT_OK || data == null || data.getData() == null) {
+            notifyFileSave("ファイル保存をキャンセルしました");
+            return;
+        }
+        try {
+            if (bytes == null) throw new IllegalStateException("File data was not retained");
+            try (java.io.OutputStream stream = getContentResolver().openOutputStream(data.getData())) {
+                if (stream == null) throw new java.io.IOException("Cannot open destination");
+                stream.write(bytes);
+                stream.flush();
+            }
+            notifyFileSave("ファイルを保存しました");
+        } catch (Exception ex) {
+            notifyFileSave("保存できませんでした。保存先の権限をご確認ください");
         }
     }
 

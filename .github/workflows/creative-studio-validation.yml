@@ -1,0 +1,37 @@
+name: Creative Studio Validation
+on:
+  pull_request:
+    paths:
+      - "keirin-race-gate/ai-seisaku-kobo/**"
+      - "tests/creative-studio-smoke.cjs"
+      - ".github/workflows/creative-studio-validation.yml"
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "keirin-race-gate/ai-seisaku-kobo/**"
+jobs:
+  browser-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Syntax and integration checks
+        run: |
+          node --check keirin-race-gate/ai-seisaku-kobo/app.js
+          node --check keirin-race-gate/ai-seisaku-kobo/creative-studio.js
+          grep -q 'creative-studio.html' keirin-race-gate/ai-seisaku-kobo/index.html
+          grep -q './creative-studio.html' keirin-race-gate/ai-seisaku-kobo/sw.js
+          grep -q 'creative-studio.js' keirin-race-gate/ai-seisaku-kobo/creative-studio.html
+      - name: Install Chromium for browser checks
+        run: |
+          npm install --no-save --no-package-lock playwright@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Serve app and run end-to-end smoke
+        run: |
+          python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/creative-studio-http.log 2>&1 &
+          sleep 2
+          node tests/creative-studio-smoke.cjs

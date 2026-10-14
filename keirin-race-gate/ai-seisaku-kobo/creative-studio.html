@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0a1020">
+<meta name="description" content="AI制作工房 図解スタジオ。デザインを選んで編集可能なスライドを作成し、1ページ1枚のPNGで書き出し。">
+<title>図解スタジオ | AI制作工房 Lite</title>
+<style>
+:root{font-family:Inter,"Noto Sans JP",system-ui,-apple-system,sans-serif;color-scheme:dark;--bg:#090f1e;--panel:#111d32;--soft:#172740;--line:#324361;--fg:#f4f8ff;--muted:#a8bdd6;--sky:#71d9f5;--radius:16px}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(145deg,#101b34,#090f1e 65%);color:var(--fg);min-height:100vh}a{color:#a3dcff}button,input,textarea,select{font:inherit}button{cursor:pointer}button:disabled{opacity:.42;cursor:not-allowed}button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid var(--sky);outline-offset:2px}
+.top{background:#0b1426e9;border-bottom:1px solid var(--line);padding:13px clamp(16px,4vw,42px);display:flex;align-items:center;justify-content:space-between;gap:16px;position:sticky;top:0;z-index:10;backdrop-filter:blur(14px)}
+.brand{display:flex;align-items:center;gap:10px;color:#fff;text-decoration:none;font-weight:850}.logo{background:linear-gradient(130deg,#0caed1,#8b62fb);border-radius:11px;padding:10px}.top small{color:var(--muted)}
+main{max-width:1520px;margin:auto;padding:26px clamp(14px,3vw,36px) 60px}.hero{display:flex;justify-content:space-between;gap:18px;align-items:end;margin-bottom:24px}.eyebrow{font-size:12px;color:var(--sky);font-weight:850;letter-spacing:.18em}h1{font-size:clamp(26px,3.6vw,40px);margin:8px 0}h2{font-size:20px;margin:0 0 16px}h3{font-size:16px;margin:0}p{color:var(--muted);line-height:1.6;margin:0}
+.grid{display:grid;grid-template-columns:minmax(310px,400px) minmax(0,1fr);gap:18px;align-items:start}
+.panel{border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);padding:20px;box-shadow:0 12px 30px #0002}.sidebar{display:grid;gap:16px}.group{display:grid;gap:9px}.group label{font-weight:750;font-size:13px}.hint{color:var(--muted);font-size:12px;line-height:1.6}.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.row>*{flex:1}textarea,input:not([type=file]),select{display:block;width:100%;border:1px solid var(--line);border-radius:10px;padding:11px 13px;background:#0a162b;color:#fff;resize:vertical}textarea::placeholder,input::placeholder{color:#7891b1}#source{min-height:160px}.btn{border:1px solid var(--line);border-radius:10px;padding:11px 14px;background:var(--soft);color:#fff;font-weight:800;line-height:1.35}.btn:hover{background:#213956}.btn.primary{background:linear-gradient(100deg,#1677cd,#684ddb);border-color:#6384ed}.btn.primary:hover{filter:brightness(1.15)}.btn.good{background:#087665;border-color:#1a998c}.btn.small{font-size:12px;padding:8px 11px}.btn.full{width:100%}
+.design-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.design-item{display:grid;gap:5px;background:#0a1528;color:#fff;border:1px solid #354564;border-radius:12px;text-align:left;padding:9px;min-width:0}.design-item.chosen{outline:2px solid #63d8f7;outline-offset:0;background:#18304c}.design-item strong{font-size:13px}.design-item small{color:#a9bfd9}.design-art{height:74px;border:1px solid;border-radius:7px;padding:11px;overflow:hidden}.design-bar{height:6px;width:25%;border-radius:4px;margin-bottom:9px}.design-head{height:9px;width:68%;border-radius:3px;margin-bottom:8px;opacity:.85}.design-blocks{display:flex;gap:5px;height:21px}.design-blocks span{flex:1;border-radius:4px;opacity:.82}
+.workspace{display:grid;gap:16px;min-width:0}.work-head{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}.muted{color:var(--muted)}.tag{border-radius:999px;background:#163650;color:#a9e7ff;border:1px solid #2a6385;padding:6px 11px;font-size:11px;font-weight:850}
+.page-tabs{display:flex;gap:8px;overflow-x:auto;padding:2px 1px 10px}.page-tab{color:#bad0e7;background:#0a162b;border:1px solid #354765;border-radius:9px;padding:10px;white-space:nowrap;font-size:12px}.page-tab.active{color:#fff;border-color:#65cdef;background:#153653}
+.canvas-wrap{background:#080d19;border:1px solid #304360;border-radius:12px;overflow:hidden;display:grid;place-items:center;padding:14px;min-height:280px}
+canvas{width:100%;height:auto;max-height:720px;object-fit:contain;box-shadow:0 15px 44px #0008;border-radius:4px}
+#empty{color:#c6d5e8;text-align:center;padding:70px 12px}#editor{display:grid;gap:12px}.edit-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.edit-grid .wide{grid-column:1/-1}.edit-grid textarea{min-height:100px}.divider{height:1px;background:var(--line);margin:4px 0}
+.status{margin-top:15px;padding:13px 15px;border-radius:10px;border:1px solid #296a73;background:#12333f;color:#b8f4ed;font-size:13px;line-height:1.5;overflow-wrap:anywhere}.status.warn,.qa.warn{border-color:#b88348;background:#493021;color:#ffdeb0}.qa{padding:10px;border-radius:8px;background:#14352d;color:#a6f3d8;font-size:12px;line-height:1.5;margin-top:11px}
+.actions{display:flex;gap:10px;flex-wrap:wrap}.actions .btn{flex:1;min-width:138px}.note{font-size:12px;color:#b7cde7;line-height:1.7;border-left:3px solid #4c9dbc;padding-left:12px;margin-top:12px}
+.file{color:#b7d1e8;font-size:12px;max-width:100%}footer{padding:28px;text-align:center;color:#8397b3;font-size:12px}
+@media(max-width:980px){.grid{grid-template-columns:1fr}.sidebar{grid-template-columns:repeat(2,minmax(0,1fr))}.sidebar>.panel:first-child{grid-column:1/-1}}
+@media(max-width:640px){.top small{display:none}.hero{align-items:start}.sidebar{grid-template-columns:1fr}.panel{padding:15px}.edit-grid{grid-template-columns:1fr}.edit-grid .wide{grid-column:auto}.canvas-wrap{min-height:190px;padding:8px}h2{font-size:18px}.top{padding:11px 13px}.actions .btn{min-width:42%}}
+</style>
+</head>
+<body>
+<header class="top"><a href="./index.html" class="brand"><span class="logo" aria-hidden="true">✦</span><span>AI制作工房 <small> / CREATIVE STUDIO</small></span></a><span class="tag">Lite · 1〜5ページ</span></header>
+<main>
+  <section class="hero">
+    <div><div class="eyebrow">EDITABLE SLIDE COMPOSER</div><h1>図解スタジオ <span style="color:#78daf4">2.6</span></h1><p>文章からページ構成を作り、デザイン・文字・写真を編集。<strong style="color:white">1ページ＝1枚の独立PNG</strong>で完成。</p></div>
+  </section>
+  <div class="grid">
+    <aside class="sidebar">
+      <section class="panel group">
+        <h2>① 内容と構成</h2>
+        <label for="source">制作したい文章・要点</label>
+        <textarea id="source" maxlength="20000" placeholder="例：店舗改善提案／現状の課題／施策／期待効果／KPI…"></textarea>
+        <div class="row"><div class="group"><label for="pageCount">ページ数</label><select id="pageCount"><option value="1">1枚</option><option value="2">2枚</option><option value="3">3枚</option><option value="4" selected>4枚</option><option value="5">5枚（Lite上限）</option></select></div>
+        <div class="group"><label for="format">画像比率</label><select id="format"><option value="landscape">16:9｜資料 1600×900</option><option value="portrait">3:4｜SNS 1080×1440</option></select></div></div>
+        <button class="btn primary full" id="localBtn" type="button">構成を作る（キー不要）</button>
+        <button class="btn small" id="sampleBtn" type="button">サンプル文章を試す</button>
+        <div class="divider"></div>
+        <label for="apiKey">GeminiによるAI構成（任意）</label>
+        <input id="apiKey" type="password" autocomplete="off" placeholder="APIキー（この画面内のみ保持）">
+        <button id="aiBtn" class="btn" type="button">AIでページ構成を作成</button>
+        <p class="hint">AI構成を使う場合のみ、明示的な確認の後に文章をGoogle APIへ送信します。APIキーは保存・書き出ししません。Google側の課金が発生する場合があります。</p>
+      </section>
+      <section class="panel group">
+        <h2>② デザインを選ぶ</h2>
+        <p class="hint">テンプレート変更は全ページに適用。選択後も文字・構成は保持されます。</p>
+        <div id="designGallery" class="design-list" role="group" aria-label="デザインテーマ"></div>
+      </section>
+      <section class="panel group">
+        <h2>③ 保存と復元</h2>
+        <div class="actions"><button id="saveBtn" class="btn" type="button">端末へ保存</button><button id="restoreBtn" class="btn" type="button">復元</button></div>
+        <div class="actions"><button id="jsonBtn" class="btn" type="button" disabled>JSON保存</button><button id="importBtn" class="btn" type="button">JSON読込</button></div>
+        <input id="importFile" type="file" accept="application/json,.json" hidden>
+        <p class="hint">画像素材とAPIキーは保存対象外。必要な写真は再読み込みしてください。</p>
+      </section>
+    </aside>
+    <div class="workspace">
+      <section class="panel">
+        <div class="work-head"><div><h2>ページ別プレビュー</h2><p class="hint">各ページを独立管理・変更箇所だけ編集</p></div><div class="row"><span id="counter" class="tag">0 / 5ページ</span><button id="undoBtn" class="btn small" type="button" disabled>元に戻す</button></div></div>
+        <div id="pageTabs" class="page-tabs" aria-label="ページ選択"></div>
+        <div class="canvas-wrap"><div id="empty">左の文章欄に入力し、「構成を作る」を選択してください。</div><canvas id="preview" width="1600" height="900" role="img" aria-label="現在のスライドのプレビュー"></canvas></div>
+        <div id="qa" class="qa">ページを作成すると品質チェックを表示します。</div>
+      </section>
+      <section class="panel">
+        <div class="work-head"><h2>選択ページを編集</h2><span class="tag">テキストは再画像生成せず修正可能</span></div>
+        <div id="editor" hidden>
+          <div class="edit-grid">
+            <div class="group"><label for="edit_kicker">小見出し</label><input id="edit_kicker" maxlength="60"></div>
+            <div class="group"><label for="edit_title">タイトル</label><input id="edit_title" maxlength="100"></div>
+            <div class="group wide"><label for="edit_body">本文（1行＝1要点）</label><textarea id="edit_body" maxlength="680" rows="7"></textarea></div>
+            <div class="group wide"><label for="edit_footer">フッター・出典</label><input id="edit_footer" maxlength="60"></div>
+          </div>
+          <div class="group"><label for="pageImage">このページだけに写真を追加（任意・12MB以内）</label><input class="file" id="pageImage" type="file" accept="image/*"></div>
+          <div class="row"><button id="clearImageBtn" type="button" class="btn small">写真を外す</button><button id="checkBtn" type="button" class="btn small">全ページ品質チェック</button></div>
+        </div>
+        <div class="divider"></div>
+        <h3>完成品を書き出す</h3>
+        <div class="actions" style="margin-top:14px">
+          <button id="downloadBtn" class="btn good" type="button" disabled>このページをPNG保存</button>
+          <button id="zipBtn" class="btn primary" type="button" disabled>全ページをZIP保存</button>
+        </div>
+        <p class="note">ZIPには各ページを別画像として格納し、編集用project.jsonも同梱します。日本語文字はCanvas上で描画するため、生成画像に焼き込まれた誤字を直す方式とは異なります。Canva連携・自動画像生成はこの版に含まれません。</p>
+        <div id="status" class="status" role="status" aria-live="polite"></div>
+      </section>
+    </div>
+  </div>
+</main>
+<footer>AI制作工房 Lite — Creative Studio 2.6 / local-first editing &amp; independent PNG export</footer>
+<script src="./creative-studio.js?v=2.6.0"></script>
+</body>
+</html>

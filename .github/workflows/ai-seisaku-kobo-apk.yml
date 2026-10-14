@@ -25,6 +25,8 @@ jobs:
           mkdir -p ai-seisaku-kobo-android/app/src/main/assets
           cp keirin-race-gate/ai-seisaku-kobo/index.html ai-seisaku-kobo-android/app/src/main/assets/index.html
           cp keirin-race-gate/ai-seisaku-kobo/app.js ai-seisaku-kobo-android/app/src/main/assets/app.js
+          cp keirin-race-gate/ai-seisaku-kobo/creative-studio.html ai-seisaku-kobo-android/app/src/main/assets/creative-studio.html
+          cp keirin-race-gate/ai-seisaku-kobo/creative-studio.js ai-seisaku-kobo-android/app/src/main/assets/creative-studio.js
           grep -q 'app.js?v=2.5.0-lite.3' ai-seisaku-kobo-android/app/src/main/assets/index.html
           grep -q 'DEEP PROMPT COMPILER' ai-seisaku-kobo-android/app/src/main/assets/index.html
           grep -q 'AISeisakuNativeVoice' ai-seisaku-kobo-android/app/src/main/assets/app.js
@@ -34,6 +36,9 @@ jobs:
           grep -q 'normalizeImportedProject' ai-seisaku-kobo-android/app/src/main/assets/app.js
           grep -q 'rec.continuous=false' ai-seisaku-kobo-android/app/src/main/assets/app.js
           node --check ai-seisaku-kobo-android/app/src/main/assets/app.js
+          node --check ai-seisaku-kobo-android/app/src/main/assets/creative-studio.js
+          grep -q 'CREATIVE_STUDIO_VERSION' ai-seisaku-kobo-android/app/src/main/assets/creative-studio.js
+          grep -q 'creative-studio.html' ai-seisaku-kobo-android/app/src/main/assets/index.html
 
       - name: Set up Java 17
         uses: actions/setup-java@v4

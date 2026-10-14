@@ -80,6 +80,8 @@ canvas{width:100%;height:auto;max-height:720px;object-fit:contain;box-shadow:0 1
           </div>
           <div class="group"><label for="pageImage">このページだけに写真を追加（任意・12MB以内）</label><input class="file" id="pageImage" type="file" accept="image/*"></div>
           <button id="generateImageBtn" type="button" class="btn">✨ AIでこのページだけの挿絵を生成（APIキー必要）</button>
+          <div class="group"><label for="imageEditInstruction">挿絵の部分修正指示</label><input id="imageEditInstruction" maxlength="800" placeholder="例：人物だけ女性に変更して、背景はそのまま"></div>
+          <button id="editImageBtn" type="button" class="btn">挿絵だけAI修正（文字はそのまま）</button>
           <div class="row"><button id="clearImageBtn" type="button" class="btn small">写真を外す</button><button id="checkBtn" type="button" class="btn small">全ページ品質チェック</button></div>
         </div>
         <div class="divider"></div>
@@ -88,7 +90,7 @@ canvas{width:100%;height:auto;max-height:720px;object-fit:contain;box-shadow:0 1
           <button id="downloadBtn" class="btn good" type="button" disabled>このページをPNG保存</button>
           <button id="zipBtn" class="btn primary" type="button" disabled>全ページをZIP保存</button>
         </div>
-        <p class="note">ZIPには各ページを別画像として格納し、編集用project.jsonも同梱します。日本語文字はCanvas上で描画するため、生成画像に焼き込まれた誤字を直す方式とは異なります。AI画像は任意で1ページずつ生成できます。Canva直接連携・画像内の領域選択編集はこの版に含まれません。</p>
+        <p class="note">ZIPには各ページを別画像として格納し、編集用project.jsonも同梱します。日本語文字はCanvas上で描画するため、生成画像に焼き込まれた誤字を直す方式とは異なります。AI画像は任意で1ページずつ生成できます。Canva直接連携・マスク指定による領域選択編集はこの版に含まれません。</p>
         <div id="status" class="status" role="status" aria-live="polite"></div>
       </section>
     </div>

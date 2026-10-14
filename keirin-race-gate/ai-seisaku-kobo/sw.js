@@ -1,7 +1,9 @@
-const CACHE_NAME = 'ai-seisaku-kobo-lite-v2.5.0-lite.3-pwa4';
+const CACHE_NAME = 'ai-seisaku-kobo-lite-v2.6.0-pwa5';
 const APP_SHELL = [
   './',
   './index.html',
+  './creative-studio.html',
+  './creative-studio.js?v=2.6.0',
   './app.js?v=2.5.0-lite.3',
   './manifest.webmanifest',
   './icon.svg',
@@ -36,10 +38,10 @@ self.addEventListener('fetch', event => {
       fetch(event.request)
         .then(response => {
           const copy = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put('./index.html', copy));
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
           return response;
         })
-        .catch(() => caches.match('./index.html'))
+        .catch(() => caches.match(event.request).then(x => x || caches.match('./index.html')))
     );
     return;
   }

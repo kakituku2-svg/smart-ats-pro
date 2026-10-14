@@ -39,6 +39,35 @@ const { chromium } = require('playwright');
   const stored=await page.evaluate(()=>localStorage.getItem('ai_kobo_creative_studio_v260'));
   assert.ok(stored.includes('ページ2の編集テスト'));
   assert.ok(!stored.includes('SENSITIVE_FAKE_KEY_DO_NOT_STORE'),'do not persist API key');
+  // Mock the external Gemini endpoint to exercise AI structure, image creation and localized edit without charges.
+  await page.evaluate(() => {
+    const original = window.fetch.bind(window);
+    const c=document.createElement('canvas');c.width=8;c.height=8;
+    const x=c.getContext('2d');x.fillStyle='#abcabc';x.fillRect(0,0,8,8);
+    const base64=c.toDataURL('image/png').split(',')[1];
+    window.fetch=async(url,opts)=>{
+      if(String(url).includes('generativelanguage.googleapis.com')){
+        let response;
+        if(String(url).includes('flash-image')){
+          response={candidates:[{content:{parts:[{inlineData:{mimeType:'image/png',data:base64}}]}}]};
+        }else{
+          const n=4;
+          response={candidates:[{content:{parts:[{text:JSON.stringify({pages:Array.from({length:n},(_,i)=>({kicker:'AI',title:'AIページ'+(i+1),body:'・要点を確認する',footer:'出典は要確認'}))})}]}}]};
+        }
+        return new Response(JSON.stringify(response),{status:200,headers:{'Content-Type':'application/json'}});
+      }
+      return original(url,opts);
+    };
+  });
+  await page.locator('#aiBtn').click();
+  await page.waitForFunction(() => document.querySelector('#status').textContent.includes('AI構成を反映しました'));
+  assert.equal(await page.locator('.page-tab').count(),4);
+  await page.locator('#generateImageBtn').click();
+  await page.waitForFunction(() => document.querySelector('#status').textContent.includes('挿絵を生成・配置しました'));
+  await page.locator('#imageEditInstruction').fill('人物の服を青に変更');
+  await page.locator('#editImageBtn').click();
+  await page.waitForFunction(() => document.querySelector('#status').textContent.includes('挿絵を修正しました'));
+  assert.equal(await page.locator('#edit_title').inputValue(),'AIページ1','text is unchanged after image edit');
   await page.locator('#format').selectOption('portrait');
   assert.equal(await page.locator('#preview').getAttribute('width'),'1080');
   assert.equal(await page.locator('#preview').getAttribute('height'),'1440');
@@ -46,5 +75,5 @@ const { chromium } = require('playwright');
   assert.ok(await page.locator('#preview').isVisible(),'mobile portrait preview');
   assert.deepEqual(errors,[], 'no uncaught JS errors');
   await browser.close();
-  console.log('CREATIVE_STUDIO_SMOKE_PASS: presets, pages, edit, PNG, ZIP, key privacy, portrait, mobile');
+  console.log('CREATIVE_STUDIO_SMOKE_PASS: presets, pages, edit, PNG, ZIP, key privacy, mocked AI edit, portrait, mobile');
 })().catch(e=>{console.error(e);process.exit(1);});

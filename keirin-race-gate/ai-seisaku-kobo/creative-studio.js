@@ -96,6 +96,10 @@
     ctx.fillStyle=d.bg;ctx.fillRect(0,0,1000,ht);
     ctx.globalAlpha=.1;ctx.fillStyle=d.accent;ctx.beginPath();ctx.arc(960,75,250,0,2*Math.PI);ctx.fill();ctx.globalAlpha=1;
     ctx.fillStyle=d.accent;ctx.fillRect(65,62,74,8);
+    if(d.layout==='editorial'){ctx.globalAlpha=.55;ctx.fillRect(65,132,870,2);ctx.globalAlpha=1;}
+    if(d.layout==='split'){ctx.globalAlpha=.2;ctx.fillRect(0,0,19,ht);ctx.fillStyle=d.accent2;ctx.fillRect(19,0,10,ht);ctx.globalAlpha=1;}
+    if(d.layout==='poster'){ctx.globalAlpha=.11;ctx.fillStyle=d.accent2;ctx.font='bold 260px sans-serif';ctx.textAlign='right';ctx.fillText(pad(index+1),980,Math.min(ht-65,405));ctx.textAlign='left';ctx.globalAlpha=1;}
+
     ctx.fillStyle=d.ink;ctx.font='600 17px sans-serif';ctx.fillText(p.kicker||'KEY POINT',65,112);
     ctx.textAlign='right';ctx.globalAlpha=.7;ctx.font='600 18px sans-serif';ctx.fillText(pad(index+1)+' / '+pad(total),935,110);ctx.textAlign='left';ctx.globalAlpha=1;
     const titleY=portrait?195:177, titleW=870,titleSize=fit(ctx,p.title,titleW,portrait?4:2,portrait?72:62);
@@ -104,7 +108,7 @@
     titleLines.slice(0,portrait?4:2).forEach((line,i)=>ctx.fillText(line,65,titleY+i*titleStep));
     if(titleLines.length>(portrait?4:2))errors.push('タイトルが長すぎます');
     const titleBottom=titleY+Math.min(titleLines.length,portrait?4:2)*titleStep;
-    const contentY=Math.max(portrait?375:285,titleBottom+23),padB=portrait?180:105,available=ht-contentY-padB;
+    const contentY=Math.max(portrait?375:285,titleBottom+23),padB=portrait?(img?400:180):105,available=ht-contentY-padB;
     if(available<120)errors.push('本文表示領域が不足');
     const colW=portrait?870:(img?520:870),textMax=colW-100;
     rounded(ctx,65,contentY,colW,Math.max(120,available),24);ctx.fillStyle=d.paper;ctx.fill();
@@ -131,7 +135,7 @@
     return [...new Set(errors)];
   }
   function renderPreview(){const p=state.pages[state.index];if(!p)return;const errors=paintSlide($('preview'),p,state.index,state.pages.length,state.images[state.index]);const qa=$('qa');qa.textContent=errors.length?'品質チェック：'+errors.join('・'):'品質チェック：文字量・入力の基本検査 OK';qa.classList.toggle('warn',!!errors.length);}
-  function renderAll(){renderTabs();renderEditor();renderPreview();$('downloadBtn').disabled=!state.pages.length;$('zipBtn').disabled=!state.pages.length;$('jsonBtn').disabled=!state.pages.length;}
+  function renderAll(){$('preview').hidden=!state.pages.length;renderTabs();renderEditor();renderPreview();$('downloadBtn').disabled=!state.pages.length;$('zipBtn').disabled=!state.pages.length;$('jsonBtn').disabled=!state.pages.length;}
   function qualityScan(){
     const problems=[];const seen=new Set();for(let i=0;i<state.pages.length;i++){
       const p=state.pages[i];if(seen.has(p.title.trim()))problems.push('P'+(i+1)+'：タイトル重複');seen.add(p.title.trim());

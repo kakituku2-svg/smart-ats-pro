@@ -74,6 +74,31 @@
     }catch(err){status('AI構成に失敗：'+String(err.message||err),true);}
     finally{$('aiBtn').disabled=false;}
   }
+  async function generatePageIllustration(){
+    const i=state.index,p=state.pages[i],key=$('apiKey').value.trim;
+    if(!p){status('先にページを作成してください',true);return;}
+    if(!key){status('画像AIにはGemini APIキーが必要です',true);return;}
+    if(!confirm('現在のページの見出しと本文をGemini画像生成APIに送信して、挿絵を1枚作成します。画像生成には料金が発生する場合があります。続行しますか？'))return;
+    const btn=$('generateImageBtn');btn.disabled=true;status('P'+(i+1)+'の挿絵をGeminiで生成中…');
+    try{
+      const prompt='Create one high-quality professional editorial illustration for a Japanese presentation slide. Visualize this topic: '+p.title+'. Context: '+p.body+'. NO text, NO letters, NO numbers, NO logos, NO typography, NO watermark added by prompt. Compose as a clean standalone image with one unified scene, not a collage or presentation slide. Leave visual space around the subject. Style: '+preset().name+'.';
+      const payload={contents:[{role:'user',parts:[{text:prompt}]}],generationConfig:{responseModalities:['IMAGE'],responseFormat:{image:{aspectRatio:state.format==='portrait'?'3:4':'16:9'}}}};
+      const res=await fetch('https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash-image:generateContent',{method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':key},body:JSON.stringify(payload)});
+      if(!res.ok)throw Error('API '+res.status+'：'+(await res.text()).slice(0,150));
+      const data=await res.json(),part=data.candidates?.[0]?.content?.parts?.find(x=>x.inlineData?.data);
+      if(!part)throw Error('画像データが返されませんでした');
+      const mime=part.inlineData.mimeType||'image/png';if(!/^image\/(png|jpeg|webp)$/i.test(mime))throw Error('未対応の画像形式');
+      const binary=atob(part.inlineData.data);if(binary.length>16*1024*1024)throw Error('画像サイズが大きすぎます');
+      const bytes=Uint8Array.from(binary,c=>c.charCodeAt(0));
+      const url=URL.createObjectURL(new Blob([bytes],{type:mime}));const img=new Image();
+      await new Promise((resolve,reject)=>{img.onload=resolve;img.onerror=()=>reject(Error('画像読み込みに失敗'));img.src=url;});
+      URL.revokeObjectURL(url);
+      state.images[i]=img;
+      if(state.index===i)renderPreview();
+      status('P'+(i+1)+'の挿絵を生成・配置しました。文字は引き続き編集できます。');
+    }catch(e){status('画像AIの処理に失敗：'+String(e.message||e),true);}
+    finally{btn.disabled=false;}
+  }
   function renderTabs(){
     const host=$('pageTabs');host.replaceChildren();
     state.pages.forEach((p,i)=>{const b=document.createElement('button');b.type='button';b.className='page-tab'+(state.index===i?' active':'');b.textContent='P'+pad(i+1)+' '+p.title.slice(0,10);b.setAttribute('aria-current',state.index===i?'page':'false');b.onclick=()=>{state.index=i;renderTabs();renderEditor();renderPreview();};host.append(b);});
@@ -179,7 +204,7 @@
   function downloadProject(){download(new Blob([JSON.stringify(project(),null,2)],{type:'application/json'}),'AI-Kobo-Project.json');status('編集可能なプロジェクトJSONを保存しました');}
   async function loadImage(file){if(!file)return;if(file.size>12*1024*1024){status('画像は12MB以内にしてください',true);return;}if(!file.type.startsWith('image/')){status('画像ファイルを選択してください',true);return;}const url=URL.createObjectURL(file),image=new Image();image.onload=()=>{URL.revokeObjectURL(url);state.images[state.index]=image;renderPreview();status('現在のページに写真を配置しました');};image.onerror=()=>{URL.revokeObjectURL(url);status('画像の読み込みに失敗しました',true);};image.src=url;}
   function wire(){
-    $('localBtn').onclick=localGenerate;$('aiBtn').onclick=aiGenerate;$('undoBtn').onclick=restore;$('downloadBtn').onclick=downloadOne;$('zipBtn').onclick=downloadZIP;$('saveBtn').onclick=saveProject;$('jsonBtn').onclick=downloadProject;
+    $('localBtn').onclick=localGenerate;$('aiBtn').onclick=aiGenerate;$('generateImageBtn').onclick=generatePageIllustration;$('undoBtn').onclick=restore;$('downloadBtn').onclick=downloadOne;$('zipBtn').onclick=downloadZIP;$('saveBtn').onclick=saveProject;$('jsonBtn').onclick=downloadProject;
     $('format').onchange=()=>{snapshot();state.format=$('format').value;renderPreview();};
     ['kicker','title','body','footer'].forEach(k=>{const el=$('edit_'+k);el.addEventListener('focus',()=>{if(state.pages.length)snapshot();},{passive:true});el.addEventListener('input',syncEditor);});
     $('pageImage').onchange=e=>{loadImage(e.target.files?.[0]);e.target.value='';};

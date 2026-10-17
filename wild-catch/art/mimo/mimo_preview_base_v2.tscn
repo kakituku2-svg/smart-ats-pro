@@ -1,0 +1,119 @@
+[gd_scene load_steps=9 format=3]
+
+[ext_resource type="PackedScene" path="res://art/mimo/mimo_preview_base.tscn" id="1_base"]
+
+[sub_resource type="SphereMesh" id="DetailSphere"]
+radius = 0.08
+height = 0.16
+radial_segments = 10
+rings = 5
+
+[sub_resource type="BoxMesh" id="DetailBox"]
+size = Vector3(0.13, 0.045, 0.035)
+
+[sub_resource type="StandardMaterial3D" id="CreamDetail"]
+albedo_color = Color(0.96, 0.85, 0.68, 1)
+roughness = 0.87
+
+[sub_resource type="StandardMaterial3D" id="InnerEar"]
+albedo_color = Color(0.91, 0.58, 0.48, 1)
+roughness = 0.82
+
+[sub_resource type="StandardMaterial3D" id="DarkDetail"]
+albedo_color = Color(0.025, 0.032, 0.04, 1)
+roughness = 0.55
+
+[sub_resource type="StandardMaterial3D" id="EyeGlow"]
+albedo_color = Color(0.86, 1.0, 0.95, 1)
+emission_enabled = true
+emission = Color(0.42, 0.95, 0.78, 1)
+emission_energy_multiplier = 1.6
+roughness = 0.30
+
+[sub_resource type="StandardMaterial3D" id="PadMat"]
+albedo_color = Color(0.23, 0.12, 0.10, 1)
+roughness = 0.72
+
+[node name="MimoPreviewBaseV2" instance=ExtResource("1_base")]
+
+[node name="EyeHighlightL" type="MeshInstance3D" parent="Rig"]
+position = Vector3(-0.135, 1.075, -0.431)
+scale = Vector3(0.22, 0.22, 0.15)
+mesh = SubResource("DetailSphere")
+material_override = SubResource("EyeGlow")
+
+[node name="EyeHighlightR" type="MeshInstance3D" parent="Rig"]
+position = Vector3(0.135, 1.075, -0.431)
+scale = Vector3(0.22, 0.22, 0.15)
+mesh = SubResource("DetailSphere")
+material_override = SubResource("EyeGlow")
+
+[node name="EarInnerL" type="MeshInstance3D" parent="Rig"]
+position = Vector3(-0.37, 1.12, -0.035)
+rotation = Vector3(0, 0, -0.14)
+scale = Vector3(0.62, 1.04, 0.30)
+mesh = SubResource("DetailSphere")
+material_override = SubResource("InnerEar")
+
+[node name="EarInnerR" type="MeshInstance3D" parent="Rig"]
+position = Vector3(0.37, 1.12, -0.035)
+rotation = Vector3(0, 0, 0.14)
+scale = Vector3(0.62, 1.04, 0.30)
+mesh = SubResource("DetailSphere")
+material_override = SubResource("InnerEar")
+
+[node name="MuzzlePatch" type="MeshInstance3D" parent="Rig"]
+position = Vector3(0, 0.94, -0.405)
+scale = Vector3(1.35, 0.72, 0.42)
+mesh = SubResource("DetailSphere")
+material_override = SubResource("CreamDetail")
+
+[node name="NoseTip" type="MeshInstance3D" parent="Rig"]
+position = Vector3(0, 0.995, -0.463)
+scale = Vector3(0.42, 0.34, 0.28)
+mesh = SubResource("DetailSphere")
+material_override = SubResource("DarkDetail")
+
+[node name="BellyPatchBase" type="MeshInstance3D" parent="Rig"]
+position = Vector3(0, 0.48, -0.318)
+scale = Vector3(1.90, 2.25, 0.38)
+mesh = SubResource("DetailSphere")
+material_override = SubResource("CreamDetail")
+
+[node name="HandPadL" type="MeshInstance3D" parent="Rig"]
+position = Vector3(-0.36, 0.35, -0.06)
+scale = Vector3(0.68, 0.62, 0.60)
+mesh = SubResource("DetailSphere")
+material_override = SubResource("CreamDetail")
+
+[node name="HandPadR" type="MeshInstance3D" parent="Rig"]
+position = Vector3(0.36, 0.35, -0.06)
+scale = Vector3(0.68, 0.62, 0.60)
+mesh = SubResource("DetailSphere")
+material_override = SubResource("CreamDetail")
+
+[node name="FootPadL" type="MeshInstance3D" parent="Rig"]
+position = Vector3(-0.20, 0.055, -0.235)
+scale = Vector3(0.90, 0.38, 0.48)
+mesh = SubResource("DetailSphere")
+material_override = SubResource("PadMat")
+
+[node name="FootPadR" type="MeshInstance3D" parent="Rig"]
+position = Vector3(0.20, 0.055, -0.235)
+scale = Vector3(0.90, 0.38, 0.48)
+mesh = SubResource("DetailSphere")
+material_override = SubResource("PadMat")
+
+[node name="BrowBaseL" type="MeshInstance3D" parent="Rig"]
+position = Vector3(-0.15, 1.17, -0.423)
+rotation_degrees = Vector3(0, 0, -7)
+scale = Vector3(0.82, 0.66, 0.65)
+mesh = SubResource("DetailBox")
+material_override = SubResource("DarkDetail")
+
+[node name="BrowBaseR" type="MeshInstance3D" parent="Rig"]
+position = Vector3(0.15, 1.17, -0.423)
+rotation_degrees = Vector3(0, 0, 7)
+scale = Vector3(0.82, 0.66, 0.65)
+mesh = SubResource("DetailBox")
+material_override = SubResource("DarkDetail")

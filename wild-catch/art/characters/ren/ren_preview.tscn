@@ -1,0 +1,285 @@
+[gd_scene load_steps=24 format=3]
+
+[sub_resource type="CapsuleMesh" id="BodyMesh"]
+height = 0.74
+radius = 0.29
+
+[sub_resource type="SphereMesh" id="HeadMesh"]
+radius = 0.37
+height = 0.74
+radial_segments = 16
+rings = 8
+
+[sub_resource type="CapsuleMesh" id="LimbMesh"]
+height = 0.48
+radius = 0.07
+radial_segments = 8
+rings = 4
+
+[sub_resource type="BoxMesh" id="VestMesh"]
+size = Vector3(0.55, 0.46, 0.12)
+
+[sub_resource type="BoxMesh" id="ShortsMesh"]
+size = Vector3(0.48, 0.24, 0.34)
+
+[sub_resource type="BoxMesh" id="ShoeMesh"]
+size = Vector3(0.22, 0.14, 0.38)
+
+[sub_resource type="TorusMesh" id="HexRingMesh"]
+inner_radius = 0.20
+outer_radius = 0.255
+rings = 8
+ring_segments = 20
+
+[sub_resource type="StandardMaterial3D" id="SkinMat"]
+albedo_color = Color(0.96, 0.70, 0.52, 1)
+roughness = 0.78
+
+[sub_resource type="StandardMaterial3D" id="ShirtMat"]
+albedo_color = Color(0.94, 0.96, 0.91, 1)
+roughness = 0.86
+
+[sub_resource type="StandardMaterial3D" id="TealMat"]
+albedo_color = Color(0.035, 0.62, 0.60, 1)
+roughness = 0.64
+
+[sub_resource type="StandardMaterial3D" id="KhakiMat"]
+albedo_color = Color(0.61, 0.50, 0.29, 1)
+roughness = 0.90
+
+[sub_resource type="StandardMaterial3D" id="HairMat"]
+albedo_color = Color(0.56, 0.18, 0.055, 1)
+roughness = 0.72
+
+[sub_resource type="StandardMaterial3D" id="DarkMat"]
+albedo_color = Color(0.028, 0.045, 0.060, 1)
+roughness = 0.60
+
+[sub_resource type="StandardMaterial3D" id="CyanGlowMat"]
+albedo_color = Color(0.12, 0.86, 1, 1)
+emission_enabled = true
+emission = Color(0.08, 0.62, 1, 1)
+emission_energy_multiplier = 2.0
+roughness = 0.28
+
+[sub_resource type="Animation" id="AnimIdle"]
+resource_name = "Idle"
+length = 1.2
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/path = NodePath("Rig:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {"times": PackedFloat32Array(0, 0.6, 1.2), "transitions": PackedFloat32Array(1, 1, 1), "update": 0, "values": [Vector3(0, 0, 0), Vector3(0, 0.018, 0), Vector3(0, 0, 0)]}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Rig/Head:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {"times": PackedFloat32Array(0, 0.6, 1.2), "transitions": PackedFloat32Array(1, 1, 1), "update": 0, "values": [Vector3(0, 0, 0), Vector3(0, 0, 0.018), Vector3(0, 0, 0)]}
+
+[sub_resource type="Animation" id="AnimRun"]
+resource_name = "Run"
+length = 0.56
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/path = NodePath("Rig/ArmL:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {"times": PackedFloat32Array(0, 0.28, 0.56), "transitions": PackedFloat32Array(1, 1, 1), "update": 0, "values": [Vector3(0.62, 0, -0.10), Vector3(-0.62, 0, -0.10), Vector3(0.62, 0, -0.10)]}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Rig/ArmR:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {"times": PackedFloat32Array(0, 0.28, 0.56), "transitions": PackedFloat32Array(1, 1, 1), "update": 0, "values": [Vector3(-0.62, 0, 0.10), Vector3(0.62, 0, 0.10), Vector3(-0.62, 0, 0.10)]}
+tracks/2/type = "value"
+tracks/2/path = NodePath("Rig/LegL:rotation")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {"times": PackedFloat32Array(0, 0.28, 0.56), "transitions": PackedFloat32Array(1, 1, 1), "update": 0, "values": [Vector3(-0.48, 0, 0), Vector3(0.48, 0, 0), Vector3(-0.48, 0, 0)]}
+tracks/3/type = "value"
+tracks/3/path = NodePath("Rig/LegR:rotation")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {"times": PackedFloat32Array(0, 0.28, 0.56), "transitions": PackedFloat32Array(1, 1, 1), "update": 0, "values": [Vector3(0.48, 0, 0), Vector3(-0.48, 0, 0), Vector3(0.48, 0, 0)]}
+tracks/4/type = "value"
+tracks/4/path = NodePath("Rig:position")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {"times": PackedFloat32Array(0, 0.14, 0.28, 0.42, 0.56), "transitions": PackedFloat32Array(1, 1, 1, 1, 1), "update": 0, "values": [Vector3(0, 0, 0), Vector3(0, 0.045, 0), Vector3(0, 0, 0), Vector3(0, 0.045, 0), Vector3(0, 0, 0)]}
+
+[sub_resource type="Animation" id="AnimJump"]
+resource_name = "Jump"
+length = 0.42
+tracks/0/type = "value"
+tracks/0/path = NodePath("Rig/ArmL:rotation")
+tracks/0/interp = 1
+tracks/0/keys = {"times": PackedFloat32Array(0, 0.18, 0.42), "transitions": PackedFloat32Array(1, 1, 1), "update": 0, "values": [Vector3(0, 0, -0.1), Vector3(-0.78, 0, -0.25), Vector3(-0.35, 0, -0.12)]}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Rig/ArmR:rotation")
+tracks/1/interp = 1
+tracks/1/keys = {"times": PackedFloat32Array(0, 0.18, 0.42), "transitions": PackedFloat32Array(1, 1, 1), "update": 0, "values": [Vector3(0, 0, 0.1), Vector3(-0.78, 0, 0.25), Vector3(-0.35, 0, 0.12)]}
+tracks/2/type = "value"
+tracks/2/path = NodePath("Rig/LegL:rotation")
+tracks/2/interp = 1
+tracks/2/keys = {"times": PackedFloat32Array(0, 0.18, 0.42), "transitions": PackedFloat32Array(1, 1, 1), "update": 0, "values": [Vector3(0, 0, 0), Vector3(0.32, 0, 0), Vector3(0.12, 0, 0)]}
+tracks/3/type = "value"
+tracks/3/path = NodePath("Rig/LegR:rotation")
+tracks/3/interp = 1
+tracks/3/keys = {"times": PackedFloat32Array(0, 0.18, 0.42), "transitions": PackedFloat32Array(1, 1, 1), "update": 0, "values": [Vector3(0, 0, 0), Vector3(-0.22, 0, 0), Vector3(0.10, 0, 0)]}
+
+[sub_resource type="Animation" id="AnimFall"]
+resource_name = "Fall"
+length = 0.5
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/path = NodePath("Rig/ArmL:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {"times": PackedFloat32Array(0, 0.25, 0.5), "transitions": PackedFloat32Array(1, 1, 1), "update": 0, "values": [Vector3(0.18, 0, -0.42), Vector3(0.28, 0, -0.48), Vector3(0.18, 0, -0.42)]}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Rig/ArmR:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {"times": PackedFloat32Array(0, 0.25, 0.5), "transitions": PackedFloat32Array(1, 1, 1), "update": 0, "values": [Vector3(0.18, 0, 0.42), Vector3(0.28, 0, 0.48), Vector3(0.18, 0, 0.42)]}
+
+[sub_resource type="Animation" id="AnimDash"]
+resource_name = "Dash"
+length = 0.28
+tracks/0/type = "value"
+tracks/0/path = NodePath("Rig:rotation")
+tracks/0/interp = 1
+tracks/0/keys = {"times": PackedFloat32Array(0, 0.08, 0.28), "transitions": PackedFloat32Array(1, 1, 1), "update": 0, "values": [Vector3(0, 0, 0), Vector3(-0.16, 0, 0), Vector3(0, 0, 0)]}
+
+[sub_resource type="Animation" id="AnimNet1"]
+resource_name = "Net_1"
+length = 0.26
+tracks/0/type = "value"
+tracks/0/path = NodePath("Rig/ArmR:rotation")
+tracks/0/interp = 1
+tracks/0/keys = {"times": PackedFloat32Array(0, 0.13, 0.26), "transitions": PackedFloat32Array(1, 1, 1), "update": 0, "values": [Vector3(-0.28, -0.85, 0.08), Vector3(-0.42, 0.10, 0.06), Vector3(-0.30, 0.95, 0.08)]}
+
+[sub_resource type="Animation" id="AnimNet2"]
+resource_name = "Net_2"
+length = 0.28
+tracks/0/type = "value"
+tracks/0/path = NodePath("Rig/ArmR:rotation")
+tracks/0/interp = 1
+tracks/0/keys = {"times": PackedFloat32Array(0, 0.14, 0.28), "transitions": PackedFloat32Array(1, 1, 1), "update": 0, "values": [Vector3(-0.36, 1.0, 0.08), Vector3(-0.48, 0.0, 0.05), Vector3(-0.36, -1.0, 0.08)]}
+
+[sub_resource type="Animation" id="AnimNet3"]
+resource_name = "Net_3"
+length = 0.34
+tracks/0/type = "value"
+tracks/0/path = NodePath("Rig/ArmR:rotation")
+tracks/0/interp = 1
+tracks/0/keys = {"times": PackedFloat32Array(0, 0.14, 0.34), "transitions": PackedFloat32Array(1, 1, 1), "update": 0, "values": [Vector3(-1.15, 0, 0.08), Vector3(-0.42, 0, 0.08), Vector3(0.42, 0, 0.08)]}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Rig:rotation")
+tracks/1/interp = 1
+tracks/1/keys = {"times": PackedFloat32Array(0, 0.14, 0.34), "transitions": PackedFloat32Array(1, 1, 1), "update": 0, "values": [Vector3(-0.08, 0, 0), Vector3(0.04, 0, 0), Vector3(0, 0, 0)]}
+
+[sub_resource type="Animation" id="AnimScan"]
+resource_name = "Scan"
+length = 0.44
+tracks/0/type = "value"
+tracks/0/path = NodePath("Rig/ArmL:rotation")
+tracks/0/interp = 1
+tracks/0/keys = {"times": PackedFloat32Array(0, 0.16, 0.44), "transitions": PackedFloat32Array(1, 1, 1), "update": 0, "values": [Vector3(0, 0, -0.1), Vector3(-0.64, 0, -0.30), Vector3(-0.48, 0, -0.20)]}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Rig/ArmR:rotation")
+tracks/1/interp = 1
+tracks/1/keys = {"times": PackedFloat32Array(0, 0.16, 0.44), "transitions": PackedFloat32Array(1, 1, 1), "update": 0, "values": [Vector3(0, 0, 0.1), Vector3(-0.64, 0, 0.30), Vector3(-0.48, 0, 0.20)]}
+
+[sub_resource type="AnimationLibrary" id="AnimLibrary"]
+_data = {&"Dash": SubResource("AnimDash"), &"Fall": SubResource("AnimFall"), &"Idle": SubResource("AnimIdle"), &"Jump": SubResource("AnimJump"), &"Net_1": SubResource("AnimNet1"), &"Net_2": SubResource("AnimNet2"), &"Net_3": SubResource("AnimNet3"), &"Run": SubResource("AnimRun"), &"Scan": SubResource("AnimScan")}
+
+[node name="RenPreview" type="Node3D"]
+
+[node name="Rig" type="Node3D" parent="."]
+
+[node name="Torso" type="MeshInstance3D" parent="Rig"]
+position = Vector3(0, 0.04, 0)
+scale = Vector3(1, 0.90, 0.80)
+mesh = SubResource("BodyMesh")
+material_override = SubResource("ShirtMat")
+
+[node name="Vest" type="MeshInstance3D" parent="Rig"]
+position = Vector3(0, 0.05, -0.25)
+mesh = SubResource("VestMesh")
+material_override = SubResource("TealMat")
+
+[node name="Shorts" type="MeshInstance3D" parent="Rig"]
+position = Vector3(0, -0.34, 0.01)
+mesh = SubResource("ShortsMesh")
+material_override = SubResource("KhakiMat")
+
+[node name="Head" type="MeshInstance3D" parent="Rig"]
+position = Vector3(0, 0.64, -0.01)
+scale = Vector3(1.02, 0.98, 0.95)
+mesh = SubResource("HeadMesh")
+material_override = SubResource("SkinMat")
+
+[node name="HairCap" type="MeshInstance3D" parent="Rig"]
+position = Vector3(0, 0.78, 0.03)
+scale = Vector3(1.04, 0.62, 1.0)
+mesh = SubResource("HeadMesh")
+material_override = SubResource("HairMat")
+
+[node name="HairFront" type="MeshInstance3D" parent="Rig"]
+position = Vector3(0.08, 0.76, -0.29)
+scale = Vector3(0.62, 0.34, 0.38)
+mesh = SubResource("HeadMesh")
+material_override = SubResource("HairMat")
+
+[node name="EyeL" type="MeshInstance3D" parent="Rig"]
+position = Vector3(-0.12, 0.65, -0.35)
+scale = Vector3(0.10, 0.10, 0.05)
+mesh = SubResource("HeadMesh")
+material_override = SubResource("DarkMat")
+
+[node name="EyeR" type="MeshInstance3D" parent="Rig"]
+position = Vector3(0.12, 0.65, -0.35)
+scale = Vector3(0.10, 0.10, 0.05)
+mesh = SubResource("HeadMesh")
+material_override = SubResource("DarkMat")
+
+[node name="ArmL" type="MeshInstance3D" parent="Rig"]
+position = Vector3(-0.35, 0.04, 0)
+rotation = Vector3(0, 0, -0.12)
+mesh = SubResource("LimbMesh")
+material_override = SubResource("SkinMat")
+
+[node name="ArmR" type="MeshInstance3D" parent="Rig"]
+position = Vector3(0.35, 0.04, 0)
+rotation = Vector3(0, 0, 0.12)
+mesh = SubResource("LimbMesh")
+material_override = SubResource("SkinMat")
+
+[node name="LegL" type="MeshInstance3D" parent="Rig"]
+position = Vector3(-0.15, -0.48, 0)
+mesh = SubResource("LimbMesh")
+material_override = SubResource("KhakiMat")
+
+[node name="LegR" type="MeshInstance3D" parent="Rig"]
+position = Vector3(0.15, -0.48, 0)
+mesh = SubResource("LimbMesh")
+material_override = SubResource("KhakiMat")
+
+[node name="ShoeL" type="MeshInstance3D" parent="Rig"]
+position = Vector3(-0.15, -0.74, -0.08)
+mesh = SubResource("ShoeMesh")
+material_override = SubResource("DarkMat")
+
+[node name="ShoeR" type="MeshInstance3D" parent="Rig"]
+position = Vector3(0.15, -0.74, -0.08)
+mesh = SubResource("ShoeMesh")
+material_override = SubResource("DarkMat")
+
+[node name="HexGadget" type="MeshInstance3D" parent="Rig"]
+position = Vector3(0.43, 0.02, -0.14)
+rotation_degrees = Vector3(90, 0, 0)
+mesh = SubResource("HexRingMesh")
+material_override = SubResource("CyanGlowMat")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {&"": SubResource("AnimLibrary")}
